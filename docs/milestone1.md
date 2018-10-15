@@ -47,6 +47,9 @@ like Newton's method (among others).
 >Try to keep your report to a reasonable length.  It will form the core of your documentation, so you
 want it to be a length that someone will actually want to read.
 
-
-
-
+> Our core data structure is our AutoDiff class and the overriden elementary operations functions.
+> The main class that we will implement is the AutoDiff class that takes as input the values of the independent variables at the function that we are calculating the derivative on. The AutoDiff class will have two main instance variables, the value of the AutoDiff instance, and the derivatives of the instance. The derivatives of the instance is initialized with the relevant m seed vectors, where m is the number of independent variables.
+> In order to override the four basic operations of elementary arithmetic (addition, subtraction, multiplication, and division), we use dunder methods within our AutoDiff class. The dunder methods return new AutoDiff instances with the updated value and derivatives.
+> In order to deal with the other elementary functions (exponential, logarithm, powers, roots, trigonometric functions, inverse trigonometric functions, hyperbolic functions, etc.), we will override the numpy elementary functions such that we can use it for our AutoDiff class. For example, we will override the `np.sin` function such that if you use it on an AutoDiff instance `x` at a given value, it will return another AutoDiff instance with the value of `sin(x)`, and the calculated derivative of `\dot{x}cos(x)` at the given value. Similarly, we will override the `np.exp` function such that if you use it on an AutoDiff instance `x` at a given value, it will return another AutoDiff instance with the value of `exp(x)`, and the calculated derivative of `\dot{x}exp(x)` at the given value.
+> In order to implement this, we will rely on the numpy and math external libraries, which will be specified as our external dependencies in our setup.py file.
+> As such, after the user initializes the AutoDiff class on the indepndent variables, he/she will be able to use the usual elementary functions on the AutoDiff instance in order to calculate both the value of the function and the value of the derivative.

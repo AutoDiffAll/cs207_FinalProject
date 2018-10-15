@@ -1055,15 +1055,14 @@ body .markdown-body
 .codehilite .vi{color:teal}
 .codehilite .il{color:#009999}
 .codehilite .gc{color:#999;background-color:#EAF2F5}
-</style><title>milestone1</title></head><body><article class="markdown-body"><h1 id="milestone-1">Milestone 1<a class="headerlink" href="#milestone-1" title="Permanent link"></a></h1>
+</style><title>milestone1</title></head><body><article class="markdown-body"><h1 id="milestone-1-autodiffall">Milestone 1: <em>AutoDiffAll</em><a class="headerlink" href="#milestone-1-autodiffall" title="Permanent link"></a></h1>
 <h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link"></a></h2>
 <ol>
 <li><a href="#introduction">Introduction</a></li>
-<li><a href="#background">Background</a><ol>
-<li><a href="#subparagraph1">Sub paragraph</a></li>
-</ol>
-</li>
-<li><a href="#paragraph2">Another paragraph</a></li>
+<li><a href="#background">Background</a></li>
+<li><a href="#API">User API</a></li>
+<li><a href="#SoftwareOrganization">Software Organization</a></li>
+<li><a href="#implementation">Implementation</a></li>
 </ol>
 <h2 id="introduction">Introduction <a name="introduction"></a><a class="headerlink" href="#introduction" title="Permanent link"></a></h2>
 <blockquote>
@@ -1075,14 +1074,14 @@ body .markdown-body
 give a treatise on automatic differentation or dual numbers.  Just give the essential ideas (e.g.
 the chain rule, the graph structure of calculations, elementary functions, etc).</p>
 </blockquote>
-<h2 id="user-api-of-autodiffall">User API of  <em>AutoDiffAll</em><a class="headerlink" href="#user-api-of-autodiffall" title="Permanent link"></a></h2>
+<h2 id="user-api">User API <a name="API"></a><a class="headerlink" href="#user-api" title="Permanent link"></a></h2>
 <blockquote>
 <p>To do: How do you envision that a user will interact with your package?  What should they import?  How can
 they instantiate AD objects?</p>
 <p>Todo: <strong>Note: This section should be a mix of pseudo code and text.  It should not include any actual
 operations yet.</strong></p>
 </blockquote>
-<h2 id="software-organization">Software Organization<a class="headerlink" href="#software-organization" title="Permanent link"></a></h2>
+<h2 id="software-organization">Software Organization <a name="SoftwareOrganization"></a><a class="headerlink" href="#software-organization" title="Permanent link"></a></h2>
 <blockquote>
 <p>Todo: Discuss how you plan on organizing your software package.
 * What will the directory structure look like?<br />
@@ -1090,18 +1089,26 @@ operations yet.</strong></p>
 * Where will your test suite live?  Will you use <code>TravisCI</code>? <code>Coveralls</code>?
 * How will you distribute your package (e.g. <code>PyPI</code>)?</p>
 </blockquote>
-<h2 id="implementation">Implementation<a class="headerlink" href="#implementation" title="Permanent link"></a></h2>
+<h2 id="implementation">Implementation <a name="implementation"></a><a class="headerlink" href="#implementation" title="Permanent link"></a></h2>
+<p>Core Data Structure</p>
+<p>The main class that we will implement is the AutoDiff class that takes as input the values of the independent variables at the function that we are calculating the derivative on. The AutoDiff class will have two main instance variables, the value of the AutoDiff instance, and the derivatives of the instance. The derivatives of the instance is initialized with the relevant m seed vectors, where m is the number of independent variables.</p>
+<ul>
+<li>What are the core data structures?</li>
+<li>What classes will you implement?</li>
+<li>What method and name attributes will your classes have?</li>
+<li>What external dependencies will you rely on?</li>
+<li>How will you deal with elementary functions like <code>sin</code> and <code>exp</code>?</li>
+</ul>
 <blockquote>
-<p>Discuss how you plan on implementing the forward mode of automatic differentiation.
-* What are the core data structures?
-* What classes will you implement?
-* What method and name attributes will your classes have?
-* What external dependencies will you rely on?
-* How will you deal with elementary functions like <code>sin</code> and <code>exp</code>?</p>
 <p>Be sure to consider a variety of use cases.  For example, don&rsquo;t limit your design to scalar
 functions of scalar values.  Make sure you can handle the situations of vector functions of vectors and
 scalar functions of vectors.  Don&rsquo;t forget that people will want to use your library in algorithms
 like Newton&rsquo;s method (among others).</p>
 <p>Try to keep your report to a reasonable length.  It will form the core of your documentation, so you
 want it to be a length that someone will actually want to read.</p>
+<p>Our core data structure is our AutoDiff class and the overriden elementary operations functions.</p>
+<p>In order to override the four basic operations of elementary arithmetic (addition, subtraction, multiplication, and division), we use dunder methods within our AutoDiff class. The dunder methods return new AutoDiff instances with the updated value and derivatives.
+In order to deal with the other elementary functions (exponential, logarithm, powers, roots, trigonometric functions, inverse trigonometric functions, hyperbolic functions, etc.), we will override the numpy elementary functions such that we can use it for our AutoDiff class. For example, we will override the <code>np.sin</code> function such that if you use it on an AutoDiff instance <code>x</code> at a given value, it will return another AutoDiff instance with the value of <code>sin(x)</code>, and the calculated derivative of <code>\dot{x}cos(x)</code> at the given value. Similarly, we will override the <code>np.exp</code> function such that if you use it on an AutoDiff instance <code>x</code> at a given value, it will return another AutoDiff instance with the value of <code>exp(x)</code>, and the calculated derivative of <code>\dot{x}exp(x)</code> at the given value.
+In order to implement this, we will rely on the numpy and math external libraries, which will be specified as our external dependencies in our setup.py file.
+As such, after the user initializes the AutoDiff class on the indepndent variables, he/she will be able to use the usual elementary functions on the AutoDiff instance in order to calculate both the value of the function and the value of the derivative.</p>
 </blockquote></article></body></html>

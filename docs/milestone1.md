@@ -1,22 +1,29 @@
-# Milestone 1
+# Milestone 1: *AutoDiffAll*
 
-[Content]
-## Introduction
+## Table of Contents
+1. [Introduction](#introduction)
+2. [Background](#background)
+3. [User API](#API)
+4. [Software Organization](#SoftwareOrganization)
+5. [Implementation](#implementation)
+
+
+## Introduction <a name="introduction"></a>
 >Todo: Describe problem the software solves and why it's important to solve that problem
 
-## Background
+## Background <a name="background"></a>
 >To do: Describe (briefly) the mathematical background and concepts as you see fit.  You **do not** need to
 give a treatise on automatic differentation or dual numbers.  Just give the essential ideas (e.g.
 the chain rule, the graph structure of calculations, elementary functions, etc).
 
-## User API of  *AutoDiffAll*
+## User API <a name="API"></a>
 >To do: How do you envision that a user will interact with your package?  What should they import?  How can
 they instantiate AD objects?
 
 >Todo: **Note: This section should be a mix of pseudo code and text.  It should not include any actual
 operations yet.**
 
-## Software Organization
+## Software Organization <a name="SoftwareOrganization"></a>
 >Todo: Discuss how you plan on organizing your software package.
 * What will the directory structure look like?  
 * What modules do you plan on including?  What is their basic functionality?
@@ -24,7 +31,7 @@ operations yet.**
 * How will you distribute your package (e.g. `PyPI`)?
 
 
-## Implementation
+## Implementation <a name="implementation"></a>
 >Discuss how you plan on implementing the forward mode of automatic differentiation.
 * What are the core data structures?
 * What classes will you implement?

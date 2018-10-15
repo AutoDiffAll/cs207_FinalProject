@@ -50,11 +50,11 @@ In order to override the four basic operations of elementary arithmetic (additio
 * Define elementary differentiation function. 
 
 In order to deal with the other elementary functions (exponential, logarithm, powers, roots, trigonometric functions, inverse trigonometric functions, hyperbolic functions, etc.), we will override the numpy elementary functions such that we can use it for our AutoDiff class. 
->For example, we will override the `np.sin` function such that if you use it on an AutoDiff instance `x` at a given value, it will return another AutoDiff instance with the value of `sin(x)`, and the calculated derivative of `\dot{x}cos(x)` at the given value. Similarly, we will override the `np.exp` function such that if you use it on an AutoDiff instance `x` at a given value, it will return another AutoDiff instance with the value of `exp(x)`, and the calculated derivative of `\dot{x}exp(x)` at the given value.
+>For example, we will override the `np.sin` function such that if you use it on an AutoDiff instance `x` at a given value, it will return another AutoDiff instance with the value of `sin(x)`, and the calculated derivative of `$t{x}cos(x)$` at the given value. Similarly, we will override the `np.exp` function such that if you use it on an AutoDiff instance `x` at a given value, it will return another AutoDiff instance with the value of `exp(x)`, and the calculated derivative of `$\dot{x}exp(x)$` at the given value.
 
 * Define non-differentiable function.
 
-We can even handle some function which is non-differentiable at certain points, such as Zigzig function like Brownian Motion, or like $f(x)=1/x$ at `x=0`. This is our extension for the `AutoDiff` class. We will employ $f(\frac{f(x+\Delta x)-f(x)}{\Delta x} $
+We can even handle some function which is non-differentiable at certain points, such as Zigzig function like Brownian Motion, or like $f(x)=1/x$ at `x=0`. This is our extension for the `AutoDiff` class. We will employ $\frac{f(x+\Delta x)-f(x)}{\Delta x}$
 * What external dependencies will you rely on?
 * How will you deal with elementary functions like `sin` and `exp`?
 

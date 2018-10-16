@@ -25,6 +25,36 @@ the chain rule, the graph structure of calculations, elementary functions, etc).
 >To do: How do you envision that a user will interact with your package?  What should they import?  How can
 they instantiate AD objects?
 
+The user would import the main AD class, as well as the numpy elementary functions that we have overriden. The usage of our elementary would use the same np short form that users are typically used to.
+
+from AutoDiff import AD
+import AutoDiff.numpy as np
+
+In the case for a scalar function, the implementation is simple. The user calls initializes AD instances on the independent variable x at a given value. The user can then use their function on the AD instance just as they would previously on a given float/integer. They can then use the der function that basically just returns the der instance attribute.  
+
+test_fn1 = lambda x: x - np.exp(-2*np.sin(4*x))
+
+x = AD(2.0)
+ad_res = test_fn1(tst1)
+der(ad_res)
+
+For a scalar function of vectors with length n with multiple independent variables d, the implementation is largely similar. The user has to initialize 2 separate AD instances for each independent variable. Moreover, the user has to indicate the number of independent variables d at initialization. The rest of the implementation is exactly the same as before. However, we note that the der function would return a n*d array of derivative with respect to all the independent variables at each value in the vector function.
+
+test_fn2 = lambda x, y: x*y + np.sin(x)
+
+x = AD([2.0, 5.0, 7.0], n_dim=2)
+y = AD([1.0, 2.0, 3.0], n_dim=2)
+ad_res = test_fn2(x, y)
+der(ad_res) # returns a 3x2 array of derivatives with respect to both x and y at each value
+
+Even if we have a vector function of vectors with lengths m and n respectively, with multiple independent variables d, the implementation remains the same. However, when the user calls the vector function on the AD instances, he/she gets returned a vector of AD instances. As such, the user will have to call the der function separately on each AD instance.
+
+test_fn3 = lambda x, y: (x*y + np.sin(x), x+y+np.sin(x*y))
+
+ad_res = test_fn3(x,y)
+der(ad_res[0])
+der(ad_res[1])
+
 >Todo: **Note: This section should be a mix of pseudo code and text.  It should not include any actual
 operations yet.**
 

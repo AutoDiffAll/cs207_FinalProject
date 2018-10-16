@@ -8,6 +8,11 @@
 5. [Implementation](#implementation)
 
 
+#### Test Math Input
+
+$x=1$
+
+
 ## Introduction <a name="introduction"></a>
 >Todo: Describe problem the software solves and why it's important to solve that problem
 
@@ -60,7 +65,10 @@ In order to deal with the other elementary functions (exponential, logarithm, po
 
 * Define non-differentiable function.
 
-We can even handle some function which is non-differentiable at certain points, such as Zigzig function like Brownian Motion, or like $f(x)=1/x$ at `x=0`. This is our extension for the `AutoDiff` class. We will employ $$\frac{f(x+\Delta x)-f(x)}{\Delta x}$$
+We can even handle some function which is non-differentiable at certain points, such as Zigzig function like Brownian Motion, or like `f(x)=1/x` at `x=0`. This is our extension for the `AutoDiff` class. We will employ
+
+
+
 * What external dependencies will you rely on?
 * How will you deal with elementary functions like `sin` and `exp`?
 

@@ -1,12 +1,18 @@
 class Variable(object):
-    def __init__(self, name, val, der = None):
-        self.val = val
-        self.name = name
-        if der is None:
-            self.der = {name : 1}
-        else:
-            self.der = der
+    primitive_names = []
     
+    def __init__(self, name, val, der = None, primitive = True):
+        self.val = val
+        if primitive:
+            if name in Variable.primitive_names:
+                raise ValueError("name {} already in use".format(name))
+            self.name = name 
+            self.der = {name : 1}
+            Variable.primitive_names.append(name)
+        else:
+            self.name = name
+            self.der = der
+
     def __repr__(self):
         return ("Variable name: {}, Value: {}, Derivatives: {}"
                 .format(self.name, self.val, self.der)
@@ -42,7 +48,7 @@ class Variable(object):
             new_der = self.der
             new_name = self.name
             new_val = self.val + other
-        return Variable(new_name, new_val, new_der)
+        return Variable(new_name, new_val, new_der, False)
 
     def __radd__(self, other):
         pass
@@ -63,3 +69,4 @@ if __name__ == "__main__":
     print(f)
     print(f.partial_der(y))
     print(f.grad())
+    bad_x = Variable('x', 10)

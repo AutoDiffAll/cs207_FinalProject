@@ -12,3 +12,7 @@ Group name: Team non-CS majors
 Group number: 5
 
 Members: Josh Feldman, Yuting Kou, Ong Sheng Siong, Eun Seuk Choi
+<<<<<<< HEAD
+
+=======
+>>>>>>> 5076489ffcb5b9e10ed68feac0b51806c07cf5f6

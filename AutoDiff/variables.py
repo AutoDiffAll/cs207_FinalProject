@@ -57,9 +57,32 @@ class Variable(object):
         return Variable(new_name, new_val, new_der, False)
     
     def __mul__(self, other):
-        pass
-    def __rmul__(self, other):
-        pass
+        try:
+            # get new dependent variables
+            new_dep_vars = set(self.der.keys()).union(set(other.der.keys()))
+            new_der = {}
+            # calculate partial derivatives
+            for dep_var in new_dep_vars:
+                # get partial derivatives for self and other
+                if dep_var in self.der.keys():
+                    partial_der_1 = self.der[dep_var]
+                else:
+                    partial_der_1 = 0
+                if dep_var in other.der.keys():
+                    partial_der_2 = other.der[dep_var]
+                else:
+                    partial_der_2 = 0
+                # calculate new partial
+                new_der[dep_var] = other.val*partial_der_1 + self.val*partial_der_2
+            new_name = "f({},{})".format(self.name, other.name)
+            new_val = self.val*other.val
+        except AttributeError:
+            new_der = other*self.der[self.name]
+            new_der = {self.name : new_der}
+            new_name = self.name
+            new_val = other*self.val
+        return Variable(new_name, new_val, new_der, False)
+    __rmul__ = __mul__
     
     # implement other dunder methods for numbers
     # https://www.python-course.eu/python3_magic_methods.php
@@ -74,3 +97,13 @@ if __name__ == "__main__":
     print(f.partial_der(y))
     print(f.grad())
     bad_x = Variable('x', 10)
+
+if __name__ == "__main__":
+    x = Variable('x', 2)
+    y = Variable('y', 3)
+    z = Variable('z', 10)
+    f = x*y
+    print(f)
+    print(f.partial_der(x))
+    print(f.grad())
+    #bad_x = Variable('x', 10)

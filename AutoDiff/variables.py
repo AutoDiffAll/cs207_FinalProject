@@ -58,17 +58,36 @@ class Variable(object):
     
     def __mul__(self, other):
         der1=self.der
-        # when other is an instance of Variable
+        # when other is an instance of Variable. Ex) derivative(x*y) -> (y, x)
         try:
             der2=other.der
             der={x: other.val * der1.get(x, 0) + self.val * der2.get(x, 0) for x in set(der1).union(der2)}
             return Variable(self.name, self.val * other.val, der, False)
-        # when other is not an instance of Variable
+        # when other is not an instance of Variable. Ex) derivative(x*6) -> 6
         except AttributeError:
             der={x: other * der1.get(x, 0) for x in set(der1)}
             return Variable(self.name, self.val * other, der, False)
-    __rmul__ = __mul__
-    
+    __rmul__ = __mul__ 
+
+    # a function for left division
+    def __truediv__(self, other):
+        der1 = self.der
+        # when other is an instance of Variable. Ex) derivative(x/y) -> (1/y, x/(y**2))
+        try:
+            der2 = other.der
+            der={x: 1/other.val * der1.get(x, 0) - self.val/other.val**2*der2.get(x,0) for x in set(der1).union(der2)}
+            return Variable(self.name, self.val / other.val, der, False)
+        # when other is not an instance of Variable. Ex) derivative(x/6) -> 1/6
+        except:
+            der = {x: der1.get(x, 0) / other for x in set(a)}
+            return Variable(self.name, self.val / other, der, False)
+    # a function for right division. Ex) derivative(6/x) -> -6/(x**2)
+    def __rtruediv__(self, other):
+        der1 = self.der
+        der = {x: -other/self.val**2*der1.get(x, 0) for x in set(a)}
+        return Variable(self.name, other/self.val, der, False)
+
+        
     # implement other dunder methods for numbers
     # https://www.python-course.eu/python3_magic_methods.php
 

@@ -58,10 +58,12 @@ class Variable(object):
     
     def __mul__(self, other):
         der1=self.der
+        # when other is an instance of Variable
         try:
             der2=other.der
             der={x: other.val * der1.get(x, 0) + self.val * der2.get(x, 0) for x in set(der1).union(der2)}
             return Variable(self.name, self.val * other.val, der, False)
+        # when other is not an instance of Variable
         except AttributeError:
             der={x: other * der1.get(x, 0) for x in set(der1)}
             return Variable(self.name, self.val * other, der, False)

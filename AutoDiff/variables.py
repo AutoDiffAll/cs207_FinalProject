@@ -87,7 +87,7 @@ if __name__ == "__main__":
     x = Variable('x', 2)
     y = Variable('y', 3)
     z = Variable('z', 10)
-    f = x*y
+    f = 6*x*x*y
     print(f)
     print(f.partial_der(x))
     print(f.grad())

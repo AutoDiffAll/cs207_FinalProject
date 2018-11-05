@@ -51,7 +51,11 @@ class Variable(object):
         return Variable(new_name, new_val, new_der, False)
 
     def __radd__(self, other):
-        pass
+        new_der = self.der
+        new_name = self.name
+        new_val = self.val + other
+        return Variable(new_name, new_val, new_der, False)
+    
     def __mul__(self, other):
         pass
     def __rmul__(self, other):
@@ -65,7 +69,7 @@ if __name__ == "__main__":
     x = Variable('x', 2)
     y = Variable('y', 3)
     z = Variable('z', 10)
-    f = x+y+z+y+5
+    f = 12+x+y+z+y+5
     print(f)
     print(f.partial_der(y))
     print(f.grad())

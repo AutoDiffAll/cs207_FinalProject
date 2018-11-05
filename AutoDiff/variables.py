@@ -57,31 +57,23 @@ class Variable(object):
         return Variable(new_name, new_val, new_der, False)
     
     def __mul__(self, other):
+        current = Variable(self.name, self.val, self.der, False)
+        # when multiplying two autodiff instances
         try:
-            # get new dependent variables
-            new_dep_vars = set(self.der.keys()).union(set(other.der.keys()))
-            new_der = {}
-            # calculate partial derivatives
-            for dep_var in new_dep_vars:
-                # get partial derivatives for self and other
-                if dep_var in self.der.keys():
-                    partial_der_1 = self.der[dep_var]
+            current.val = self.val*other.val
+            for key in np.unique([key for key in self.der] + [key for key in other.der]):
+                if key not in self.der:
+                    current.der[key]=self.val*other.der[key]
+                elif key not in other.der:
+                    current.der[key]=self.der[key]*other.val
                 else:
-                    partial_der_1 = 0
-                if dep_var in other.der.keys():
-                    partial_der_2 = other.der[dep_var]
-                else:
-                    partial_der_2 = 0
-                # calculate new partial
-                new_der[dep_var] = other.val*partial_der_1 + self.val*partial_der_2
-            new_name = "f({},{})".format(self.name, other.name)
-            new_val = self.val*other.val
+                    current.der[key]=self.der[key]*other.val+other.der[key]*self.val
+        # when 'other' is not autodiff instance
         except AttributeError:
-            new_der = other*self.der[self.name]
-            new_der = {self.name : new_der}
-            new_name = self.name
-            new_val = other*self.val
-        return Variable(new_name, new_val, new_der, False)
+            for key in self.der:
+                current.der[key] = other*self.der[key]
+                current.val = other*self.val
+        return current
     __rmul__ = __mul__
     
     # implement other dunder methods for numbers

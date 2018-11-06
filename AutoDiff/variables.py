@@ -23,7 +23,13 @@ class Variable(object):
     
     def grad(self):
         return self.der
-    
+    # unary operation of Variable instance.
+    def __neg__(self):
+        var = Variable(self.name, -self.val, self.der, False)    
+        for key in self.der:
+            var.der[key] = -self.der[key]
+        return var
+
     def __add__(self, other):
         try:
             # get new dependent variables
@@ -79,15 +85,19 @@ class Variable(object):
             return Variable(self.name, self.val / other.val, der, False)
         # when other is not an instance of Variable. Ex) derivative(x/6) -> 1/6
         except:
-            der = {x: der1.get(x, 0) / other for x in set(a)}
+            der = {x: der1.get(x, 0) / other for x in set(der1)}
             return Variable(self.name, self.val / other, der, False)
     # a function for right division. Ex) derivative(6/x) -> -6/(x**2)
     def __rtruediv__(self, other):
         der1 = self.der
-        der = {x: -other/self.val**2*der1.get(x, 0) for x in set(a)}
+        der = {x: -other/self.val**2*der1.get(x, 0) for x in set(der1)}
         return Variable(self.name, other/self.val, der, False)
 
-        
+    def jacobian(self):
+        der1 = self.der
+        jacobian = {key: self.der[key] for key in set(der1)}
+        return jacobian
+
     # implement other dunder methods for numbers
     # https://www.python-course.eu/python3_magic_methods.php
 

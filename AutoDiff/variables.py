@@ -99,27 +99,64 @@ class Variable(object):
         der1 = self.der
         jacobian = {key: self.der[key] for key in set(der1)}
         return jacobian
+ 
+def exp(value):
+    # when value is an autodiff instance. Ex) derivative(e^(x*y)) -> (y*e^(x*y), x*e^(x*y))
+    try:
+        der1 = value.der
+        val = np.exp(value.val)
+        der = {x: np.exp(value.val)*der1.get(x, 0) for x in set(der1)}
+        return Variable(value.name, val, der, False)
+    # when value is not an autodiff instance, print AttributeError, TypeError
+    except (AttributeError, TypeError):
+        print("Error: please enter autodiff instance for exp function")
+
+def log(value):
+    # when value is an autodiff instance. Ex) derivative(log^(x*y)) -> (y*1/(x*y), x*1/(x*y))
+    try:
+        der1 = value.der
+        val = np.log(value.val)
+        der = {x: 1/(value.val)*der1.get(x, 0) for x in set(der1)}
+        return Variable(value.name, val, der, False)
+    # when value is not an autodiff instance, print AttributeError, TypeError
+    except (AttributeError, TypeError):
+        print("Error: please enter autodiff instance for log function")
+
+def sin(value):
+    # when value is not an autodiff instance, print AttributeError, TypeError
+    try:
+        der1 = value.der
+        val = np.sin(value.val)
+        der = {x: np.cos(value.val)*der1.get(x, 0) for x in set(der1)}
+        return Variable(value.name, val, der, False)
+    # when value is not an autodiff instance, print TypeError
+    except (AttributeError, TypeError):
+        print("Error: please enter autodiff instance for sine function")
+
+
+
+
+
 
     # implement other dunder methods for numbers
     # https://www.python-course.eu/python3_magic_methods.php
 
+#if __name__ == "__main__":
+#   x = Variable('x', 2)
+#    y = Variable('y', 3)
+#    z = Variable('z', 10)
+#    f = 12+x+y+z+y+5
+#    print(f)
+#    print(f.partial_der(y))
+#    print(f.grad())
+#    bad_x = Variable('x', 10)
 
 if __name__ == "__main__":
     x = Variable('x', 2)
     y = Variable('y', 3)
     z = Variable('z', 10)
-    f = 12+x+y+z+y+5
+    f = 6*x
     print(f)
-    print(f.partial_der(y))
-    print(f.grad())
-    bad_x = Variable('x', 10)
-
-if __name__ == "__main__":
-    x = Variable('x', 2)
-    y = Variable('y', 3)
-    z = Variable('z', 10)
-    f = 6*x*x*y
-    print(f)
-    print(f.partial_der(x))
-    print(f.grad())
-    #bad_x = Variable('x', 10)
+#    print(f.partial_der(x))
+#    print(f.grad())
+#    bad_x = Variable('x', 10)

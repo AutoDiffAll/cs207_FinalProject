@@ -57,25 +57,37 @@ class Variable(object):
         return Variable(new_name, new_val, new_der, False)
     
     def __mul__(self, other):
-        current = Variable(self.name, self.val, self.der, False)
-        # when multiplying two autodiff instances
+        der1=self.der
+        # when other is an instance of Variable. Ex) derivative(x*y) -> (y, x)
         try:
-            current.val = self.val*other.val
-            for key in np.unique([key for key in self.der] + [key for key in other.der]):
-                if key not in self.der:
-                    current.der[key]=self.val*other.der[key]
-                elif key not in other.der:
-                    current.der[key]=self.der[key]*other.val
-                else:
-                    current.der[key]=self.der[key]*other.val+other.der[key]*self.val
-        # when 'other' is not autodiff instance
+            der2=other.der
+            der={x: other.val * der1.get(x, 0) + self.val * der2.get(x, 0) for x in set(der1).union(der2)}
+            return Variable(self.name, self.val * other.val, der, False)
+        # when other is not an instance of Variable. Ex) derivative(x*6) -> 6
         except AttributeError:
-            for key in self.der:
-                current.der[key] = other*self.der[key]
-                current.val = other*self.val
-        return current
-    __rmul__ = __mul__
-    
+            der={x: other * der1.get(x, 0) for x in set(der1)}
+            return Variable(self.name, self.val * other, der, False)
+    __rmul__ = __mul__ 
+
+    # a function for left division
+    def __truediv__(self, other):
+        der1 = self.der
+        # when other is an instance of Variable. Ex) derivative(x/y) -> (1/y, x/(y**2))
+        try:
+            der2 = other.der
+            der={x: 1/other.val * der1.get(x, 0) - self.val/other.val**2*der2.get(x,0) for x in set(der1).union(der2)}
+            return Variable(self.name, self.val / other.val, der, False)
+        # when other is not an instance of Variable. Ex) derivative(x/6) -> 1/6
+        except:
+            der = {x: der1.get(x, 0) / other for x in set(a)}
+            return Variable(self.name, self.val / other, der, False)
+    # a function for right division. Ex) derivative(6/x) -> -6/(x**2)
+    def __rtruediv__(self, other):
+        der1 = self.der
+        der = {x: -other/self.val**2*der1.get(x, 0) for x in set(a)}
+        return Variable(self.name, other/self.val, der, False)
+
+        
     # implement other dunder methods for numbers
     # https://www.python-course.eu/python3_magic_methods.php
 
@@ -94,7 +106,7 @@ if __name__ == "__main__":
     x = Variable('x', 2)
     y = Variable('y', 3)
     z = Variable('z', 10)
-    f = x*y
+    f = 6*x*x*y
     print(f)
     print(f.partial_der(x))
     print(f.grad())

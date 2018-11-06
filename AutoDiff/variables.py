@@ -31,36 +31,17 @@ class Variable(object):
         return var
 
     def __add__(self, other):
+        der1=self.der
+        # when other is an instance of Variable. Ex) derivative(x*y) -> (y, x)
         try:
-            # get new dependent variables
-            new_dep_vars = set(self.der.keys()).union(set(other.der.keys()))
-            new_der = {}
-            # calculate partial derivatives
-            for dep_var in new_dep_vars:
-                # get partial derivatives for self and other
-                if dep_var in self.der.keys():
-                    partial_der_1 = self.der[dep_var]
-                else:
-                    partial_der_1 = 0
-                if dep_var in other.der.keys():
-                    partial_der_2 = other.der[dep_var]
-                else:
-                    partial_der_2 = 0
-                # calculate new partial
-                new_der[dep_var] = partial_der_1 + partial_der_2
-            new_name = "f({},{})".format(self.name, other.name)
-            new_val = self.val+other.val
+            der2=other.der
+            der={x: der1.get(x, 0) + der2.get(x, 0) for x in set(der1).union(der2)}
+            return Variable(self.name, self.val + other.val, der, False)
+        # when other is not an instance of Variable. Ex) derivative(x*6) -> 6
         except AttributeError:
-            new_der = self.der
-            new_name = self.name
-            new_val = self.val + other
-        return Variable(new_name, new_val, new_der, False)
-
-    def __radd__(self, other):
-        new_der = self.der
-        new_name = self.name
-        new_val = self.val + other
-        return Variable(new_name, new_val, new_der, False)
+            return Variable(self.name, self.val + other, der1, False)
+    __radd__ = __add__ 
+    
     
     def __mul__(self, other):
         der1=self.der

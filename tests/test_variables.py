@@ -47,11 +47,12 @@ def test_variable_scalar_add_minus():
     # case 5: left minus
     
     f2 = 10+2*8-y
+    print('f5,', y.der)
     assert (f2.val == 31)
     assert (f2.jacobian() == {'y':-1})
     assert (f2.partial_der(x) == 0)
     assert (f2.partial_der(y) == -1)
-    
+
 
     # case 6: variable+variable
     '''
@@ -62,7 +63,7 @@ def test_variable_scalar_add_minus():
     assert (f3.partial_der(x) == -1)
     assert (f3.partial_der(y) == -1)
     '''
-    
+
 
     # case 7: positive
     '''
@@ -79,6 +80,7 @@ def test_variable_scalar_add_minus():
     assert (f4.partial_der(y) == 0)
     '''
     # case 8: negative
+    print(y.der)
     f5 = -y
     assert (f5.val == 5)
     print(f5.jacobian())

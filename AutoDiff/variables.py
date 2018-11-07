@@ -23,39 +23,47 @@ class Variable(object):
     
     def grad(self):
         return self.der
-    
-    def __add__(self, other):
-        try:
-            # get new dependent variables
-            new_dep_vars = set(self.der.keys()).union(set(other.der.keys()))
-            new_der = {}
-            # calculate partial derivatives
-            for dep_var in new_dep_vars:
-                # get partial derivatives for self and other
-                if dep_var in self.der.keys():
-                    partial_der_1 = self.der[dep_var]
-                else:
-                    partial_der_1 = 0
-                if dep_var in other.der.keys():
-                    partial_der_2 = other.der[dep_var]
-                else:
-                    partial_der_2 = 0
-                # calculate new partial
-                new_der[dep_var] = partial_der_1 + partial_der_2
-            new_name = "f({},{})".format(self.name, other.name)
-            new_val = self.val+other.val
-        except AttributeError:
-            new_der = self.der
-            new_name = self.name
-            new_val = self.val + other
-        return Variable(new_name, new_val, new_der, False)
+    # unary operation of Variable instance.
+    def __neg__(self):
+        var = Variable(self.name, -self.val, self.der, False)    
+        for key in self.der:
+            var.der[key] = -self.der[key]
+        return var
 
-    def __radd__(self, other):
-        new_der = self.der
-        new_name = self.name
-        new_val = self.val + other
-        return Variable(new_name, new_val, new_der, False)
+    def __add__(self, other):
+        der1=self.der
+        # when other is an instance of Variable. Ex) derivative(x+y) -> (y, x)
+        try:
+            der2=other.der
+            der={x: der1.get(x, 0) + der2.get(x, 0) for x in set(der1).union(der2)}
+            return Variable(self.name, self.val + other.val, der, False)
+        # when other is not an instance of Variable. Ex) derivative(x*6) -> 6
+        except AttributeError:
+            return Variable(self.name, self.val + other, der1, False)
+    __radd__ = __add__ 
     
+    def __sub__(self, other):
+        der1=self.der
+        # when other is an instance of Variable. Ex) derivative(x-y) -> (y, x)
+        try:
+            der2=other.der
+            der={x: der1.get(x, 0) - der2.get(x, 0) for x in set(der1).union(der2)}
+            return Variable(self.name, self.val - other.val, der, False)
+        # when other is not an instance of Variable. Ex) derivative(x-6) -> 6
+        except AttributeError:
+            return Variable(self.name, self.val - other, der1, False)
+    
+    def __rsub__(self, other):
+        der1=self.der
+        # when other is an instance of Variable. Ex) derivative(y-x) -> (y, x)
+        try:
+            der2=other.der
+            der={x: der2.get(x, 0)- der1.get(x, 0) for x in set(der1).union(der2)}
+            return Variable(self.name, other.val - self.val, der, False)
+        # when other is not an instance of Variable. Ex) derivative(y-x) -> 6
+        except AttributeError:
+            return Variable(self.name, other - self.val, der1, False)
+        
     def __mul__(self, other):
         der1=self.der
         # when other is an instance of Variable. Ex) derivative(x*y) -> (y, x)
@@ -79,35 +87,76 @@ class Variable(object):
             return Variable(self.name, self.val / other.val, der, False)
         # when other is not an instance of Variable. Ex) derivative(x/6) -> 1/6
         except:
-            der = {x: der1.get(x, 0) / other for x in set(a)}
+            der = {x: der1.get(x, 0) / other for x in set(der1)}
             return Variable(self.name, self.val / other, der, False)
     # a function for right division. Ex) derivative(6/x) -> -6/(x**2)
     def __rtruediv__(self, other):
         der1 = self.der
-        der = {x: -other/self.val**2*der1.get(x, 0) for x in set(a)}
+        der = {x: -other/self.val**2*der1.get(x, 0) for x in set(der1)}
         return Variable(self.name, other/self.val, der, False)
 
-        
+    def jacobian(self):
+        der1 = self.der
+        jacobian = {key: self.der[key] for key in set(der1)}
+        return jacobian
+ 
+def exp(value):
+    # when value is an autodiff instance. Ex) derivative(e^(x*y)) -> (y*e^(x*y), x*e^(x*y))
+    try:
+        der1 = value.der
+        val = np.exp(value.val)
+        der = {x: np.exp(value.val)*der1.get(x, 0) for x in set(der1)}
+        return Variable(value.name, val, der, False)
+    # when value is not an autodiff instance, print AttributeError, TypeError
+    except (AttributeError, TypeError):
+        print("Error: please enter autodiff instance for exp function")
+
+def log(value):
+    # when value is an autodiff instance. Ex) derivative(log^(x*y)) -> (y*1/(x*y), x*1/(x*y))
+    try:
+        der1 = value.der
+        val = np.log(value.val)
+        der = {x: 1/(value.val)*der1.get(x, 0) for x in set(der1)}
+        return Variable(value.name, val, der, False)
+    # when value is not an autodiff instance, print AttributeError, TypeError
+    except (AttributeError, TypeError):
+        print("Error: please enter autodiff instance for log function")
+
+def sin(value):
+    # when value is not an autodiff instance, print AttributeError, TypeError
+    try:
+        der1 = value.der
+        val = np.sin(value.val)
+        der = {x: np.cos(value.val)*der1.get(x, 0) for x in set(der1)}
+        return Variable(value.name, val, der, False)
+    # when value is not an autodiff instance, print TypeError
+    except (AttributeError, TypeError):
+        print("Error: please enter autodiff instance for sine function")
+
+
+
+
+
+
     # implement other dunder methods for numbers
     # https://www.python-course.eu/python3_magic_methods.php
 
+#if __name__ == "__main__":
+#   x = Variable('x', 2)
+#    y = Variable('y', 3)
+#    z = Variable('z', 10)
+#    f = 12+x+y+z+y+5
+#    print(f)
+#    print(f.partial_der(y))
+#    print(f.grad())
+#    bad_x = Variable('x', 10)
 
 if __name__ == "__main__":
     x = Variable('x', 2)
     y = Variable('y', 3)
     z = Variable('z', 10)
-    f = 12+x+y+z+y+5
+    f = 6*x
     print(f)
-    print(f.partial_der(y))
-    print(f.grad())
-    bad_x = Variable('x', 10)
-
-if __name__ == "__main__":
-    x = Variable('x', 2)
-    y = Variable('y', 3)
-    z = Variable('z', 10)
-    f = 6*x*x*y
-    print(f)
-    print(f.partial_der(x))
-    print(f.grad())
-    #bad_x = Variable('x', 10)
+#    print(f.partial_der(x))
+#    print(f.grad())
+#    bad_x = Variable('x', 10)

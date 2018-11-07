@@ -1,10 +1,11 @@
-from AutoDiff.variables import Variable
+from cs207-FinalProject.AutoDiff.variables import Variable
 import AutoDiff.numpy as anp
 import numpy as np
 import pytest
 
 # test for the successfulness of building a variable class and call a function
-
+import sys
+print(sys.path)
 def test_variable_scalar_add_minus():
     '''
     object.__add__(), object.__sub__(), object.__pos__(), object.__neg__(),

@@ -120,17 +120,14 @@ class Variable(object):
                     return 1
                 else:
                     return Variable(self.name, np.power(self.val, other), {k:v*other*np.power(self.val, other-1) for (k,v) in self.der.items()}, False)
-            # only other is variable
-            elif isinstance(other, Variable):
-                return Variable(other.name, np.power(self, other.val)*np.log(self), {k:v*np.log(self)*np.power(self, other.val) for (k,v) in other.der.items()})
             # both not variable
             else:
                 return np.power(self, other)
-    
-    def jacobian(self):
+    def __rpow__(self, other):
         der1 = self.der
-        jacobian = {key: self.der[key] for key in set(der1)}
-        return jacobian
+        der = {x: other**self.val*np.log(other)*der1.get(x,0) for x in set(der1)}
+        return Variable(self.name, other**self.val, der, False)
+    
 
     
 

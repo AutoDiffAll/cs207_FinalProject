@@ -4,10 +4,8 @@ class Variable(object):
         self.val = val
         if primitive:
             self.name = name 
-            if self.val > 0:
-                self.der = {name : 1}
-            else:
-                self.der = {name : -1}
+            self.der = {name : 1}
+            
         else:
             self.name = name
             self.der = der
@@ -23,8 +21,6 @@ class Variable(object):
         except AttributeError:
             print("input is not a Variable")
 
-    
-    
     def jacobian(self):
         return self.der
     # unary operation of Variable instance.
@@ -33,9 +29,10 @@ class Variable(object):
         return Variable(self.name, self.val, der, False)
 
     def __neg__(self):
-        der1 = self.der
-        new_der = {x: -der1.get(x,0) for x in set(der1)}
-        return Variable(self.name, -self.val, new_der, False)
+        try:
+            return Variable(self.name, np.negative(self.val), {k:np.negative(v) for (k,v) in self.der.items()}, False)
+        except AttributeError:
+            return np.negative(self)
 
     def __add__(self, other):
         der1=self.der
@@ -106,17 +103,14 @@ class Variable(object):
                     return 1
                 else:
                     return Variable(self.name, np.power(self.val, other), {k:v*other*np.power(self.val, other-1) for (k,v) in self.der.items()}, False)
-            # only other is variable
-            elif isinstance(other, Variable):
-                return Variable(other.name, {k:v*np.log(self)*np.power(self, other.val) for (k,v) in other.der.items()})
             # both not variable
             else:
                 return np.power(self, other)
-    
-    def jacobian(self):
+    def __rpow__(self, other):
         der1 = self.der
-        jacobian = {key: self.der[key] for key in set(der1)}
-        return jacobian
+        der = {x: other**self.val*np.log(other)*der1.get(x,0) for x in set(der1)}
+        return Variable(self.name, other**self.val, der, False)
+    
 
     
 

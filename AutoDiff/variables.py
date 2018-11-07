@@ -22,7 +22,7 @@ class Variable(object):
             return self.der.get(dep_var_name.name,0)
         except AttributeError:
             print("input is not a Variable")
-        
+
     
     
     def jacobian(self):
@@ -50,29 +50,12 @@ class Variable(object):
     __radd__ = __add__ 
     
     def __sub__(self, other):
-        der1=self.der
-        # when other is an instance of Variable. Ex) derivative(x-y) -> (y, x)
-        try:
-            der2=other.der
-            der={x: der1.get(x, 0) - der2.get(x, 0) for x in set(der1).union(der2)}
-            return Variable('f({},{})'.format(self.name, other.name), self.val - other.val, der, False)
-        # when other is not an instance of Variable. Ex) derivative(x-6) -> 6
-        except AttributeError:
-            return Variable('f({})'.format(self.name), self.val - other, der1, False)
+        other = -other
+        return self+other
     
     def __rsub__(self, other):
-        der1=self.der
-        # when other is an instance of Variable. Ex) derivative(y-x) -> (y, x)
-        try:
-            der2=other.der
-            der={x: der2.get(x, 0) - der1.get(x, 0) for x in set(der1).union(der2)}
-            return Variable('f({},{})'.format(self.name, other.name), 
-                            other.val - self.val, der, False)
-        # when other is not an instance of Variable. Ex) derivative(y-x) -> 6
-        except AttributeError:
-            for key in self.der:
-                der1[key] = -der1[key]
-            return Variable('f({})'.format(self.name), other - self.val, der1, False)
+        var = -self
+        return var+other
         
     def __mul__(self, other):
         der1=self.der

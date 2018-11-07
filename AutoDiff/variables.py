@@ -62,6 +62,8 @@ class Variable(object):
             return Variable(self.name, other.val - self.val, der, False)
         # when other is not an instance of Variable. Ex) derivative(y-x) -> 6
         except AttributeError:
+            for key in self.der:
+                der1[key] = -der1[key]
             return Variable(self.name, other - self.val, der1, False)
         
     def __mul__(self, other):

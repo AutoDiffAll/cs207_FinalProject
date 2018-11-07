@@ -1,3 +1,4 @@
+import numpy as np
 class Variable(object):    
     def __init__(self, name, val, der = None, primitive = True):
         self.val = val

@@ -19,11 +19,12 @@ class Variable(object):
                 )
 
     def partial_der(self, dep_var_name):
-        if dep_var_name.name not in self.der:
-            return 0
         try:
-            return self.der[dep_var_name.name]
-        raise KeyError("input is not a variable") 
+            return self.der.get(dep_var_name.name,0)
+        except AttributeError:
+            print("input is not a Variable")
+        
+    
     
     def grad(self):
         return self.der
@@ -155,12 +156,12 @@ def sin(value):
 #    print(f.grad())
 #    bad_x = Variable('x', 10)
 
-if __name__ == "__main__":
-    x = Variable('x', 2)
-    y = Variable('y', 3)
-    z = Variable('z', 10)
-    f = 6*x
-    print(f)
+#if __name__ == "__main__":
+#    x = Variable('x', 2)
+#    y = Variable('y', 3)
+#   z = Variable('z', 10)
+#    f = 6*x
+#    print(f)
 #    print(f.partial_der(x))
 #    print(f.grad())
 #    bad_x = Variable('x', 10)

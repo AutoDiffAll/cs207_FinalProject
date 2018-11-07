@@ -35,7 +35,7 @@ def user_function(fn, fn_der):
     >>> sec = lambda x: 1/np.cos(x)
     >>> sec_der = lambda x: sec(x)*np.tan(x)
     >>> ad_sec = user_function(sec, sec_der)
-    >>> a = Variable(2)
+    >>> a = Variable('a', 2)
     >>> x = ad_sec(a)
     >>> x.val
     -2.4029979617223809

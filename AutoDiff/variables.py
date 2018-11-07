@@ -19,7 +19,13 @@ class Variable(object):
         except AttributeError:
             print("input is not a Variable")
         
+<<<<<<< HEAD
     def grad(self):
+=======
+    
+    
+    def jacobian(self):
+>>>>>>> e26d6a72b8b7253ea3e7114adce9a14dc364bd0c
         return self.der
     # unary operation of Variable instance.
 
@@ -27,9 +33,16 @@ class Variable(object):
         return Variable(self.name, self.val, der, False)
 
     def __neg__(self):
+<<<<<<< HEAD
         der1 = self.der
         new_der = {x: -der1.get(x,0) for x in set(der1)}
         return Variable(self.name, -self.val, new_der, False)
+=======
+        var = Variable('f({})'.format(self.name), -self.val, self.der, False)    
+        for key in self.der:
+            var.der[key] = -self.der[key]
+        return var
+>>>>>>> e26d6a72b8b7253ea3e7114adce9a14dc364bd0c
 
     def __add__(self, other):
         der1=self.der
@@ -37,10 +50,10 @@ class Variable(object):
         try:
             der2=other.der
             der={x: der1.get(x, 0) + der2.get(x, 0) for x in set(der1).union(der2)}
-            return Variable(self.name, self.val + other.val, der, False)
+            return Variable('f({},{})'.format(self.name, other.name), self.val + other.val, der, False)
         # when other is not an instance of Variable. Ex) derivative(x*6) -> 6
         except AttributeError:
-            return Variable(self.name, self.val + other, der1, False)
+            return Variable('f({})'.format(self.name), self.val + other, der1, False)
     __radd__ = __add__ 
     
     def __sub__(self, other):
@@ -49,10 +62,10 @@ class Variable(object):
         try:
             der2=other.der
             der={x: der1.get(x, 0) - der2.get(x, 0) for x in set(der1).union(der2)}
-            return Variable(self.name, self.val - other.val, der, False)
+            return Variable('f({},{})'.format(self.name, other.name), self.val - other.val, der, False)
         # when other is not an instance of Variable. Ex) derivative(x-6) -> 6
         except AttributeError:
-            return Variable(self.name, self.val - other, der1, False)
+            return Variable('f({})'.format(self.name), self.val - other, der1, False)
     
     def __rsub__(self, other):
         der1=self.der
@@ -60,10 +73,13 @@ class Variable(object):
         try:
             der2=other.der
             der={x: der2.get(x, 0) - der1.get(x, 0) for x in set(der1).union(der2)}
-            return Variable(self.name, other.val - self.val, der, False)
+            return Variable('f({},{})'.format(self.name, other.name), 
+                            other.val - self.val, der, False)
         # when other is not an instance of Variable. Ex) derivative(y-x) -> 6
         except AttributeError:
-            return Variable(self.name, other - self.val, der1, False)
+            for key in self.der:
+                der1[key] = -der1[key]
+            return Variable('f({})'.format(self.name), other - self.val, der1, False)
         
     def __mul__(self, other):
         der1=self.der
@@ -71,11 +87,12 @@ class Variable(object):
         try:
             der2=other.der
             der={x: other.val * der1.get(x, 0) + self.val * der2.get(x, 0) for x in set(der1).union(der2)}
-            return Variable(self.name, self.val * other.val, der, False)
+            return Variable('f({},{})'.format(self.name, other.name),
+                            self.val * other.val, der, False)
         # when other is not an instance of Variable. Ex) derivative(x*6) -> 6
         except AttributeError:
             der={x: other * der1.get(x, 0) for x in set(der1)}
-            return Variable(self.name, self.val * other, der, False)
+            return Variable('f({})'.format(self.name), self.val * other, der, False)
     __rmul__ = __mul__ 
 
     # a function for left division
@@ -85,17 +102,19 @@ class Variable(object):
         try:
             der2 = other.der
             der={x: 1/other.val * der1.get(x, 0) - self.val/other.val**2*der2.get(x,0) for x in set(der1).union(der2)}
-            return Variable(self.name, self.val / other.val, der, False)
+            return Variable('f({},{})'.format(self.name, other.name), 
+                            self.val / other.val, der, False)
         # when other is not an instance of Variable. Ex) derivative(x/6) -> 1/6
         except:
             der = {x: der1.get(x, 0) / other for x in set(der1)}
-            return Variable(self.name, self.val / other, der, False)
+            return Variable('f({})'.format(self.name), self.val / other, der, False)
     # a function for right division. Ex) derivative(6/x) -> -6/(x**2)
     def __rtruediv__(self, other):
         der1 = self.der
         der = {x: -other/self.val**2*der1.get(x, 0) for x in set(der1)}
-        return Variable(self.name, other/self.val, der, False)
+        return Variable('f({})'.format(self.name), other/self.val, der, False)
 
+<<<<<<< HEAD
     def __pow__(self, other):
         try:
             # calculate new derivative
@@ -120,6 +139,8 @@ class Variable(object):
         der1 = self.der
         jacobian = {key: self.der[key] for key in set(der1)}
         return jacobian
+=======
+>>>>>>> e26d6a72b8b7253ea3e7114adce9a14dc364bd0c
 
     
 

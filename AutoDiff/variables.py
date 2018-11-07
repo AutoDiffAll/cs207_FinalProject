@@ -4,7 +4,10 @@ class Variable(object):
         self.val = val
         if primitive:
             self.name = name 
-            self.der = {name : 1}
+            if self.val > 0:
+                self.der = {name : 1}
+            else:
+                self.der = {name : -1}
         else:
             self.name = name
             self.der = der

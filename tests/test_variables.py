@@ -21,7 +21,7 @@ def test_variable_scalar_add_minus():
     assert (f1.val == 4)
     assert (f1.grad() == {'x':1})
     assert (f1.partial_der(x) == 1)
-    #assert (f1.partial_der(y) == 0)
+    assert (f1.partial_der(y) == 0)
 
     # case 2: left add
     f2 = 10+2*8+y

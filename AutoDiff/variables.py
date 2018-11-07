@@ -138,27 +138,27 @@ class Variable(object):
             # calculate new derivative
             new_der = {}
             for k in set(self.der).union(other.der):
-                partial_self = der1.get(k, 0)*other.val*np.power(self.val, other.val-1)
-                partial_other = der2.get(k, 0)*np.log(self.val)*np.power(self.val, other.val)
+                partial_self = der1.get(k, 0)*other.val*self.val**(other.val-1)
+                partial_other = der2.get(k, 0)*np.log(self.val)*self.val**other.val
                 new_der[k] = partial_self + partial_other
             new_name = "f({},{})".format(self.name, other.name)
-            new_val = np.power(self.val, other.val)
+            new_val = self.val**other.val
             return Variable(new_name, new_val, new_der, False)      
         except AttributeError:
             new_der = {}
             for k in self.der:
-                new_der[k] = self.der[k]*other*np.power(self.val, other-1)
+                new_der[k] = self.der[k]*other*self.val**(other-1)
             new_name = "f({})".format(self.name)
-            new_val = np.power(self.val, other)
+            new_val = self.val**other
             return Variable(new_name, new_val, new_der, False)
             
             
     def __rpow__(self, other):
         new_der = {}
         for k in self.der:
-            new_der[k] = self.der[k]*np.log(other)*np.power(other, self.val)
+            new_der[k] = self.der[k]*np.log(other)*other**self.val
         new_name = "f({})".format(self.name)
-        new_val = np.power(other, self.val)
+        new_val = other**self.val
         return Variable(new_name, new_val, new_der, False)
     
 

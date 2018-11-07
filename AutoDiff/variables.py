@@ -1,14 +1,9 @@
-class Variable(object):
-    primitive_names = []
-    
+class Variable(object):    
     def __init__(self, name, val, der = None, primitive = True):
         self.val = val
         if primitive:
-            if name in Variable.primitive_names:
-                raise ValueError("name {} already in use".format(name))
             self.name = name 
             self.der = {name : 1}
-            Variable.primitive_names.append(name)
         else:
             self.name = name
             self.der = der

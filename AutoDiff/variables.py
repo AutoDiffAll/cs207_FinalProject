@@ -91,11 +91,11 @@ class Variable(object):
         try:
             # calculate new derivative
             new_der = {k: self.der.get(k, 0)*other.val*np.power(self.val, other.val-1) + other.der.get(k, 0)*np.log(self.val)*np.power(self.val, other.val) for k in set(self.der).union(other.der)}
-
+            
             new_name = "f({},{})".format(self.name, other.name)
             new_val = np.power(self.val, other.val)
-
             return Variable(new_name, new_val, new_der, False)
+        
         except AttributeError:
             # only self is variable
             if isinstance(self, Variable):
@@ -103,9 +103,12 @@ class Variable(object):
                     return 1
                 else:
                     return Variable(self.name, np.power(self.val, other), {k:v*other*np.power(self.val, other-1) for (k,v) in self.der.items()}, False)
+            # only other is variable
+            elif isinstance(other, Variable):
+                return Variable(other.name, np.power(self, other.val) ,{k:v*np.log(self)*np.power(self, other.val) for (k,v) in other.der.items()}, False)
             # both not variable
             else:
-                return np.power(self, other)
+                return np.power(x, y)
     def __rpow__(self, other):
         der1 = self.der
         der = {x: other**self.val*np.log(other)*der1.get(x,0) for x in set(der1)}

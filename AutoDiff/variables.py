@@ -19,7 +19,11 @@ class Variable(object):
                 )
 
     def partial_der(self, dep_var_name):
-        return self.der[dep_var_name.name]
+        if dep_var_name.name not in self.der:
+            return 0
+        try:
+            return self.der[dep_var_name.name]
+        raise KeyError("input is not a variable") 
     
     def grad(self):
         return self.der

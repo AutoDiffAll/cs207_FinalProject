@@ -75,7 +75,7 @@ def negative(x):
     >>> x.val
     0.0
     >>> x.der
-    1.0
+    -1.0
     """
     try:
         return Variable(x.name, np.negative(x.val), {k:np.negative(v) for (k,v) in x.der.items()}, False)

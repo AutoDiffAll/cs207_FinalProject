@@ -63,7 +63,7 @@ class Variable(object):
         # when other is an instance of Variable. Ex) derivative(y-x) -> (y, x)
         try:
             der2=other.der
-            der={x: der2.get(x, 0)- der1.get(x, 0) for x in set(der1).union(der2)}
+            der={x: der2.get(x, 0) - der1.get(x, 0) for x in set(der1).union(der2)}
             return Variable(self.name, other.val - self.val, der, False)
         # when other is not an instance of Variable. Ex) derivative(y-x) -> 6
         except AttributeError:

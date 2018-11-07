@@ -175,9 +175,21 @@ def test_numpy_scalar_sin_cos():
     object.__iadd__(), object.__isub__()
     '''
     # case 0: build variables
-    x = Variable('x', 2)
-    y = Variable('y', -5)
+    x = Variable('x', np.pi/4)
+    y = Variable('y', -np.pi/4)
     z = Variable('z', 0)
+    a = Variable('a',np.pi/2)
+
+    f1=cos(a)
+    assert(f1.val==0)
+    assert(f1.jacobian()=={'a':-1})
+    f2=cos(x)
+    assert(f2.val==np.sqrt(2)/2)
+    assert(f2.jacobian() == {'x': -np.sqrt(2)/2})
+    f3=sin(y)
+    assert(f3.val == np.sqrt(2)/2)
+    assert(f3.jacobian() == {'x': -np.sqrt(2)/2})
+
 
     
 def test_variable_scalar_pow():
@@ -213,16 +225,19 @@ def test_variable_scalar_pow():
     assert (f3.partial_der(y) == 0)
 
     # case 4:
-    f4 = 2**x
+    f4 = anp.power(2,x)
     assert (f4.val == 4)
-    assert (f4.jacobian() == [4*np.log(2)])
+    assert (f4.jacobian() == {'x':4*np.log(2)})
     assert (f4.partial_der(x) == 4*np.log(2))
     assert (f4.partial_der(y) == 0)
 
     # case 5:
+    '''
     f5 = x**x
     assert (f5.val == 4)
     assert (f5.jacobian() == [np.log(2)*(2**(np.log(2)))])
+    '''
+
 
 
 test_numpy_scalar_add_minus()

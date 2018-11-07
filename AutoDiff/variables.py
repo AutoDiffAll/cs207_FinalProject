@@ -15,15 +15,59 @@ class Variable(object):
                 .format(self.name, self.val, self.der)
                 )
 
-    def partial_der(self, dep_var_name):
+    def partial_der(self, dep_var):
+        """Returns partial derivative of a variable w.r.t. another variable.
+        
+        INPUTS
+        =======
+        dep_var: Variable
+        
+        RETURNS
+        ========
+        value: numeric, element-wise for lists, arrays, or similar structures
+        
+        NOTES
+        =====
+        POST:
+            - if this variable is not a function of dep_var, return 0
+            - if dep_var is not a variable, raise AttributeError
+        
+        EXAMPLES
+        =========
+        >>> from variables import Variable
+        >>> a = Variable('a', 2)
+        >>> x = 4*a
+        >>> x.partial_der(a)
+        4
+        """
         try:
-            return self.der.get(dep_var_name.name,0)
+            return self.der.get(dep_var.name,0)
         except AttributeError:
             print("input is not a Variable")
-        
+
     def jacobian(self):
+        """Returns jacobian of variable
+        
+        
+        RETURNS
+        ========
+        value: dict
+        
+        NOTES
+        =====
+        POST:
+            - returns jacobian as a dictionary where keys are dependent variable
+        
+        EXAMPLES
+        =========
+        >>> from variables import Variable
+        >>> a = Variable('a', 2)
+        >>> b = Variable('b', 3)
+        >>> x = a*b
+        >>> x.jacobian()
+        {'a': 3, 'b': 2}
+        """
         return self.der
-    # unary operation of Variable instance.
 
     def __pos__(self):
         return Variable(self.name, self.val, der, False)
@@ -47,29 +91,12 @@ class Variable(object):
     __radd__ = __add__ 
     
     def __sub__(self, other):
-        der1=self.der
-        # when other is an instance of Variable. Ex) derivative(x-y) -> (y, x)
-        try:
-            der2=other.der
-            der={x: der1.get(x, 0) - der2.get(x, 0) for x in set(der1).union(der2)}
-            return Variable('f({},{})'.format(self.name, other.name), self.val - other.val, der, False)
-        # when other is not an instance of Variable. Ex) derivative(x-6) -> 6
-        except AttributeError:
-            return Variable('f({})'.format(self.name), self.val - other, der1, False)
+        other = -other
+        return self+other
     
     def __rsub__(self, other):
-        der1=self.der
-        # when other is an instance of Variable. Ex) derivative(y-x) -> (y, x)
-        try:
-            der2=other.der
-            der={x: der2.get(x, 0) - der1.get(x, 0) for x in set(der1).union(der2)}
-            return Variable('f({},{})'.format(self.name, other.name), 
-                            other.val - self.val, der, False)
-        # when other is not an instance of Variable. Ex) derivative(y-x) -> 6
-        except AttributeError:
-            for key in self.der:
-                der1[key] = -der1[key]
-            return Variable('f({})'.format(self.name), other - self.val, der1, False)
+        var = -self
+        return var+other
         
     def __mul__(self, other):
         der1=self.der
@@ -105,32 +132,35 @@ class Variable(object):
         return Variable('f({})'.format(self.name), other/self.val, der, False)
 
     def __pow__(self, other):
-        try:
-            # calculate new derivative
-            new_der = {k: self.der.get(k, 0)*other.val*np.power(self.val, other.val-1) + other.der.get(k, 0)*np.log(self.val)*np.power(self.val, other.val) for k in set(self.der).union(other.der)}
-
-            new_name = "f({},{})".format(self.name, other.name)
-            new_val = np.power(self.val, other.val)
-
-            return Variable(new_name, new_val, new_der, False)
-        except AttributeError:
-            # only self is variable
-            if isinstance(self, Variable):
-                if other == 0:
-                    return 1
-                else:
-                    return Variable(self.name, np.power(self.val, other), {k:v*other*np.power(self.val, other-1) for (k,v) in self.der.items()}, False)
-            # only other is variable
-            elif isinstance(other, Variable):
-                return Variable(other.name, np.power(self, other.val)*np.log(self), {k:v*np.log(self)*np.power(self, other.val) for (k,v) in other.der.items()})
-            # both not variable
-            else:
-                return np.power(self, other)
-    
-    def jacobian(self):
         der1 = self.der
-        jacobian = {key: self.der[key] for key in set(der1)}
-        return jacobian
+        try:
+            der2 = other.der
+            # calculate new derivative
+            new_der = {}
+            for k in set(self.der).union(other.der):
+                partial_self = der1.get(k, 0)*other.val*self.val**(other.val-1)
+                partial_other = der2.get(k, 0)*np.log(self.val)*self.val**other.val
+                new_der[k] = partial_self + partial_other
+            new_name = "f({},{})".format(self.name, other.name)
+            new_val = self.val**other.val
+            return Variable(new_name, new_val, new_der, False)      
+        except AttributeError:
+            new_der = {}
+            for k in self.der:
+                new_der[k] = self.der[k]*other*self.val**(other-1)
+            new_name = "f({})".format(self.name)
+            new_val = self.val**other
+            return Variable(new_name, new_val, new_der, False)
+            
+            
+    def __rpow__(self, other):
+        new_der = {}
+        for k in self.der:
+            new_der[k] = self.der[k]*np.log(other)*other**self.val
+        new_name = "f({})".format(self.name)
+        new_val = other**self.val
+        return Variable(new_name, new_val, new_der, False)
+    
 
     
 

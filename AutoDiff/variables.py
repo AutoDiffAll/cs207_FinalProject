@@ -114,10 +114,13 @@ class Variable(object):
 
             return Variable(new_name, new_val, new_der, False)
         except AttributeError:
-            # only x is variable
+            # only self is variable
             if isinstance(self, Variable):
-                return Variable(self.name, np.power(self.val, other), {k:v*other*np.power(self.val, other-1) for (k,v) in self.der.items()}, False)
-            # only y is variable
+                if other == 0:
+                    return 1
+                else:
+                    return Variable(self.name, np.power(self.val, other), {k:v*other*np.power(self.val, other-1) for (k,v) in self.der.items()}, False)
+            # only other is variable
             elif isinstance(other, Variable):
                 return Variable(other.name, {k:v*np.log(self)*np.power(self, other.val) for (k,v) in other.der.items()})
             # both not variable

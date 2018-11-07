@@ -32,53 +32,30 @@ def add(x, y):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
-    >>> a = Variable('a', 2)
-    >>> b = Variable('b', 3)
-    >>> x = np.add(a,b)
+    >>> from Variables import Variables
+    >>> from AD_numpy import add
+    >>> a = Variable(2)
+    >>> b = Variable(3)
+    >>> x = add(a,b)
     >>> x.val
-    5.0
+    5
     >>> x.der
-    {'a': 1, 'b': 1}
-    """
-    return x+y
-
-def negative(x):
-    """Returns negative of x, can be used to calculate negative of
-    Variable instance
-
-    INPUTS
-    =======
-    x: numeric or Variable, element-wise for lists, arrays, or similar structures
-
-    RETURNS
-    ========
-    value: numeric or Variable, element-wise for lists, arrays, or similar structures
-
-    NOTES
-    =====
-    PRE:
-         - x is either numeric or Variable types
-
-    POST:
-         - x is not changed by this function
-         - if x is Variable instance, returns a new Variable instance
-         - if x is numeric, returns numeric
-
-    EXAMPLES
-    =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
-    >>> a = Variable('a', 0)
-    >>> x = np.negative(a)
-    >>> x.val
-    0.0
-    >>> x.der
-    -1.0
+    [[1,0], [0,1]] # or something liddat
     """
     try:
-        return Variable(x.name, np.negative(x.val), {k:np.negative(v) for (k,v) in x.der.items()}, False)
+        return Variable(np.add(x.val, y.val), np.nan) # wrong, needs to have derx dery
+    except AttributeError:
+        try:
+            return Variable(np.add(x.val, y), x.der)
+        except AttributeError:
+            try:
+                return Variable(np.add(x, y.val), y.der)
+            except AttributeError:
+                return np.add(x,y)
+
+def negative(x):
+    try:
+        return Variable(np.negative(x.val), np.negative(x.der))
     except AttributeError:
         return np.negative(x)
 
@@ -109,17 +86,26 @@ def multiply(x, y):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
-    >>> a = Variable('a', 2)
-    >>> b = Variable('b', 3)
-    >>> x = np.multiply(a,b)
+    >>> from Variables import Variables
+    >>> from AD_numpy import multiply
+    >>> a = Variable(2)
+    >>> b = Variable(3)
+    >>> x = multiply(a,b)
     >>> x.val
-    6.0
+    6
     >>> x.der
-    {'a': 3, 'b': 2}
+    [[1,0], [0,1]] # or something liddat
     """
-    return x*y
+    try:
+        return Variable(np.multiply(x.val, y.val), np.nan) # wrong, needs to have derx dery
+    except AttributeError:
+        try:
+            return Variable(np.multiply(x.val, y), np.multiply(x.der, y))
+        except AttributeError:
+            try:
+                return Variable(np.multiply(x, y.val), np.multiply(x, y.der))
+            except AttributeError:
+                return np.multiply(x, y)
 
 def divide(x, y):
     """Returns division of two values x and y, can be used to divide Variable instances
@@ -148,17 +134,26 @@ def divide(x, y):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
-    >>> a = Variable('a', 6)
-    >>> b = Variable('b', 2)
-    >>> x = np.divide(a,b)
+    >>> from Variables import Variables
+    >>> from AD_numpy import divide
+    >>> a = Variable(6)
+    >>> b = Variable(3)
+    >>> x = divide(a,b)
     >>> x.val
-    3.0
+    2
     >>> x.der
-    {'b': -1.5, 'a': 0.5}
+    [[1/3,0], [0,-2/3]] # or something liddat
     """
-    return x/y
+    try:
+        return Variable(np.divide(x.val, y.val), np.nan) # wrong, needs to have derx dery
+    except AttributeError:
+        try:
+            return Variable(np.divide(x.val, y), np.divide(x.der, y))
+        except AttributeError:
+            try:
+                return Variable(np.divide(x, y.val), np.divide(x, y.der))
+            except AttributeError:
+                return np.divide(x, y)
 
 def power(x, y):
     """Returns power of x to y, can be used to calculate power of Variable instances
@@ -187,37 +182,26 @@ def power(x, y):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
-    >>> a = Variable('a', 2)
-    >>> b = Variable('b', 3)
-    >>> x = np.power(a,b)
+    >>> from Variables import Variables
+    >>> from AD_numpy import power
+    >>> a = Variable(2)
+    >>> b = Variable(3)
+    >>> x = power(a,b)
     >>> x.val
-    8.0
+    8
     >>> x.der
-    {'a': 12.0, 'b': 5.545177444479562}
+    [[1,0], [0,1]] # or something liddat
     """
     try:
-        # calculate new derivative
-        new_der = {k: x.der.get(k, 0)*y.val*np.power(x.val, y.val-1) + y.der.get(k, 0)*np.log(x.val)*np.power(x.val, y.val) for k in set(x.der).union(y.der)}
-
-        new_name = "f({},{})".format(x.name, y.name)
-        new_val = np.power(x.val, y.val)
-
-        return Variable(new_name, new_val, new_der, False)
+        return Variable(np.power(x.val, y.val), np.nan) # wrong, needs to have derx dery
     except AttributeError:
-        # only x is variable
-        if isinstance(x, Variable):
-            if y == 0:
-                return 1
-            else:
-                return Variable(x.name, np.power(x.val, y), {k:v*y*np.power(x.val, y-1) for (k,v) in x.der.items()}, False)
-        # only y is variable
-        elif isinstance(y, Variable):
-            return Variable(y.name, np.power(x, y.val) ,{k:v*np.log(x)*np.power(x, y.val) for (k,v) in y.der.items()}, False)
-        # both not variable
-        else:
-            return np.power(x, y)
+        try:
+            return Variable(np.power(x.val, y), y*x.der*np.power(x.val, y-1))
+        except AttributeError:
+            try:
+                return Variable(np.power(x, y.val), np.log(x)*y.der*np.power(x, y.val))
+            except AttributeError:
+                return np.power(x, y)
 
 def subtract(x, y):
     """Returns difference of two values x and y, can be used to subtract Variable instances
@@ -246,17 +230,26 @@ def subtract(x, y):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
-    >>> a = Variable('a', 2)
-    >>> b = Variable('b', 3)
-    >>> x = np.subtract(a,b)
+    >>> from Variables import Variables
+    >>> from AD_numpy import subtract
+    >>> a = Variable(2)
+    >>> b = Variable(3)
+    >>> x = subtract(a,b)
     >>> x.val
-    -1.0
+    -1
     >>> x.der
-    {'a': 1, 'b': 1}
+    [[1,0], [0,1]] # or something liddat
     """
-    return x+(-y)
+    try:
+        return Variable(np.subtract(x.val, y.val), np.nan) # wrong, needs to have derx dery
+    except AttributeError:
+        try:
+            return Variable(np.subtract(x.val, y), x.der)
+        except AttributeError:
+            try:
+                return Variable(np.subtract(x, y.val), y.der)
+            except AttributeError:
+                return np.subtract(x,y)
 
 # trigonometric functions
 def sin(x):
@@ -284,17 +277,17 @@ def sin(x):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
-    >>> a = Variable('a', 0)
-    >>> x = np.sin(a)
+    >>> from Variables import Variables
+    >>> from AD_numpy import sin
+    >>> a = Variable(0)
+    >>> x = sin(a)
     >>> x.val
     0.0
     >>> x.der
-    {'a': 1.0}
+    1.0
     """
     try:
-        return Variable(x.name, np.sin(x.val), {k:v*np.cos(x.val) for (k,v) in x.der.items()}, False)
+        return Variable(np.sin(x.val), x.der*np.cos(x.val))
     except AttributeError:
         return np.sin(x)
 
@@ -323,17 +316,17 @@ def cos(x):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
-    >>> a = Variable('a', 0)
-    >>> x = np.cos(a)
+    >>> from Variables import Variables
+    >>> from AD_numpy import cos
+    >>> a = Variable(0)
+    >>> x = cos(a)
     >>> x.val
     1.0
     >>> x.der
-    {'a': 0.0}
+    0.0
     """
     try:
-        return Variable(x.name, np.cos(x.val), {k:-v*np.sin(x.val) for (k,v) in x.der.items()}, False)
+        return Variable(np.cos(x.val), -x.der*np.sin(x.val))
     except AttributeError:
         return np.cos(x)
 
@@ -361,17 +354,17 @@ def tan(x):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
-    >>> a = Variable('a', 0)
-    >>> x = np.tan(a)
+    >>> from Variables import Variables
+    >>> from AD_numpy import tan
+    >>> a = Variable(0)
+    >>> x = tan(a)
     >>> x.val
     0.0
     >>> x.der
-    {'a': 1.0}
+    1.0
     """
     try:
-        return Variable(x.name, np.tan(x.val), {k:v/(np.cos(x.val)**2) for (k,v) in x.der.items()}, False)
+        return Variable(np.tan(x.val), x.der/(np.cos(x.val))**2)
     except AttributeError:
         return np.tan(x)
 
@@ -391,7 +384,6 @@ def arcsin(x):
     =====
     PRE:
          - x is either numeric or Variable types
-         - x is between -1 and 1
 
     POST:
          - x is not changed by this function
@@ -402,23 +394,18 @@ def arcsin(x):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
-    >>> a = Variable('a', 0)
-    >>> x = np.arcsin(a)
+    >>> from Variables import Variables
+    >>> from AD_numpy import arcsin
+    >>> a = Variable(0)
+    >>> x = arcsin(a)
     >>> x.val
     0.0
     >>> x.der
-    {'a': 1.0}
+    1.0
     """
-
     try:
-        if x.val < -1 or x.val > 1:
-            raise ValueError('math domain error')
-        return Variable(x.name, np.arcsin(x.val), {k:v/np.sqrt(1-x.val**2) for (k,v) in x.der.items()}, False)
+        return Variable(np.arcsin(x.val), x.der/np.sqrt(1-x.val**2))
     except AttributeError:
-        if x < -1 or x > 1:
-            raise ValueError('math domain error')
         return np.arcsin(x)
 
 def arccos(x):
@@ -448,22 +435,18 @@ def arccos(x):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
-    >>> a = Variable('a', 0)
-    >>> x = np.arccos(a)
+    >>> from Variables import Variables
+    >>> from AD_numpy import arccos
+    >>> a = Variable(0)
+    >>> x = arccos(a)
     >>> x.val
     1.5707963267948966
     >>> x.der
-    {'a': -1.0}
+    -1.0
     """
     try:
-        if x.val < -1 or x.val > 1:
-            raise ValueError('math domain error')
-        return Variable(x.name, np.arccos(x.val), {k:-v/np.sqrt(1-x.val**2) for (k,v) in x.der.items()}, False)
+        return Variable(np.arccos(x.val), -x.der/np.sqrt(1-x.val**2))
     except AttributeError:
-        if x < -1 or x > 1:
-            raise ValueError('math domain error')
         return np.arccos(x)
 
 def arctan(x):
@@ -491,17 +474,17 @@ def arctan(x):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
-    >>> a = Variable('a', 0)
-    >>> x = np.arctan(a)
+    >>> from Variables import Variables
+    >>> from AD_numpy import arctan
+    >>> a = Variable(0)
+    >>> x = arctan(a)
     >>> x.val
     0.0
     >>> x.der
-    {'a': 1.0}
+    1.0
     """
     try:
-        return Variable(x.name, np.arctan(x.val), {k:v/(1+x.val**2) for (k,v) in x.der.items()}, False)
+        return Variable(np.arctan(x.val), x.der/(1+x.val**2))
     except AttributeError:
         return np.arctan(x)
 
@@ -530,17 +513,17 @@ def sinh(x):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
+    >>> from Variables import Variables
+    >>> from AD_numpy import sinh
     >>> a = Variable(1)
-    >>> x = np.sinh(a)
+    >>> x = sinh(a)
     >>> x.val
     1.1752011936438014
     >>> x.der
-    {'a': 1.5430806348152437}
+    1.5430806348152437
     """
     try:
-        return Variable(x.name, np.sinh(x.val), {k:v*np.cosh(x.val) for (k,v) in x.der.items()}, False)
+        return Variable(np.sinh(x.val), x.der*np.cosh(x))
     except AttributeError:
         return np.sinh(x)
 
@@ -569,17 +552,17 @@ def cosh(x):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
-    >>> a = Variable('a', 1)
-    >>> x = np.cosh(a)
+    >>> from Variables import Variables
+    >>> from AD_numpy import cosh
+    >>> a = Variable(1)
+    >>> x = cosh(a)
     >>> x.val
     1.1752011936438014
     >>> x.der
-    {'a': 1.5430806348152437}
+    1.5430806348152437
     """
     try:
-        return Variable(x.name, np.cosh(x.val), {k:v*np.sinh(x.val) for (k,v) in x.der.items()}, False)
+        return Variable(np.cosh(x.val), x.der*np.sinh(x))
     except AttributeError:
         return np.cosh(x)
 
@@ -608,17 +591,17 @@ def tanh(x):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
-    >>> a = Variable('a', 1)
-    >>> x = np.tanh(a)
+    >>> from Variables import Variables
+    >>> from AD_numpy import tanh
+    >>> a = Variable(1)
+    >>> x = tanh(a)
     >>> x.val
     0.76159415595576485
     >>> x.der
-    {'a': 0.41997434161402608}
+    0.41997434161402608
     """
     try:
-        return Variable(x.name, np.tanh(x.val), {k:v/(np.cosh(x.val)**2) for (k,v) in x.der.items()}, False)
+        return Variable(np.tanh(x.val), x.der/(np.cosh(x.val))**2)
     except AttributeError:
         return np.tanh(x)
 
@@ -646,17 +629,17 @@ def arcsinh(x):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
-    >>> a = Variable('a', 1)
-    >>> x = np.arcsinh(a)
+    >>> from Variables import Variables
+    >>> from AD_numpy import arcsinh
+    >>> a = Variable(1)
+    >>> x = arcsinh(a)
     >>> x.val
     0.88137358701954305
     >>> x.der
-    {'a': 0.70710678118654746}
+    0.70710678118654746
     """
     try:
-        return Variable(x.name, np.arcsinh(x.val), {k:v/np.sqrt(1+x.val**2) for (k,v) in x.der.items()}, False)
+        return Variable(np.arcsinh(x.val), x.der/np.sqrt(1+x.val**2))
     except AttributeError:
         return np.arcsinh(x)
 
@@ -682,27 +665,24 @@ def arccosh(x):
          - x is not changed by this function
          - if x is Variable instance, returns a new Variable instance
          - if x is numeric, returns numeric
-         - should return ValueError if x lesser than 1
+         - should return RuntimeWarning if x lesser than 1
+         - should return ZeroDivisionErrorif if x equal 1
          - should return value greater than 0
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
-    >>> a = Variable('a', 2)
-    >>> x = np.arccosh(a)
+    >>> from Variables import Variables
+    >>> from AD_numpy import arccosh
+    >>> a = Variable(2)
+    >>> x = arccosh(a)
     >>> x.val
     1.3169578969248166
     >>> x.der
-    {'a': 0.57735026918962584}
+    0.57735026918962584
     """
-    if x.val <= 1:
-        raise ValueError('math domain error')
     try:
-        return Variable(x.name, np.arccosh(x.val), {k:v/np.sqrt(x.val**2 - 1) for (k,v) in x.der.items()}, False)
+        return Variable(np.arccosh(x.val), x.der/np.sqrt(x.val**2 - 1))
     except AttributeError:
-        if x < 1:
-            raise ValueError('math domain error')
         return np.arccosh(x)
 
 def arctanh(x):
@@ -727,26 +707,22 @@ def arctanh(x):
          - x is not changed by this function
          - if x is Variable instance, returns a new Variable instance
          - if x is numeric, returns numeric
-         - should return ValueError if x not within domain
+         - should return RuntimeWarning if x not within domain
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
-    >>> a = Variable('a', 0)
-    >>> x = np.arctanh(a)
+    >>> from Variables import Variables
+    >>> from AD_numpy import arctanh
+    >>> a = Variable(0)
+    >>> x = arctanh(a)
     >>> x.val
     0.0
     >>> x.der
-    {'a': 1.0}
+    1.0
     """
     try:
-        if x.val <= -1 or x.val >= 1:
-            raise ValueError('math domain error')
-        return Variable(x.name, np.arctanh(x.val), {k:v/(1 - x.val**2) for (k,v) in x.der.items()}, False)
+        return Variable(np.arctanh(x.val), x.der/(1 - x.val**2))
     except AttributeError:
-        if x <= -1 or x >= 1:
-            raise ValueError('math domain error')
         return np.arctanh(x)
 
 # exponentials and logarithms
@@ -775,17 +751,17 @@ def exp(x):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
-    >>> a = Variable('a', 0)
-    >>> x = np.exp(a)
+    >>> from Variables import Variables
+    >>> from AD_numpy import exp
+    >>> a = Variable(0)
+    >>> x = exp(a)
     >>> x.val
     1.0
     >>> x.der
-    {'a': 1.0}
+    1.0
     """
     try:
-        return Variable(x.name, np.exp(x.val), {k:v*np.exp(x.val) for (k,v) in x.der.items()}, False)
+        return Variable(np.exp(x.val), x.der*np.exp(x.val))
     except AttributeError:
         return np.exp(x)
 
@@ -811,26 +787,22 @@ def log(x):
          - x is not changed by this function
          - if x is Variable instance, returns a new Variable instance
          - if x is numeric, returns numeric
-         - should raise ValueError if x less than 0
+         - should raise RuntimeWarning if x not greater than 0
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
-    >>> a = Variable('a', 1)
-    >>> x = np.log(a)
+    >>> from Variables import Variables
+    >>> from AD_numpy import log
+    >>> a = Variable(1)
+    >>> x = log(a)
     >>> x.val
     0.0
     >>> x.der
-    {'a': 1.0}
+    1.0
     """
     try:
-        if x.val <= 0:
-            raise ValueError('math domain error')
-        return Variable(x.name, np.log(x.val), {k:v/x.val for (k,v) in x.der.items()}, False)
+        return Variable(np.log(x.val), x.der/x.val)
     except AttributeError:
-        if x <= 0:
-            raise ValueError('math domain error')
         return np.log(x)
 
 def exp2(x):
@@ -857,17 +829,17 @@ def exp2(x):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
-    >>> a = Variable('a', 1)
-    >>> x = np.exp2(a)
+    >>> from Variables import Variables
+    >>> from AD_numpy import exp2
+    >>> a = Variable(1)
+    >>> x = exp2(a)
     >>> x.val
     2.0
     >>> x.der
-    {'a': 1.3862943611198906}
+    1.3862943611198906
     """
     try:
-        return Variable(x.name, np.exp2(x.val), {k:v*np.log(2)*np.exp2(x.val) for (k,v) in x.der.items()}, False)
+        return Variable(np.exp2(x.val), np.log(2)*x.der*np.exp2(x.val))
     except AttributeError:
         return np.exp2(x)
 
@@ -886,34 +858,29 @@ def log10(x):
     NOTES
     =====
     PRE:
-         - x is either numeric or Variable types
          - x should be greater than 0
 
     POST:
          - x is not changed by this function
          - if x is Variable instance, returns a new Variable instance
          - if x is numeric, returns numeric
-         - should raise ValueError if x less than 0
-         - should raise ZeroDivisionError if x equals 0
+         - should raise RuntimeWarning if x not greater than 0
+         - should raise ZeroDivisionErrorif x equals 0
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
-    >>> a = Variable('a', 1)
-    >>> x = np.log10(a)
+    >>> from Variables import Variables
+    >>> from AD_numpy import log10
+    >>> a = Variable(1)
+    >>> x = log10(a)
     >>> x.val
     0.0
     >>> x.der
-    {'a': 0.43429448190325182}
+    0.43429448190325182
     """
     try:
-        if x.val <= 0:
-            raise ValueError('math domain error')
-        return Variable(x.name, np.log10(x.val), {k:v*np.log10(np.exp(1))/x.val for (k,v) in x.der.items()}, False)
+        return Variable(np.log10(x.val), x.der*np.log10(np.exp(1))/x.val)
     except AttributeError:
-        if x <= 0:
-            raise ValueError('math domain error')
         return np.log10(x)
 
 def log2(x):
@@ -931,34 +898,29 @@ def log2(x):
     NOTES
     =====
     PRE:
-         - x is either numeric or Variable types
          - x should be greater than 0
 
     POST:
          - x is not changed by this function
          - if x is Variable instance, returns a new Variable instance
          - if x is numeric, returns numeric
-         - should raise ValueError if x less than 0
+         - should raise RuntimeWarning if x not greater than 0
          - should raise ZeroDivisionErrorif x equals 0
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
-    >>> a = Variable('a', 1)
-    >>> x = np.log2(a)
+    >>> from Variables import Variables
+    >>> from AD_numpy import log2
+    >>> a = Variable(1)
+    >>> x = log2(a)
     >>> x.val
     0.0
     >>> x.der
-    {'a': 1.4426950408889634}
+    1.4426950408889634
     """
     try:
-        if x.val <= 0:
-            raise ValueError('math domain error')
-        return Variable(x.name, np.log2(x.val), {k:v*np.log2(np.exp(1))/x.val for (k,v) in x.der.items()}, False)
+        return Variable(np.log2(x.val), x.der*np.log2(np.exp(1))/x.val)
     except AttributeError:
-        if x <= 0:
-            raise ValueError('math domain error')
         return np.log2(x)
 
 # miscellaneous
@@ -977,31 +939,26 @@ def sqrt(x):
     NOTES
     =====
     PRE:
-         - x is either numeric or Variable types
          - x should be greater than or equal to 0
 
     POST:
          - x is not changed by this function
          - if x is Variable instance, returns a new Variable instance
          - if x is numeric, returns numeric
-         - should raise ValueError if x is less than 0
+         - should raise RuntimeWarning if x not greater than or equal to 0
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
-    >>> a = Variable('a', 1)
-    >>> x = np.sqrt(a)
+    >>> from Variables import Variables
+    >>> from AD_numpy import sqrt
+    >>> a = Variable(1)
+    >>> x = sqrt(a)
     >>> x.val
     1.0
     >>> x.der
-    {'a': 0.5}
+    0.5
     """
     try:
-        if x.val < 0:
-            raise ValueError('math domain error')
-        return Variable(x.name, np.sqrt(x.val), {k:v*0.5/np.sqrt(x.val) for (k,v) in x.der.items()}, False)
+        return Variable(np.sqrt(x.val), 0.5*x.der/np.sqrt(x.val))
     except AttributeError:
-        if x < 0:
-            raise ValueError('math domain error')
         return np.sqrt(x)

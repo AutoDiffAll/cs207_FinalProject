@@ -48,9 +48,9 @@ def user_function(fn, fn_der):
     >>> a = Variable('a', 2)
     >>> x = ad_sec(a)
     >>> x.val
-    -2.4029979617223809
+    -2.402997961722381
     >>> x.der
-    5.25064633769958
+    {'a': 5.25064633769958}
     """
     def AD_fn(x):
         try:

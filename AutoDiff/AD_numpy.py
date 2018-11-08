@@ -2,7 +2,10 @@
 # functions should be able to handle inputs of Variable and regular python
 # numbers
 import numpy as np
-from AutoDiff.variables import Variable
+try:
+    from variables import Variable
+except:
+    from AutoDiff.variables import Variable
 
 # arithmetic
 def add(x, y):

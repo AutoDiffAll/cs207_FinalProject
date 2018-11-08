@@ -3,9 +3,13 @@ import numpy as np
 import pytest
 import sys
 import os
-sys.path.append('../AutoDiff')
-from variables import Variable
-import AD_numpy as anp
+try:
+    sys.path.append('../AutoDiff')
+    from variables import Variable
+    import AD_numpy as anp
+except:
+    from AutoDiff.variables import Variable
+    import AutoDiff.AD_numpy as anp
 
 def test_numpy_scalar_add_minus():
       # case 0: build variables
@@ -57,7 +61,7 @@ def test_numpy_scalar_add_minus():
     assert (f3.partial_der(x) == -1)
     assert (f3.partial_der(y) == -1)
     '''
-    
+
     # case 7: positive
     '''
     f4 = anp.+y
@@ -191,7 +195,7 @@ def test_numpy_scalar_sin_cos():
     assert(f3.jacobian() == {'x': -np.sqrt(2)/2})
 
 
-    
+
 def test_variable_scalar_pow():
     '''object.__pow__(), object.__ipow__()'''
     x = Variable('x',2)

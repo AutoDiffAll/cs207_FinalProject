@@ -2,9 +2,13 @@
 import numpy as np
 import pytest
 import sys, os
-sys.path.append('../AutoDiff')
-from variables import Variable
-import numpy as anp
+try:
+    sys.path.append('../AutoDiff')
+    from variables import Variable
+    import AD_numpy as anp
+except:
+    from AutoDiff.variables import Variable
+    import AutoDiff.AD_numpy as anp
 
 
 def test_variable_scalar_add_minus():
@@ -17,7 +21,7 @@ def test_variable_scalar_add_minus():
     y = Variable('y',-5)
 
     # case 1: right add
-    f1 = x+2    
+    f1 = x+2
     assert (f1.val == 4)
     assert (f1.jacobian() == {'x':1})
     assert (f1.partial_der(x) == 1)
@@ -45,7 +49,7 @@ def test_variable_scalar_add_minus():
     assert (f1.partial_der(y) == 0)
 
     # case 5: left minus
-    
+
     f2 = 10+2*8-y
     assert (f2.val == 31)
     assert (f2.jacobian() == {'y':-1})
@@ -54,7 +58,7 @@ def test_variable_scalar_add_minus():
 
 
     # case 6: variable+variable
-    
+
     f3 = 3-x-y-2
     assert (f3.val == 4)
     assert (f3.jacobian() == {'x':-1, 'y':-1})
@@ -235,7 +239,7 @@ def test_variable_scalar_pow():
     # notice 0**0 not define, should throws error
     with pytest.raises(ZeroDivisionError):
         f3 = z**0
-    
+
     with pytest.raises(ZeroDivisionError):
         f4 = z**(-2)
 

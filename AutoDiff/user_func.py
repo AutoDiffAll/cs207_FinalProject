@@ -1,4 +1,7 @@
-from variables import variable
+try:
+    from variables import Variable
+except:
+    from AutoDiff.variables import Variable
 
 def user_function(fn, fn_der):
     """Given a function and its derivative, returns an original function that

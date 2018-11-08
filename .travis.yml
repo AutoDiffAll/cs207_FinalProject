@@ -5,6 +5,7 @@ before_install:
     - "pip install pytest pytest-cov"
     - "pip install coveralls"
     - "pip install -U pip"
+    - "export PYTHONPATH=$PYTHONPATH:$(pwd)"
     - "python setup.py install"
 script:
     - py.test

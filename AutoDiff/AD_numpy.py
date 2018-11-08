@@ -34,12 +34,13 @@ def add(x, y):
     =========
     >>> from variables import Variable
     >>> import AD_numpy as np
+    >>> import pprint
     >>> a = Variable('a', 2)
     >>> b = Variable('b', 3)
     >>> x = np.add(a,b)
     >>> x.val
-    5.0
-    >>> x.der
+    5
+    >>> pprint.pprint(x.der)
     {'a': 1, 'b': 1}
     """
     return x+y
@@ -73,14 +74,11 @@ def negative(x):
     >>> a = Variable('a', 0)
     >>> x = np.negative(a)
     >>> x.val
-    0.0
+    0
     >>> x.der
-    -1.0
+    {'a': -1}
     """
-    try:
-        return Variable(x.name, np.negative(x.val), {k:np.negative(v) for (k,v) in x.der.items()}, False)
-    except AttributeError:
-        return np.negative(x)
+    return -x
 
 def multiply(x, y):
     """Returns product of two values x and y, can be used to multiply Variable instances
@@ -111,12 +109,13 @@ def multiply(x, y):
     =========
     >>> from variables import Variable
     >>> import AD_numpy as np
+    >>> import pprint
     >>> a = Variable('a', 2)
     >>> b = Variable('b', 3)
     >>> x = np.multiply(a,b)
     >>> x.val
-    6.0
-    >>> x.der
+    6
+    >>> pprint.pprint(x.der)
     {'a': 3, 'b': 2}
     """
     return x*y
@@ -150,13 +149,14 @@ def divide(x, y):
     =========
     >>> from variables import Variable
     >>> import AD_numpy as np
+    >>> import pprint
     >>> a = Variable('a', 6)
     >>> b = Variable('b', 2)
     >>> x = np.divide(a,b)
     >>> x.val
     3.0
-    >>> x.der
-    {'b': -1.5, 'a': 0.5}
+    >>> pprint.pprint(x.der)
+    {'a': 0.5, 'b': -1.5}
     """
     return x/y
 
@@ -189,12 +189,13 @@ def power(x, y):
     =========
     >>> from variables import Variable
     >>> import AD_numpy as np
+    >>> import pprint
     >>> a = Variable('a', 2)
     >>> b = Variable('b', 3)
     >>> x = np.power(a,b)
     >>> x.val
-    8.0
-    >>> x.der
+    8
+    >>> pprint.pprint(x.der)
     {'a': 12.0, 'b': 5.545177444479562}
     """
     return x**y
@@ -228,15 +229,16 @@ def subtract(x, y):
     =========
     >>> from variables import Variable
     >>> import AD_numpy as np
+    >>> import pprint
     >>> a = Variable('a', 2)
     >>> b = Variable('b', 3)
     >>> x = np.subtract(a,b)
     >>> x.val
-    -1.0
-    >>> x.der
-    {'a': 1, 'b': 1}
+    -1
+    >>> pprint.pprint(x.der)
+    {'a': 1, 'b': -1}
     """
-    return x+(-y)
+    return x-y
 
 # trigonometric functions
 def sin(x):
@@ -310,7 +312,7 @@ def cos(x):
     >>> x.val
     1.0
     >>> x.der
-    {'a': 0.0}
+    {'a': -0.0}
     """
     try:
         return Variable(x.name, np.cos(x.val), {k:-v*np.sin(x.val) for (k,v) in x.der.items()}, False)
@@ -512,7 +514,7 @@ def sinh(x):
     =========
     >>> from variables import Variable
     >>> import AD_numpy as np
-    >>> a = Variable(1)
+    >>> a = Variable('a', 1)
     >>> x = np.sinh(a)
     >>> x.val
     1.1752011936438014
@@ -554,9 +556,9 @@ def cosh(x):
     >>> a = Variable('a', 1)
     >>> x = np.cosh(a)
     >>> x.val
-    1.1752011936438014
+    1.5430806348152437
     >>> x.der
-    {'a': 1.5430806348152437}
+    {'a': 1.1752011936438014}
     """
     try:
         return Variable(x.name, np.cosh(x.val), {k:v*np.sinh(x.val) for (k,v) in x.der.items()}, False)
@@ -593,9 +595,9 @@ def tanh(x):
     >>> a = Variable('a', 1)
     >>> x = np.tanh(a)
     >>> x.val
-    0.76159415595576485
+    0.7615941559557649
     >>> x.der
-    {'a': 0.41997434161402608}
+    {'a': 0.4199743416140261}
     """
     try:
         return Variable(x.name, np.tanh(x.val), {k:v/(np.cosh(x.val)**2) for (k,v) in x.der.items()}, False)
@@ -631,9 +633,9 @@ def arcsinh(x):
     >>> a = Variable('a', 1)
     >>> x = np.arcsinh(a)
     >>> x.val
-    0.88137358701954305
+    0.881373587019543
     >>> x.der
-    {'a': 0.70710678118654746}
+    {'a': 0.7071067811865475}
     """
     try:
         return Variable(x.name, np.arcsinh(x.val), {k:v/np.sqrt(1+x.val**2) for (k,v) in x.der.items()}, False)
@@ -674,7 +676,7 @@ def arccosh(x):
     >>> x.val
     1.3169578969248166
     >>> x.der
-    {'a': 0.57735026918962584}
+    {'a': 0.5773502691896258}
     """
     if x.val <= 1:
         raise ValueError('math domain error')
@@ -885,7 +887,7 @@ def log10(x):
     >>> x.val
     0.0
     >>> x.der
-    {'a': 0.43429448190325182}
+    {'a': 0.4342944819032518}
     """
     try:
         if x.val <= 0:
@@ -985,3 +987,7 @@ def sqrt(x):
         if x < 0:
             raise ValueError('math domain error')
         return np.sqrt(x)
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()

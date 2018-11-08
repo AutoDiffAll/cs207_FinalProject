@@ -1,9 +1,9 @@
 language: python
 python:
     - "3.6"
+env:
+    PYTHONPATH=$PYTHONPATH:$TRAVIS_BUILD_DIR/tests:$TRAVIS_BUILD_DIR/cs207_FinalProject
 before_install:
-    - "pip install -U pip"
-    - "export PYTHONPATH=$PYTHONPATH:$(pwd)"
     - pip install pytest pytest-cov
     - pip install coveralls
 script:

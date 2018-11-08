@@ -64,13 +64,9 @@ class Variable(object):
         EXAMPLES
         =========
         >>> try:
-    ...         from variables import Variable
-    ...     except:
-    ...         from AutoDiff.variables import Variable
-        >>> try:
-    ...     from variables import Variable
-    ... except:
-    ...     from AutoDiff.variables import Variable
+        ...     from variables import Variable
+        ... except:
+        ...     from AutoDiff.variables import Variable
         >>> a = Variable('a', 2)
         >>> b = Variable('b', 3)
         >>> x = a*b

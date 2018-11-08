@@ -54,7 +54,7 @@ def user_function(fn, fn_der):
     """
     def AD_fn(x):
         try:
-            return Variable(fn(x.val), {k:v*fn_der(x.val) for (k,v) in x.der.items()})
+            return Variable(x.name, fn(x.val), {k:v*fn_der(x.val) for (k,v) in x.der.items()}, False)
         except AttributeError:
             return fn(x)
     return AD_fn

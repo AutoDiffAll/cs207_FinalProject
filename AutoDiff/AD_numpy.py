@@ -319,6 +319,8 @@ def sin(x):
     0.0
     >>> x.der
     {'a': 1.0}
+    >>> np.sin(0)
+    0.0
     """
     try:
         return Variable(x.name, np.sin(x.val), {k:v*np.cos(x.val) for (k,v) in x.der.items()}, False)
@@ -364,6 +366,8 @@ def cos(x):
     1.0
     >>> x.der
     {'a': -0.0}
+    >>> np.cos(0)
+    1.0
     """
     try:
         return Variable(x.name, np.cos(x.val), {k:-v*np.sin(x.val) for (k,v) in x.der.items()}, False)
@@ -408,6 +412,8 @@ def tan(x):
     0.0
     >>> x.der
     {'a': 1.0}
+    >>> np.tan(0)
+    0.0
     """
     try:
         return Variable(x.name, np.tan(x.val), {k:v/(np.cos(x.val)**2) for (k,v) in x.der.items()}, False)
@@ -455,6 +461,8 @@ def arcsin(x):
     0.0
     >>> x.der
     {'a': 1.0}
+    >>> np.arcsin(0)
+    0.0
     """
 
     try:
@@ -507,6 +515,8 @@ def arccos(x):
     1.5707963267948966
     >>> x.der
     {'a': -1.0}
+    >>> np.arccos(1)
+    0.0
     """
     try:
         if x.val < -1 or x.val > 1:
@@ -556,6 +566,8 @@ def arctan(x):
     0.0
     >>> x.der
     {'a': 1.0}
+    >>> np.arctan(0)
+    0.0
     """
     try:
         return Variable(x.name, np.arctan(x.val), {k:v/(1+x.val**2) for (k,v) in x.der.items()}, False)
@@ -601,6 +613,8 @@ def sinh(x):
     1.1752011936438014
     >>> x.der
     {'a': 1.5430806348152437}
+    >>> np.sinh(0)
+    0.0
     """
     try:
         return Variable(x.name, np.sinh(x.val), {k:v*np.cosh(x.val) for (k,v) in x.der.items()}, False)
@@ -646,6 +660,8 @@ def cosh(x):
     1.5430806348152437
     >>> x.der
     {'a': 1.1752011936438014}
+    >>> np.cosh(0)
+    1.0
     """
     try:
         return Variable(x.name, np.cosh(x.val), {k:v*np.sinh(x.val) for (k,v) in x.der.items()}, False)
@@ -691,6 +707,8 @@ def tanh(x):
     0.7615941559557649
     >>> x.der
     {'a': 0.4199743416140261}
+    >>> np.tanh(0)
+    0.0
     """
     try:
         return Variable(x.name, np.tanh(x.val), {k:v/(np.cosh(x.val)**2) for (k,v) in x.der.items()}, False)
@@ -735,6 +753,8 @@ def arcsinh(x):
     0.881373587019543
     >>> x.der
     {'a': 0.7071067811865475}
+    >>> np.arcsinh(0)
+    0.0
     """
     try:
         return Variable(x.name, np.arcsinh(x.val), {k:v/np.sqrt(1+x.val**2) for (k,v) in x.der.items()}, False)
@@ -782,10 +802,13 @@ def arccosh(x):
     1.3169578969248166
     >>> x.der
     {'a': 0.5773502691896258}
+    >>> np.arccosh(1)
+    0.0
     """
-    if x.val <= 1:
-        raise ValueError('math domain error')
+
     try:
+        if x.val <= 1:
+            raise ValueError('math domain error')
         return Variable(x.name, np.arccosh(x.val), {k:v/np.sqrt(x.val**2 - 1) for (k,v) in x.der.items()}, False)
     except AttributeError:
         if x < 1:
@@ -832,6 +855,8 @@ def arctanh(x):
     0.0
     >>> x.der
     {'a': 1.0}
+    >>> np.arctanh(0)
+    0.0
     """
     try:
         if x.val <= -1 or x.val >= 1:
@@ -882,6 +907,8 @@ def exp(x):
     1.0
     >>> x.der
     {'a': 1.0}
+    >>> np.exp(0)
+    1.0
     """
     try:
         return Variable(x.name, np.exp(x.val), {k:v*np.exp(x.val) for (k,v) in x.der.items()}, False)
@@ -928,6 +955,8 @@ def log(x):
     0.0
     >>> x.der
     {'a': 1.0}
+    >>> np.log(1)
+    0.0
     """
     try:
         if x.val <= 0:
@@ -976,6 +1005,8 @@ def exp2(x):
     2.0
     >>> x.der
     {'a': 1.3862943611198906}
+    >>> np.exp2(0)
+    1.0
     """
     try:
         return Variable(x.name, np.exp2(x.val), {k:v*np.log(2)*np.exp2(x.val) for (k,v) in x.der.items()}, False)
@@ -1023,6 +1054,8 @@ def log10(x):
     0.0
     >>> x.der
     {'a': 0.4342944819032518}
+    >>> np.log10(10)
+    1.0
     """
     try:
         if x.val <= 0:
@@ -1074,6 +1107,8 @@ def log2(x):
     0.0
     >>> x.der
     {'a': 1.4426950408889634}
+    >>> np.log2(2)
+    1.0
     """
     try:
         if x.val <= 0:
@@ -1125,6 +1160,8 @@ def sqrt(x):
     1.0
     >>> x.der
     {'a': 0.5}
+    >>> np.sqrt(4)
+    2.0
     """
     try:
         if x.val < 0:

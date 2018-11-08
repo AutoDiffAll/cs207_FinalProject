@@ -1,6 +1,8 @@
 language: python
 xcode_project: AutoDiff
 xcode_scheme: tests
+virtualenv:
+  system_site_packages: true
 python:
     - "3.6"
 before_install:

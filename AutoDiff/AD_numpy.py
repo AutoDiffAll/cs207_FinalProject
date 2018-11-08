@@ -35,8 +35,14 @@ def add(x, y):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
+    >>> try:
+    ...     from variables import Variable
+    ... except:
+    ...     from AutoDiff.variables import Variable
+    >>> try:
+    ...     import AD_numpy as np
+    ... except:
+    ...     import AutoDiff.AD_numpy as np
     >>> import pprint
     >>> a = Variable('a', 2)
     >>> b = Variable('b', 3)
@@ -72,8 +78,14 @@ def negative(x):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
+    >>> try:
+    ...     from variables import Variable
+    ... except:
+    ...     from AutoDiff.variables import Variable
+    >>> try:
+    ...     import AD_numpy as np
+    ... except:
+    ...     import AutoDiff.AD_numpy as np
     >>> a = Variable('a', 0)
     >>> x = np.negative(a)
     >>> x.val
@@ -110,8 +122,14 @@ def multiply(x, y):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
+    >>> try:
+    ...     from variables import Variable
+    ... except:
+    ...     from AutoDiff.variables import Variable
+    >>> try:
+    ...     import AD_numpy as np
+    ... except:
+    ...     import AutoDiff.AD_numpy as np
     >>> import pprint
     >>> a = Variable('a', 2)
     >>> b = Variable('b', 3)
@@ -150,8 +168,14 @@ def divide(x, y):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
+    >>> try:
+    ...     from variables import Variable
+    ... except:
+    ...     from AutoDiff.variables import Variable
+    >>> try:
+    ...     import AD_numpy as np
+    ... except:
+    ...     import AutoDiff.AD_numpy as np
     >>> import pprint
     >>> a = Variable('a', 6)
     >>> b = Variable('b', 2)
@@ -190,8 +214,14 @@ def power(x, y):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
+    >>> try:
+    ...     from variables import Variable
+    ... except:
+    ...     from AutoDiff.variables import Variable
+    >>> try:
+    ...     import AD_numpy as np
+    ... except:
+    ...     import AutoDiff.AD_numpy as np
     >>> import pprint
     >>> a = Variable('a', 2)
     >>> b = Variable('b', 3)
@@ -230,8 +260,14 @@ def subtract(x, y):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
+    >>> try:
+    ...     from variables import Variable
+    ... except:
+    ...     from AutoDiff.variables import Variable
+    >>> try:
+    ...     import AD_numpy as np
+    ... except:
+    ...     import AutoDiff.AD_numpy as np
     >>> import pprint
     >>> a = Variable('a', 2)
     >>> b = Variable('b', 3)
@@ -269,8 +305,14 @@ def sin(x):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
+    >>> try:
+    ...     from variables import Variable
+    ... except:
+    ...     from AutoDiff.variables import Variable
+    >>> try:
+    ...     import AD_numpy as np
+    ... except:
+    ...     import AutoDiff.AD_numpy as np
     >>> a = Variable('a', 0)
     >>> x = np.sin(a)
     >>> x.val
@@ -308,8 +350,14 @@ def cos(x):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
+    >>> try:
+    ...     from variables import Variable
+    ... except:
+    ...     from AutoDiff.variables import Variable
+    >>> try:
+    ...     import AD_numpy as np
+    ... except:
+    ...     import AutoDiff.AD_numpy as np
     >>> a = Variable('a', 0)
     >>> x = np.cos(a)
     >>> x.val
@@ -346,8 +394,14 @@ def tan(x):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
+    >>> try:
+    ...     from variables import Variable
+    ... except:
+    ...     from AutoDiff.variables import Variable
+    >>> try:
+    ...     import AD_numpy as np
+    ... except:
+    ...     import AutoDiff.AD_numpy as np
     >>> a = Variable('a', 0)
     >>> x = np.tan(a)
     >>> x.val
@@ -387,8 +441,14 @@ def arcsin(x):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
+    >>> try:
+    ...     from variables import Variable
+    ... except:
+    ...     from AutoDiff.variables import Variable
+    >>> try:
+    ...     import AD_numpy as np
+    ... except:
+    ...     import AutoDiff.AD_numpy as np
     >>> a = Variable('a', 0)
     >>> x = np.arcsin(a)
     >>> x.val
@@ -433,8 +493,14 @@ def arccos(x):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
+    >>> try:
+    ...     from variables import Variable
+    ... except:
+    ...     from AutoDiff.variables import Variable
+    >>> try:
+    ...     import AD_numpy as np
+    ... except:
+    ...     import AutoDiff.AD_numpy as np
     >>> a = Variable('a', 0)
     >>> x = np.arccos(a)
     >>> x.val
@@ -476,8 +542,14 @@ def arctan(x):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
+    >>> try:
+    ...     from variables import Variable
+    ... except:
+    ...     from AutoDiff.variables import Variable
+    >>> try:
+    ...     import AD_numpy as np
+    ... except:
+    ...     import AutoDiff.AD_numpy as np
     >>> a = Variable('a', 0)
     >>> x = np.arctan(a)
     >>> x.val
@@ -515,8 +587,14 @@ def sinh(x):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
+    >>> try:
+    ...     from variables import Variable
+    ... except:
+    ...     from AutoDiff.variables import Variable
+    >>> try:
+    ...     import AD_numpy as np
+    ... except:
+    ...     import AutoDiff.AD_numpy as np
     >>> a = Variable('a', 1)
     >>> x = np.sinh(a)
     >>> x.val
@@ -554,8 +632,14 @@ def cosh(x):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
+    >>> try:
+    ...     from variables import Variable
+    ... except:
+    ...     from AutoDiff.variables import Variable
+    >>> try:
+    ...     import AD_numpy as np
+    ... except:
+    ...     import AutoDiff.AD_numpy as np
     >>> a = Variable('a', 1)
     >>> x = np.cosh(a)
     >>> x.val
@@ -593,8 +677,14 @@ def tanh(x):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
+    >>> try:
+    ...     from variables import Variable
+    ... except:
+    ...     from AutoDiff.variables import Variable
+    >>> try:
+    ...     import AD_numpy as np
+    ... except:
+    ...     import AutoDiff.AD_numpy as np
     >>> a = Variable('a', 1)
     >>> x = np.tanh(a)
     >>> x.val
@@ -631,8 +721,14 @@ def arcsinh(x):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
+    >>> try:
+    ...     from variables import Variable
+    ... except:
+    ...     from AutoDiff.variables import Variable
+    >>> try:
+    ...     import AD_numpy as np
+    ... except:
+    ...     import AutoDiff.AD_numpy as np
     >>> a = Variable('a', 1)
     >>> x = np.arcsinh(a)
     >>> x.val
@@ -672,8 +768,14 @@ def arccosh(x):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
+    >>> try:
+    ...     from variables import Variable
+    ... except:
+    ...     from AutoDiff.variables import Variable
+    >>> try:
+    ...     import AD_numpy as np
+    ... except:
+    ...     import AutoDiff.AD_numpy as np
     >>> a = Variable('a', 2)
     >>> x = np.arccosh(a)
     >>> x.val
@@ -716,8 +818,14 @@ def arctanh(x):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
+    >>> try:
+    ...     from variables import Variable
+    ... except:
+    ...     from AutoDiff.variables import Variable
+    >>> try:
+    ...     import AD_numpy as np
+    ... except:
+    ...     import AutoDiff.AD_numpy as np
     >>> a = Variable('a', 0)
     >>> x = np.arctanh(a)
     >>> x.val
@@ -760,8 +868,14 @@ def exp(x):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
+    >>> try:
+    ...     from variables import Variable
+    ... except:
+    ...     from AutoDiff.variables import Variable
+    >>> try:
+    ...     import AD_numpy as np
+    ... except:
+    ...     import AutoDiff.AD_numpy as np
     >>> a = Variable('a', 0)
     >>> x = np.exp(a)
     >>> x.val
@@ -800,8 +914,14 @@ def log(x):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
+    >>> try:
+    ...     from variables import Variable
+    ... except:
+    ...     from AutoDiff.variables import Variable
+    >>> try:
+    ...     import AD_numpy as np
+    ... except:
+    ...     import AutoDiff.AD_numpy as np
     >>> a = Variable('a', 1)
     >>> x = np.log(a)
     >>> x.val
@@ -842,8 +962,14 @@ def exp2(x):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
+    >>> try:
+    ...     from variables import Variable
+    ... except:
+    ...     from AutoDiff.variables import Variable
+    >>> try:
+    ...     import AD_numpy as np
+    ... except:
+    ...     import AutoDiff.AD_numpy as np
     >>> a = Variable('a', 1)
     >>> x = np.exp2(a)
     >>> x.val
@@ -883,8 +1009,14 @@ def log10(x):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
+    >>> try:
+    ...     from variables import Variable
+    ... except:
+    ...     from AutoDiff.variables import Variable
+    >>> try:
+    ...     import AD_numpy as np
+    ... except:
+    ...     import AutoDiff.AD_numpy as np
     >>> a = Variable('a', 1)
     >>> x = np.log10(a)
     >>> x.val
@@ -928,8 +1060,14 @@ def log2(x):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
+    >>> try:
+    ...     from variables import Variable
+    ... except:
+    ...     from AutoDiff.variables import Variable
+    >>> try:
+    ...     import AD_numpy as np
+    ... except:
+    ...     import AutoDiff.AD_numpy as np
     >>> a = Variable('a', 1)
     >>> x = np.log2(a)
     >>> x.val
@@ -973,8 +1111,14 @@ def sqrt(x):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
-    >>> import AD_numpy as np
+    >>> try:
+    ...     from variables import Variable
+    ... except:
+    ...     from AutoDiff.variables import Variable
+    >>> try:
+    ...     import AD_numpy as np
+    ... except:
+    ...     import AutoDiff.AD_numpy as np
     >>> a = Variable('a', 1)
     >>> x = np.sqrt(a)
     >>> x.val

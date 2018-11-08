@@ -33,7 +33,10 @@ def user_function(fn, fn_der):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
+    >>> try:
+    ...     from variables import Variable
+    ... except:
+    ...     from AutoDiff.variables import Variable
     >>> import numpy as np
     >>> sec = lambda x: 1/np.cos(x)
     >>> sec_der = lambda x: sec(x)*np.tan(x)

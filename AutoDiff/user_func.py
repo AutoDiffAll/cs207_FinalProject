@@ -37,6 +37,10 @@ def user_function(fn, fn_der):
     ...     from variables import Variable
     ... except:
     ...     from AutoDiff.variables import Variable
+    >>> try:
+    ...     from user_func import user_function
+    ... except:
+    ...     from AutoDiff.user_func import user_function
     >>> import numpy as np
     >>> sec = lambda x: 1/np.cos(x)
     >>> sec_der = lambda x: sec(x)*np.tan(x)
@@ -50,7 +54,7 @@ def user_function(fn, fn_der):
     """
     def AD_fn(x):
         try:
-            return variable(fn(x.val), {k:v*fn_der(x.val) for (k,v) in x.der.items()})
+            return Variable(fn(x.val), {k:v*fn_der(x.val) for (k,v) in x.der.items()})
         except AttributeError:
             return fn(x)
     return AD_fn

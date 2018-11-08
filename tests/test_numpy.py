@@ -207,19 +207,19 @@ def test_variable_scalar_pow():
 
     # case 2:
     f2 = anp.power(x,0)
-    f2 = x**0
-    assert (f2==1)
-    # notice 0**0 not define, should throws error
-    f3 = anp.power(z,0)
-    assert(f3==1)
+    assert (f2.val == 1)
+    assert (f2.jacobian() == {'x': 0})
 
-    with pytest.raises(ValueError):
-        f4 = anp.power(z,-2)
+    # notice 0**0 not define, should throws error
+    with pytest.raises(ZeroDivisionError):
+        f3 = anp.power(z,0)
+
+    with pytest.raises(ZeroDivisionError):
+        f4 = z**(-2)
 
     # case 3:
     f3 = anp.power(2*x,1/2)
     assert (f3.val == 2)
-    print(f3.jacobian())
     assert (f3.jacobian() == {'x': 0.5})
     assert (f3.partial_der(x) == 0.5)
     assert (f3.partial_der(y) == 0)

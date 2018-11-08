@@ -1,37 +1,48 @@
 import numpy as np
-class Variable(object):    
+class Variable(object):
     def __init__(self, name, val, der = None, primitive = True):
         self.val = val
         if primitive:
-            self.name = name 
+            self.name = name
             self.der = {name : 1}
-            
+
         else:
             self.name = name
             self.der = der
 
     def __repr__(self):
+        """
+        EXAMPLES
+        =========
+        >>> try:
+        ...     from variables import Variable
+        ... except:
+        ...     from AutoDiff.variables import Variable
+        >>> a = Variable('a', 2)
+        >>> a
+        Variable name: a, Value: 2, Derivatives: {'a': 1}
+        """
         return ("Variable name: {}, Value: {}, Derivatives: {}"
                 .format(self.name, self.val, self.der)
                 )
 
     def partial_der(self, dep_var):
         """Returns partial derivative of a variable w.r.t. another variable.
-        
+
         INPUTS
         =======
         dep_var: Variable
-        
+
         RETURNS
         ========
         value: numeric, element-wise for lists, arrays, or similar structures
-        
+
         NOTES
         =====
         POST:
             - if this variable is not a function of dep_var, return 0
             - if dep_var is not a variable, raise AttributeError
-        
+
         EXAMPLES
         =========
         >>> try:
@@ -42,6 +53,9 @@ class Variable(object):
         >>> x = 4*a
         >>> x.partial_der(a)
         4
+        >>> b = 3
+        >>> x.partial_der(b)
+        input is not a Variable
         """
         try:
             return self.der.get(dep_var.name,0)
@@ -50,17 +64,17 @@ class Variable(object):
 
     def jacobian(self):
         """Returns jacobian of variable
-        
-        
+
+
         RETURNS
         ========
         value: dict
-        
+
         NOTES
         =====
         POST:
             - returns jacobian as a dictionary where keys are dependent variable
-        
+
         EXAMPLES
         =========
         >>> try:
@@ -94,16 +108,16 @@ class Variable(object):
         # when other is not an instance of Variable. Ex) derivative(x*6) -> 6
         except AttributeError:
             return Variable('f({})'.format(self.name), self.val + other, der1, False)
-    __radd__ = __add__ 
-    
+    __radd__ = __add__
+
     def __sub__(self, other):
         other = -other
         return self+other
-    
+
     def __rsub__(self, other):
         var = -self
         return var+other
-        
+
     def __mul__(self, other):
         der1=self.der
         # when other is an instance of Variable. Ex) derivative(x*y) -> (y, x)
@@ -116,7 +130,7 @@ class Variable(object):
         except AttributeError:
             der={x: other * der1.get(x, 0) for x in set(der1)}
             return Variable('f({})'.format(self.name), self.val * other, der, False)
-    __rmul__ = __mul__ 
+    __rmul__ = __mul__
 
     # a function for left division
     def __truediv__(self, other):
@@ -125,7 +139,7 @@ class Variable(object):
         try:
             der2 = other.der
             der={x: 1/other.val * der1.get(x, 0) - self.val/other.val**2*der2.get(x,0) for x in set(der1).union(der2)}
-            return Variable('f({},{})'.format(self.name, other.name), 
+            return Variable('f({},{})'.format(self.name, other.name),
                             self.val / other.val, der, False)
         # when other is not an instance of Variable. Ex) derivative(x/6) -> 1/6
         except:
@@ -149,7 +163,7 @@ class Variable(object):
                 new_der[k] = partial_self + partial_other
             new_name = "f({},{})".format(self.name, other.name)
             new_val = self.val**other.val
-            return Variable(new_name, new_val, new_der, False)      
+            return Variable(new_name, new_val, new_der, False)
         except AttributeError:
             new_der = {}
             for k in self.der:
@@ -157,8 +171,8 @@ class Variable(object):
             new_name = "f({})".format(self.name)
             new_val = self.val**other
             return Variable(new_name, new_val, new_der, False)
-            
-            
+
+
     def __rpow__(self, other):
         new_der = {}
         for k in self.der:
@@ -166,9 +180,9 @@ class Variable(object):
         new_name = "f({})".format(self.name)
         new_val = other**self.val
         return Variable(new_name, new_val, new_der, False)
-    
 
-    
+
+
 
 
 

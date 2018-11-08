@@ -51,6 +51,8 @@ def user_function(fn, fn_der):
     -2.402997961722381
     >>> x.der
     {'a': 5.25064633769958}
+    >>> ad_sec(2)
+    -2.402997961722381
     """
     def AD_fn(x):
         try:

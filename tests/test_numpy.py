@@ -5,7 +5,7 @@ import sys
 import os
 sys.path.append('../AutoDiff')
 from variables import Variable
-import numpy as anp
+import AD_numpy as anp
 
 def test_numpy_scalar_add_minus():
       # case 0: build variables

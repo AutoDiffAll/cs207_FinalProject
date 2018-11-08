@@ -34,7 +34,10 @@ class Variable(object):
         
         EXAMPLES
         =========
-        >>> from variables import Variable
+        >>> try:
+    ...         from variables import Variable
+    ...     except:
+    ...         from AutoDiff.variables import Variable
         >>> a = Variable('a', 2)
         >>> x = 4*a
         >>> x.partial_der(a)
@@ -60,7 +63,10 @@ class Variable(object):
         
         EXAMPLES
         =========
-        >>> from variables import Variable
+        >>> try:
+    ...         from variables import Variable
+    ...     except:
+    ...         from AutoDiff.variables import Variable
         >>> a = Variable('a', 2)
         >>> b = Variable('b', 3)
         >>> x = a*b

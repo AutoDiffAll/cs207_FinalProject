@@ -1,4 +1,5 @@
-from variables import variable
+import cs207_FinalProject.AutoDiff as AD
+from AD.variables import Variable
 
 def user_function(fn, fn_der):
     """Given a function and its derivative, returns an original function that

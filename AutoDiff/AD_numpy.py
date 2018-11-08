@@ -2,7 +2,8 @@
 # functions should be able to handle inputs of Variable and regular python
 # numbers
 import numpy as np
-from variables import Variable
+import AutoDiff as AD
+from AD.variables import Variable
 
 # arithmetic
 def add(x, y):

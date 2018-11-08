@@ -197,27 +197,7 @@ def power(x, y):
     >>> x.der
     {'a': 12.0, 'b': 5.545177444479562}
     """
-    try:
-        # calculate new derivative
-        new_der = {k: x.der.get(k, 0)*y.val*np.power(x.val, y.val-1) + y.der.get(k, 0)*np.log(x.val)*np.power(x.val, y.val) for k in set(x.der).union(y.der)}
-
-        new_name = "f({},{})".format(x.name, y.name)
-        new_val = np.power(x.val, y.val)
-
-        return Variable(new_name, new_val, new_der, False)
-    except AttributeError:
-        # only x is variable
-        if isinstance(x, Variable):
-            if y == 0:
-                return 1
-            else:
-                return Variable(x.name, np.power(x.val, y), {k:v*y*np.power(x.val, y-1) for (k,v) in x.der.items()}, False)
-        # only y is variable
-        elif isinstance(y, Variable):
-            return Variable(y.name, np.power(x, y.val) ,{k:v*np.log(x)*np.power(x, y.val) for (k,v) in y.der.items()}, False)
-        # both not variable
-        else:
-            return np.power(x, y)
+    return x**y
 
 def subtract(x, y):
     """Returns difference of two values x and y, can be used to subtract Variable instances

@@ -1,0 +1,14 @@
+README.md
+setup.cfg
+setup.py
+AutoDiff/AD_numpy.py
+AutoDiff/__init__.py
+AutoDiff/user_func.py
+AutoDiff/variables.py
+autoder.egg-info/PKG-INFO
+autoder.egg-info/SOURCES.txt
+autoder.egg-info/dependency_links.txt
+autoder.egg-info/top_level.txt
+tests/__init__.py
+tests/test_numpy.py
+tests/test_variables.py

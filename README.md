@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/AutoDiffAll/cs207_FinalProject.svg?branch=master)](https://travis-ci.org/AutoDiffAll/cs207_FinalProject)
 
-[![Coverage Status](https://coveralls.io/repos/github/AutoDiffAll/cs207_FinalProject/badge.svg?branch=master)](https://coveralls.io/github/AutoDiffAll/cs207_FinalProject?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/AutoDiffAll/cs207_FinalProject/badge.svg?branch=master&service=github)](https://coveralls.io/github/AutoDiffAll/cs207_FinalProject?branch=master&service=github)
 
 Final Project to create a general Auto Differentiation Class
 

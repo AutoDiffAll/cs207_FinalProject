@@ -1,4 +1,6 @@
 language: python
+xcode_project: AutoDiff
+xcode_scheme: tests
 python:
     - "3.6"
 before_install:

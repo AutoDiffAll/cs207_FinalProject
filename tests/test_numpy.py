@@ -184,15 +184,16 @@ def test_numpy_scalar_sin_cos():
     z = Variable('z', 0)
     a = Variable('a',np.pi/2)
 
-    f1=cos(a)
-    assert(f1.val==0)
+    f1=anp.cos(a)
+    assert(abs(f1.val-0)<=1e-16)
     assert(f1.jacobian()=={'a':-1})
-    f2=cos(x)
-    assert(f2.val==np.sqrt(2)/2)
-    assert(f2.jacobian() == {'x': -np.sqrt(2)/2})
-    f3=sin(y)
-    assert(f3.val == np.sqrt(2)/2)
-    assert(f3.jacobian() == {'x': -np.sqrt(2)/2})
+
+    f2=anp.cos(x)
+    assert(abs(f2.val-(np.sqrt(2)/2))<=1e-5)
+    assert(abs(f2.partial_der(x) +np.sqrt(2)/2)<=1e-5)
+    f3=anp.sin(y)
+    assert(abs(f3.val+(np.sqrt(2)/2))<=1e-5)
+    assert(abs(f3.partial_der(y) - np.sqrt(2)/2) <= 1e-5)
 
 
 
@@ -247,3 +248,4 @@ def test_variable_scalar_pow():
 test_numpy_scalar_add_minus()
 test_numpy_scalar_multiple_divide()
 test_variable_scalar_pow()
+test_numpy_scalar_sin_cos()

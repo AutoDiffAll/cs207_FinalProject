@@ -1,11 +1,12 @@
 language: python
 python:
     - "3.6"
-env:
-    PYTHONPATH=$PYTHONPATH:$TRAVIS_BUILD_DIR/tests:$TRAVIS_BUILD_DIR/cs207_FinalProject/AutoDiff
 before_install:
     - pip install pytest pytest-cov
     - pip install coveralls
+install:
+  - export PYTHONPATH=$PYTHONPATH:$(pwd)/src/thermo
+  - python3 setup.py install
 script:
     - py.test
 after_success:

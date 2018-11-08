@@ -190,10 +190,10 @@ def test_numpy_scalar_sin_cos():
 
     f2=anp.cos(x)
     assert(abs(f2.val-(np.sqrt(2)/2))<=1e-5)
-    assert(f2.jacobian() == {'x': -np.sqrt(2)/2})
+    assert(abs(f2.partial_der(x) +np.sqrt(2)/2)<=1e-5)
     f3=anp.sin(y)
     assert(abs(f3.val+(np.sqrt(2)/2))<=1e-5)
-    assert(f3.jacobian() == {'y': np.sqrt(2)/2})
+    assert(abs(f3.partial_der(y) - np.sqrt(2)/2) <= 1e-5)
 
 
 

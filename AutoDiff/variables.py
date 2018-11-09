@@ -85,7 +85,7 @@ class Variable(object):
         >>> b = Variable('b', 3)
         >>> x = a*b
         >>> x.jacobian()
-        {'a': 3, 'b': 2}
+        {'b': 2, 'a': 3}
         """
         return self.der
 

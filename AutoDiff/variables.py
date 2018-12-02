@@ -81,10 +81,11 @@ class Variable(object):
         ...     from variables import Variable
         ... except:
         ...     from AutoDiff.variables import Variable
+        >>> import pprint
         >>> a = Variable('a', 2)
         >>> b = Variable('b', 3)
         >>> x = a*b
-        >>> x.jacobian()
+        >>> pprint.pprint(x.jacobian())
         {'a': 3, 'b': 2}
         """
         return self.der

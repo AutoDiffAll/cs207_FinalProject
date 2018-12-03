@@ -1,0 +1,72 @@
+try:
+    from variables import Variable
+except:
+    from AutoDiff.variables import Variable
+# minimizer
+
+
+def minimize(fun, x0, args=(), method=None):
+    """Minimization of scalar or vector function of scalar or vector variables.
+
+    INPUTS
+    =======
+    fun: callable object. The opjective function to be minimized.
+    x0: variable inputs or normal value tuple. Initial guess.
+    args: tuple (optional). Extra arguments passed to the opjective function.
+    method: string (optional). Type of different optimizer. Should be one of
+
+        - 'Newton Method'               :ref:`(see here) <optimizer.min_newton>`
+        - 'BFGS'                        :ref:`(see here) <optimizer.min_BFGS>`
+        - 'Stochastic Gradient Descend' :ref:`(see here) <optimizer.min_SGD>`
+        - 'Gradient Descend'            :ref:`(see here) <optimizer.min_gradientdescend>`
+        \\ To add
+        If not specified, it will automatically choose 'Newton Method'.
+    
+
+
+    RETURNS
+    ========
+    res: OptimizationResult. Maybe a Variable or a normal value tuple, depends on the input object.
+
+    NOTES
+    =====
+    PRE:
+         - fun is normal function.
+         - x0 are initial guess of the results
+
+    POST:
+         - fun and x0 are not changed by this function
+         - if initial guess x0 is a Variable instance, 
+         returns a new Variable instance
+         - if x0 is numeric, returns numeric
+
+    EXAMPLES
+    =========
+    >>> try:
+    ...     from variables import Variable
+    ... except:
+    ...     from AutoDiff.variables import Variable
+    >>> try:
+    ...     from Optimizer import minimize
+    ... except:
+    ...     from AutoDiff.Optimizer import minimize
+    >>> a = Variable('a', 2)
+    >>> myfunc = lambda x: x**2
+    >>> res=minimize(myfunc,a)
+    >>> res.val
+    0
+    """
+    pass
+
+def min_SGD():
+    pass
+
+def min_newton():
+    pass
+
+def min_SGD():
+    pass
+
+def min_BFGS():
+    pass
+

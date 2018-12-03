@@ -126,14 +126,14 @@ def findroot(fun, x0, args=(), method=None):
     """
     pass
 
-    def root_BFGS():
-        pass
-    
-    def root_gradientdescend():
-        pass
-    
-    def root_newton():
-        pass
-    
-    def root_SGD():
-        pass
+def root_BFGS():
+    pass
+
+def root_gradientdescend():
+    pass
+
+def root_newton():
+    pass
+
+def root_SGD():
+    pass

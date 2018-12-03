@@ -7,6 +7,9 @@ except:
 
 class vector_Variable(object):
     def __init__(self, variable_vec):
+        
+        # should convert to array?
+        variable_vec = np.array(variable_vec)
 
         # check that it is not single variable
         if isinstance(variable_vec, Variable):

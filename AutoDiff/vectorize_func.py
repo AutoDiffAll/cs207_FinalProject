@@ -27,7 +27,7 @@ def vectorize_variable(fn):
     >>> try:
     ...     from vectorize_func import vectorize_Variable
     ... except:
-    ...     from AutoDiff.vectorize_fun import vectorize_Variable
+    ...     from AutoDiff.vectorize_func import vectorize_Variable
     >>> try:
     ...     import AD_numpy as anp
     ... except:

@@ -2,7 +2,29 @@ try:
     from variables import Variable
 except:
     from AutoDiff.variables import Variable
-# minimizer
+
+
+class Result:
+    def __init__(self, x, step_rec, val_rec, time, true_value=None):
+        """Record the optimization results and performance
+
+        INPUTS
+        =======
+        x: optimization value, can be either Variable or value. //Or just store the value, since there is no need for its derivatives
+        step_rec: stores the iteration steps, save for plotting the accuracy results.
+        val_rec: stores the value of each iteration, save for plotting the optimization paths.
+        time: stores the total time for converging.
+        true_value: if it is not None, then we can calculate the accuracy rate of each iteration results, and plot the error rate plots.
+        """
+        self.x = x
+        self.step_rec = step_rec
+        self.val_rec = val_rec
+        self.time = time
+        self.acc_rec=None
+
+        if true_value:
+            self.acc_rec=self.val_rec-true_value
+        
 
 
 def minimize(fun, x0, args=(), method=None):
@@ -21,7 +43,7 @@ def minimize(fun, x0, args=(), method=None):
         - 'Gradient Descend'            :ref:`(see here) <optimizer.min_gradientdescend>`
         \\ To add
         If not specified, it will automatically choose 'Newton Method'.
-    
+
 
 
     RETURNS
@@ -53,19 +75,23 @@ def minimize(fun, x0, args=(), method=None):
     >>> a = Variable('a', 2)
     >>> myfunc = lambda x: x**2
     >>> res=minimize(myfunc,a)
-    >>> res.val
+    >>> res.x.val # Remeber to change this to res.x if we finally decides store x as numerical value!!!!!!!!
     0
     """
     pass
 
+
 def min_SGD():
     pass
+
 
 def min_newton():
     pass
 
+
 def min_gradientdescend():
     pass
+
 
 def min_BFGS():
     pass
@@ -89,7 +115,7 @@ def findroot(fun, x0, args=(), method=None):
         - 'Gradient Descend'            :ref:`(see here) <optimizer.root_gradientdescend>`
         \\ To add
         If not specified, it will automatically choose 'Newton Method'.
-    
+
 
 
     RETURNS
@@ -121,19 +147,23 @@ def findroot(fun, x0, args=(), method=None):
     >>> a = Variable('a', 2)
     >>> myfunc = lambda x: x**2
     >>> res=findroot(myfunc,a)
-    >>> res.val
+    >>> res.x.val # Remeber to change this to res.x if we finally decides store x as numerical value!!!!!!!!
     0
     """
     pass
 
+
 def root_BFGS():
     pass
+
 
 def root_gradientdescend():
     pass
 
+
 def root_newton():
     pass
+
 
 def root_SGD():
     pass

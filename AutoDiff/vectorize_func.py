@@ -25,23 +25,23 @@ def vectorize_variable(fn):
     ... except:
     ...     from AutoDiff.variables import Variable
     >>> try:
-    ...     from vectorize_func import vectorize_Variable
+    ...     from vectorize_func import vectorize_variable
     ... except:
-    ...     from AutoDiff.vectorize_func import vectorize_Variable
+    ...     from AutoDiff.vectorize_func import vectorize_variable
     >>> try:
     ...     import AD_numpy as anp
     ... except:
     ...     import AutoDiff.AD_numpy as anp
-    >>> @vectorize_Variable
+    >>> @vectorize_variable
     >>> def vec_fn(x, y, z):
     ...     f1 = x * y + anp.sin(y) + anp.cos(z)
     ...     f2 = x + y + anp.sin(x*y)
-    ...     return np.array([f1,f2])
+    ...     return [f1,f2]
     >>> a = Variable('a', 3)
     >>> b = Variable('b', 1)
     >>> c = Variable('c', 2)
     >>> f = vec_fn(a, b, c)
-    >>> f.jacobian()
+    >>> f.jacobian().values
     array([[ 1.        ,  3.54030231, -0.90929743],
            [ 0.0100075 , -1.96997749,  0.        ]])
     >>> f.val

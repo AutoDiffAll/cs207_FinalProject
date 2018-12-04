@@ -5,8 +5,10 @@ class Variable(object):
         self.val = val
         if primitive:
             self.name = name
-            self.der = {name : 1}
-
+            try:
+                self.der = {name : np.ones(val.shape)}
+            except AttributeError:
+                self.der = {name : 1}
         else:
             self.name = name
             self.der = der
@@ -23,7 +25,7 @@ class Variable(object):
         >>> a
         Variable name: a, Value: 2, Derivatives: {'a': 1}
         """
-        return ("Variable name: {}, Value: {}, Derivatives: {}"
+        return ("Variable name:\n{}\nValue:\n{}\nDerivatives:\n{}"
                 .format(self.name, self.val, self.der)
                 )
 

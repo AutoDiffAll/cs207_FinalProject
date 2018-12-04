@@ -240,10 +240,21 @@ def binary_user_function(fn, fn_der_x1, fn_der_x2):
         x1_val, x2_val, der1, der2 = _unpack_vars(x1, x2)
         dep_vars = set(der1).union(der2)
         #calculate derivative
-        der={dep_var:
-            fn_der_x1(x1_val,x2_val) * der1.get(dep_var, 0) + fn_der_x2(x1_val,x2_val) * der2.get(dep_var, 0) # chain rule
-            for dep_var in dep_vars
-        }
+        der = {}
+        for dep_var in dep_vars:
+            # df/dx1*dx1/dy
+            dep_var_der1 = der1.get(dep_var, 0)
+            if dep_var_der1 != 0:
+                partial_x1 = fn_der_x1(x1_val,x2_val) * dep_var_der1
+            else:
+                partial_x1 = 0
+            # df/dx2*dx2/dy
+            dep_var_der2 = der2.get(dep_var, 0)
+            if dep_var_der2 != 0:
+                partial_x2 = fn_der_x2(x1_val,x2_val) * dep_var_der2
+            else:
+                partial_x2 = 0
+            der[dep_var] = partial_x1 + partial_x2
         # get function name
         name = 'f('+','.join(der.keys())+')'
         # return new variable

@@ -3,9 +3,9 @@
 # numbers
 import numpy as np
 try:
-    from variables import Variable
+    from variables import Variable, unary_user_function
 except:
-    from AutoDiff.variables import Variable
+    from AutoDiff.variables import Variable, unary_user_function
 
 # arithmetic
 def add(x, y):
@@ -322,10 +322,7 @@ def sin(x):
     >>> np.sin(0)
     0.0
     """
-    try:
-        return Variable(x.name, np.sin(x.val), {k:v*np.cos(x.val) for (k,v) in x.der.items()}, False)
-    except AttributeError:
-        return np.sin(x)
+    return unary_user_function(lambda x: np.sin(x), lambda x: np.cos(x))(x)
 
 def cos(x):
     """Returns trigonometric cos of x, can be used to calculate cos of
@@ -369,10 +366,7 @@ def cos(x):
     >>> np.cos(0)
     1.0
     """
-    try:
-        return Variable(x.name, np.cos(x.val), {k:-v*np.sin(x.val) for (k,v) in x.der.items()}, False)
-    except AttributeError:
-        return np.cos(x)
+    return unary_user_function(lambda x: np.cos(x), lambda x: -np.sin(x))(x)
 
 def tan(x):
     """Returns trigonometric tan of x, can be used to calculate tan of
@@ -415,10 +409,7 @@ def tan(x):
     >>> np.tan(0)
     0.0
     """
-    try:
-        return Variable(x.name, np.tan(x.val), {k:v/(np.cos(x.val)**2) for (k,v) in x.der.items()}, False)
-    except AttributeError:
-        return np.tan(x)
+    return unary_user_function(lambda x: np.tan(x), lambda x: 1/np.cos(x)**2)(x)
 
 def arcsin(x):
     """Returns trigonometric arcsin of x, can be used to calculate arcsin of
@@ -475,15 +466,8 @@ def arcsin(x):
     ...     print(e)
     math domain error
     """
-
-    try:
-        if x.val < -1 or x.val > 1:
-            raise ValueError('math domain error')
-        return Variable(x.name, np.arcsin(x.val), {k:v/np.sqrt(1-x.val**2) for (k,v) in x.der.items()}, False)
-    except AttributeError:
-        if x < -1 or x > 1:
-            raise ValueError('math domain error')
-        return np.arcsin(x)
+    _check_input(x, lower = -1, upper = 1)
+    return  unary_user_function(lambda x: np.arcsin(x), lambda x: 1/np.sqrt(1-x**2))(x)
 
 def arccos(x):
     """Returns trigonometric arccos of x, can be used to calculate arccos of
@@ -540,14 +524,8 @@ def arccos(x):
     ...     print(e)
     math domain error
     """
-    try:
-        if x.val < -1 or x.val > 1:
-            raise ValueError('math domain error')
-        return Variable(x.name, np.arccos(x.val), {k:-v/np.sqrt(1-x.val**2) for (k,v) in x.der.items()}, False)
-    except AttributeError:
-        if x < -1 or x > 1:
-            raise ValueError('math domain error')
-        return np.arccos(x)
+    _check_input(x, lower = -1, upper = 1)
+    return unary_user_function(lambda x: np.arccos(x), lambda x: -1/np.sqrt(1-x**2))(x)
 
 def arctan(x):
     """Returns trigonometric arctan of x, can be used to calculate arctan of
@@ -591,10 +569,7 @@ def arctan(x):
     >>> np.arctan(0)
     0.0
     """
-    try:
-        return Variable(x.name, np.arctan(x.val), {k:v/(1+x.val**2) for (k,v) in x.der.items()}, False)
-    except AttributeError:
-        return np.arctan(x)
+    return unary_user_function(lambda x: np.arctan(x), lambda x: 1.0/(1+x**2))(x)
 
 # hyperbolic functions
 def sinh(x):
@@ -638,10 +613,7 @@ def sinh(x):
     >>> np.sinh(0)
     0.0
     """
-    try:
-        return Variable(x.name, np.sinh(x.val), {k:v*np.cosh(x.val) for (k,v) in x.der.items()}, False)
-    except AttributeError:
-        return np.sinh(x)
+    return unary_user_function(lambda x: np.sinh(x), lambda x: np.cosh(x))(x)
 
 def cosh(x):
     """Returns hyberbolic cosh of x, can be used to calculate cosh of
@@ -685,10 +657,7 @@ def cosh(x):
     >>> np.cosh(0)
     1.0
     """
-    try:
-        return Variable(x.name, np.cosh(x.val), {k:v*np.sinh(x.val) for (k,v) in x.der.items()}, False)
-    except AttributeError:
-        return np.cosh(x)
+    return unary_user_function(lambda x: np.cosh(x), lambda x: np.sinh(x))(x)
 
 def tanh(x):
     """Returns hyberbolic tanh of x, can be used to calculate tanh of
@@ -732,10 +701,7 @@ def tanh(x):
     >>> np.tanh(0)
     0.0
     """
-    try:
-        return Variable(x.name, np.tanh(x.val), {k:v/(np.cosh(x.val)**2) for (k,v) in x.der.items()}, False)
-    except AttributeError:
-        return np.tanh(x)
+    return unary_user_function(lambda x: np.tanh(x), lambda x: 1/np.cosh(x)**2)(x)
 
 def arcsinh(x):
     """Returns hyberbolic inverse arcsinh of x, can be used to calculate
@@ -778,10 +744,7 @@ def arcsinh(x):
     >>> np.arcsinh(0)
     0.0
     """
-    try:
-        return Variable(x.name, np.arcsinh(x.val), {k:v/np.sqrt(1+x.val**2) for (k,v) in x.der.items()}, False)
-    except AttributeError:
-        return np.arcsinh(x)
+    return unary_user_function(lambda x: np.arcsinh(x), lambda x: 1/np.sqrt(x**2+1))(x)
 
 def arccosh(x):
     """Returns hyberbolic inverse arccosh of x, can be used to calculate
@@ -838,15 +801,8 @@ def arccosh(x):
     ...     print(e)
     math domain error
     """
-
-    try:
-        if x.val <= 1:
-            raise ValueError('math domain error')
-        return Variable(x.name, np.arccosh(x.val), {k:v/np.sqrt(x.val**2 - 1) for (k,v) in x.der.items()}, False)
-    except AttributeError:
-        if x < 1:
-            raise ValueError('math domain error')
-        return np.arccosh(x)
+    _check_input(x, lower = 1)
+    return unary_user_function(lambda x: np.arccosh(x), lambda x: 1/np.sqrt(x**2-1))(x)
 
 def arctanh(x):
     """Returns hyberbolic inverse arccosh of x, can be used to calculate
@@ -902,14 +858,8 @@ def arctanh(x):
     ...     print(e)
     math domain error
     """
-    try:
-        if x.val <= -1 or x.val >= 1:
-            raise ValueError('math domain error')
-        return Variable(x.name, np.arctanh(x.val), {k:v/(1 - x.val**2) for (k,v) in x.der.items()}, False)
-    except AttributeError:
-        if x <= -1 or x >= 1:
-            raise ValueError('math domain error')
-        return np.arctanh(x)
+    _check_input(x, lower = -1, upper = 1)
+    return unary_user_function(lambda x: np.arctanh(x), lambda x: 1.0/(1-x**2))(x)
 
 # exponentials and logarithms
 def exp(x):
@@ -954,10 +904,7 @@ def exp(x):
     >>> np.exp(0)
     1.0
     """
-    try:
-        return Variable(x.name, np.exp(x.val), {k:v*np.exp(x.val) for (k,v) in x.der.items()}, False)
-    except AttributeError:
-        return np.exp(x)
+    return unary_user_function(lambda x: np.exp(x), lambda x: np.exp(x))(x)
 
 def log(x):
     """Returns natural logarithm of x, can be used to calculate
@@ -1013,14 +960,8 @@ def log(x):
     ...     print(e)
     math domain error
     """
-    try:
-        if x.val <= 0:
-            raise ValueError('math domain error')
-        return Variable(x.name, np.log(x.val), {k:v/x.val for (k,v) in x.der.items()}, False)
-    except AttributeError:
-        if x <= 0:
-            raise ValueError('math domain error')
-        return np.log(x)
+    _check_input(x, lower = 0)
+    return unary_user_function(lambda x: np.log(x), lambda x: 1/x)(x)
 
 def exp2(x):
     """Returns 2 to the power of x, can be used to calculate
@@ -1063,10 +1004,7 @@ def exp2(x):
     >>> np.exp2(0)
     1.0
     """
-    try:
-        return Variable(x.name, np.exp2(x.val), {k:v*np.log(2)*np.exp2(x.val) for (k,v) in x.der.items()}, False)
-    except AttributeError:
-        return np.exp2(x)
+    return 2.0**x
 
 def log10(x):
     """Returns logarithm to the base 10 of x, can be used to calculate
@@ -1108,7 +1046,7 @@ def log10(x):
     >>> x.val
     0.0
     >>> x.der
-    {'a': 0.4342944819032518}
+    {'a': 0.43429448190325176}
     >>> b = Variable('b', -1)
     >>> try:
     ...     np.log10(b)
@@ -1123,14 +1061,8 @@ def log10(x):
     ...     print(e)
     math domain error
     """
-    try:
-        if x.val <= 0:
-            raise ValueError('math domain error')
-        return Variable(x.name, np.log10(x.val), {k:v*np.log10(np.exp(1))/x.val for (k,v) in x.der.items()}, False)
-    except AttributeError:
-        if x <= 0:
-            raise ValueError('math domain error')
-        return np.log10(x)
+    _check_input(x, lower = 0)
+    return unary_user_function(lambda x: np.log10(x), lambda x: 1/(x*np.log(10)))(x)
 
 def log2(x):
     """Returns logarithm to the base 2 of x, can be used to calculate
@@ -1187,14 +1119,8 @@ def log2(x):
     ...     print(e)
     math domain error
     """
-    try:
-        if x.val <= 0:
-            raise ValueError('math domain error')
-        return Variable(x.name, np.log2(x.val), {k:v*np.log2(np.exp(1))/x.val for (k,v) in x.der.items()}, False)
-    except AttributeError:
-        if x <= 0:
-            raise ValueError('math domain error')
-        return np.log2(x)
+    _check_input(x, lower = 0)
+    return unary_user_function(lambda x: np.log2(x), lambda x: 1/(x*np.log(2)))(x)
 
 # miscellaneous
 def sqrt(x):
@@ -1251,14 +1177,29 @@ def sqrt(x):
     ...     print(e)
     math domain error
     """
+    _check_input(x, lower = 0, lower_inclusive = True)
+    return unary_user_function(lambda x: np.sqrt(x), lambda x: 1/(2*sqrt(x)))(x)
+
+def _check_input(x, lower = None, upper = None, lower_inclusive = False, upper_inclusive = False):
     try:
-        if x.val < 0:
-            raise ValueError('math domain error')
-        return Variable(x.name, np.sqrt(x.val), {k:v*0.5/np.sqrt(x.val) for (k,v) in x.der.items()}, False)
+        val = x.val
     except AttributeError:
-        if x < 0:
-            raise ValueError('math domain error')
-        return np.sqrt(x)
+        val = x
+    if lower is not None:
+        if lower_inclusive:
+            if val <= lower:
+                raise ValueError('math domain error')
+        else:
+            if val < lower:
+                raise ValueError('math domain error')
+    if upper is not None:
+        if upper_inclusive:
+            if val >= upper:
+                raise ValueError('math domain error')
+        else:
+            if val > upper:
+                raise ValueError('math domain error')
+
 
 if __name__ == "__main__":
     import doctest

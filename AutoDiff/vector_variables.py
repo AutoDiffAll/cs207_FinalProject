@@ -87,3 +87,8 @@ class vector_Variable(object):
 
     def __neg__(self):
         return vector_Variable(np.negative(self.variables))
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()

@@ -33,7 +33,7 @@ def vectorize_variable(fn):
     ... except:
     ...     import AutoDiff.AD_numpy as anp
     >>> @vectorize_variable
-    >>> def vec_fn(x, y, z):
+    ... def vec_fn(x, y, z):
     ...     f1 = x * y + anp.sin(y) + anp.cos(z)
     ...     f2 = x + y + anp.sin(x*y)
     ...     return [f1,f2]
@@ -52,3 +52,8 @@ def vectorize_variable(fn):
 
         return vector_Variable(variable_vec)
     return fn_wrapper
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()

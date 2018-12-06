@@ -5,29 +5,24 @@ except:
 
 
 class Result:
-    def __init__(self, x, step_rec, val_rec, time, true_value=None):
+    def __init__(self, x, val_rec, time_rec, converge):
         """Record the optimization results and performance
 
         INPUTS
         =======
-        x: optimization value, can be either Variable or value. //Or just store the value, since there is no need for its derivatives
-        step_rec: stores the iteration steps, save for plotting the accuracy results.
-        val_rec: stores the value of each iteration, save for plotting the optimization paths.
-        time: stores the total time for converging.
-        true_value: if it is not None, then we can calculate the accuracy rate of each iteration results, and plot the error rate plots.
+        x array: optimization value, can be either Variable or value. //Or just store the value, since there is no need for its derivatives
+        val_rec array: stores the function inputs at each iteration, save for plotting the accuracy results.
+        time_rec array: stores the cumulative time at each iteration.
+        converge boolean: did the optimization procedure converge
         """
         self.x = x
-        self.step_rec = step_rec
         self.val_rec = val_rec
-        self.time = time
-        self.acc_rec=None
-
-        if true_value:
-            self.acc_rec=self.val_rec-true_value
-        
+        self.time_rec = time_rec
+        self.converge = converge
+        ## throw warning if not convergent
 
 
-def minimize(fun, x0, args=(), method=None):
+def minimize(fun, x0, method=None, **kwargs):
     """Minimization of scalar or vector function of scalar or vector variables.
 
     INPUTS
@@ -58,7 +53,7 @@ def minimize(fun, x0, args=(), method=None):
 
     POST:
          - fun and x0 are not changed by this function
-         - if initial guess x0 is a Variable instance, 
+         - if initial guess x0 is a Variable instance,
          returns a new Variable instance
          - if x0 is numeric, returns numeric
 
@@ -78,7 +73,10 @@ def minimize(fun, x0, args=(), method=None):
     >>> res.x.val # Remeber to change this to res.x if we finally decides store x as numerical value!!!!!!!!
     0
     """
-    pass
+    if method == "Newton Method":
+        result = min_newton(fun, x0, **kwargs)
+    # etc.
+    return result
 
 
 def min_SGD():
@@ -130,7 +128,7 @@ def findroot(fun, x0, args=(), method=None):
 
     POST:
          - fun and x0 are not changed by this function
-         - if initial guess x0 is a Variable instance, 
+         - if initial guess x0 is a Variable instance,
          returns a new Variable instance
          - if x0 is numeric, returns numeric
 

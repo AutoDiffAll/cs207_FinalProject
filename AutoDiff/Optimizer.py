@@ -98,7 +98,7 @@ def min_conjugate_gradient(fn, x0, precision, max_iter):
     x = np.array(x0)
     s = 0 # initialize as 0 works to ensure that s=g in 1st iteration
 
-    nums_iteration = 1
+    nums_iteration = 0
     val_rec = []
     time_rec = []
     init_time = time.time()

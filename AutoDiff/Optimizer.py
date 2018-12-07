@@ -79,8 +79,57 @@ def minimize(fun, x0, method=None, **kwargs):
     return result
 
 
-def min_SGD():
-    pass
+def min_conjugate_gradient(fn, x0, precision, max_iter):
+    # create initial variables
+    # right now we only test with the 26 alphabets
+    from string import ascii_lowercase
+    from scipy.optimize import minimize
+    import time
+    import numpy as np
+
+    name_ls = iter(ascii_lowercase)
+
+    # create initial variables
+    var_names = []
+    for i in x0:
+        name = next(name_ls)
+        var_names.append(name)
+
+    x = np.array(x0)
+    s = 0 # initialize as 0 works to ensure that s=g in 1st iteration
+
+    nums_iteration = 1
+    val_rec = []
+    time_rec = []
+    init_time = time.time()
+    while True:
+        # recreate new variables with new values
+        x_var = []
+        for i, v in enumerate(x):
+            x_var.append(Variable(var_names[i], v))
+
+        g = np.array([-fn(*x_var).der.get(i) for i in var_names])
+
+        # threshold stopping condition
+        # maximum norm
+        if max(abs(g)) < precision:
+            return Result(x, val_rec, time_rec, True)
+
+        beta = (g @ g) / (g @ g)
+        s = g + beta*s
+        argmin_fn = lambda alpha: fn(*[i + alpha*j for i, j in zip(x, s)])
+        alpha = minimize(argmin_fn, 0).x
+        x = x + alpha*s
+
+        # store history of values
+        val_rec.append(x)
+        time_rec.append(time.time()-init_time)
+
+
+        # iteration stopping condition
+        if nums_iteration >= max_iter:
+            return Result(x, val_rec, time_rec, False)
+        nums_iteration +=1
 
 
 def min_newton():

@@ -3,6 +3,11 @@ try:
 except:
     from AutoDiff.vector_variables import vector_Variable
 
+try:
+    from variables import Variable
+except:
+    from AutoDiff.variables import Variable
+
 def vectorize_variable(fn):
     """Given a vector function of variables, returns a function that
     wraps the original function to return a new vector_Variable class
@@ -49,6 +54,19 @@ def vectorize_variable(fn):
     """
     def fn_wrapper(*args):
         variable_vec = fn(*args)
+
+        # if every object in vector is just numeric
+        if all([isinstance(i, (int, float, complex)) for i in variable_vec]):
+            return variable_vec
+
+        # check that it is not single variable
+        if isinstance(variable_vec, Variable):
+            raise TypeError('Function is not a vector function!')
+
+        # check that every object in vector is a variable
+        # OR SHOULD WE ALLOW SUCH THAT NOT ALL OBJECT IS A VARIABLE?
+        if not all([isinstance(i, Variable) for i in variable_vec]):
+            raise TypeError('Every object in a vector function should be a Variable!')
 
         return vector_Variable(variable_vec)
     return fn_wrapper

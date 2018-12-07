@@ -7,22 +7,14 @@ except:
 
 class vector_Variable(object):
     def __init__(self, variable_vec):
-        
+
         # should convert to array?
         variable_vec = np.array(variable_vec)
 
-        # check that it is not single variable
-        if isinstance(variable_vec, Variable):
-            raise TypeError('Function is not a vector function!')
-
-        # check that every object in vector is a variable
-        # OR SHOULD WE ALLOW SUCH THAT NOT ALL OBJECT IS A VARIABLE?
-        if not all([isinstance(i, Variable) for i in variable_vec]):
-            raise TypeError('Every object in a vector function should be a Variable!')
-
         self.variables = variable_vec
         self.val = np.array([i.val for i in variable_vec])
-        self.der = pd.concat([pd.DataFrame(i.jacobian(), index=[i.name]) for i in variable_vec], sort=True).fillna(0)
+        self.der = pd.concat([pd.DataFrame(i.jacobian(), index=[i.name]) for i in variable_vec],
+         sort=True, ignore_index=True).fillna(0)
 
     def jacobian(self):
         return self.der

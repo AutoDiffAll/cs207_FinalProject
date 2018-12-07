@@ -19,7 +19,7 @@ class Result:
         self.val_rec = val_rec
         self.time_rec = time_rec
         self.converge = converge
-        ## throw warning if not convergent
+        # throw warning if not convergent
 
 
 def minimize(fun, x0, method=None, **kwargs):
@@ -35,7 +35,9 @@ def minimize(fun, x0, method=None, **kwargs):
         - 'Newton Method'               :ref:`(see here) <optimizer.min_newton>`
         - 'BFGS'                        :ref:`(see here) <optimizer.min_BFGS>`
         - 'Stochastic Gradient Descend' :ref:`(see here) <optimizer.min_SGD>`
-        - 'Gradient Descend'            :ref:`(see here) <optimizer.min_gradientdescend>`
+        - 'Gradient Descend'            :ref:`(see here) <optimizer.min_gradient_descend>`
+        - 'Conjugate Gradient'          :ref:`(see here) <optimizer.min_conjugate_gradient>`
+        - 'Secant Method'               :ref:`(see here) <optimizer.min_secant_method>`
         \\ To add
         If not specified, it will automatically choose 'Newton Method'.
 
@@ -73,13 +75,17 @@ def minimize(fun, x0, method=None, **kwargs):
     >>> res.x.val # Remeber to change this to res.x if we finally decides store x as numerical value!!!!!!!!
     0
     """
-    if method == "Newton Method":
-        result = min_newton(fun, x0, **kwargs)
+    if method == "Conjugate Gradient":
+        result = min_conjugate_gradient(fun, x0, **kwargs)
     # etc.
     return result
 
 
-def min_conjugate_gradient(fn, x0, precision, max_iter):
+def min_secant_method(fun, x0, precesion=1e-5, max_iter=10000):
+    pass
+
+
+def min_conjugate_gradient(fn, x0, precision=1e-5, max_iter=10000):
     # create initial variables
     # right now we only test with the 26 alphabets
     from string import ascii_lowercase
@@ -96,7 +102,7 @@ def min_conjugate_gradient(fn, x0, precision, max_iter):
         var_names.append(name)
 
     x = np.array(x0)
-    s = 0 # initialize as 0 works to ensure that s=g in 1st iteration
+    s = 0  # initialize as 0 works to ensure that s=g in 1st iteration
 
     nums_iteration = 0
     val_rec = []
@@ -117,8 +123,13 @@ def min_conjugate_gradient(fn, x0, precision, max_iter):
         
         beta = (g @ g) / (g @ g)
         s = g + beta*s
+<<<<<<< HEAD
         argmin_fn = lambda alpha: fn(*[i + alpha*j for i, j in zip(x, s)])
         
+=======
+
+        def argmin_fn(alpha): return fn(*[i + alpha*j for i, j in zip(x, s)])
+>>>>>>> c5508920cc053374192443dbca3281778312e5fc
         alpha = minimize(argmin_fn, 0).x
         x = x + alpha*s
 
@@ -128,17 +139,22 @@ def min_conjugate_gradient(fn, x0, precision, max_iter):
         time_rec.append(time.time()-init_time)
         
 
-
         # iteration stopping condition
         if nums_iteration >= max_iter:
             return Result(x, val_rec, time_rec, False)
+<<<<<<< HEAD
         nums_iteration +=1
     
+=======
+        nums_iteration += 1
+
+>>>>>>> c5508920cc053374192443dbca3281778312e5fc
 
 def min_newton():
     pass
 
 
+<<<<<<< HEAD
 def min_gradientdescent(fn, x0, precision, max_iter, lr=0.01):
      # create initial variables
     # right now we only test with the 26 alphabets
@@ -190,13 +206,17 @@ def min_gradientdescent(fn, x0, precision, max_iter, lr=0.01):
         if nums_iteration >= max_iter:
             return Result(x, val_rec, time_rec, False)
         nums_iteration +=1
+=======
+def min_gradient_descend():
+    pass
+>>>>>>> c5508920cc053374192443dbca3281778312e5fc
 
 
 def min_BFGS():
     pass
 
 
-def findroot(fun, x0, args=(), method=None):
+def findroot(fun, x0, method=None, **kwargs):
     """Find the roots of a function.
     Return the roots of the (non-linear) equations defined by
     ``func(x) = 0`` given a starting estimate.
@@ -250,6 +270,39 @@ def findroot(fun, x0, args=(), method=None):
     0
     """
     pass
+
+
+def root_secant_method(fun, x0, precision=1e-5, max_iter=10000):
+    # choose initial guess of x0, and use finite difference to approximate the derivatives
+    import time
+    import numpy as np
+    begin = time.time()
+    time_arr = [0]
+    val_arr = [x0]
+    converge=False
+
+    x1=x0-1 # randomly assigned
+    i=0
+    
+    f_der_inv=lambda x1,x0:(x1-x0)/(fun(x1)-fun(x0))
+    while True:
+        
+        i+=1
+        x0,x1=x1,x1-fun(x1)*f_der_inv(x1,x0)
+        time_arr.append(time.time()-begin)
+        val_arr.append(x1)
+        if abs(fun(x1)-fun(x0))<=precision:
+            converge=True
+            break
+        if i>max_iter:
+            converge=False
+            break
+    return Result(x1,np.array(val_arr),np.array(time_arr),converge)
+    
+
+        
+
+    return
 
 
 def root_BFGS():

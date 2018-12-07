@@ -123,13 +123,8 @@ def min_conjugate_gradient(fn, x0, precision=1e-5, max_iter=10000):
         
         beta = (g @ g) / (g @ g)
         s = g + beta*s
-<<<<<<< HEAD
         argmin_fn = lambda alpha: fn(*[i + alpha*j for i, j in zip(x, s)])
         
-=======
-
-        def argmin_fn(alpha): return fn(*[i + alpha*j for i, j in zip(x, s)])
->>>>>>> c5508920cc053374192443dbca3281778312e5fc
         alpha = minimize(argmin_fn, 0).x
         x = x + alpha*s
 
@@ -142,19 +137,13 @@ def min_conjugate_gradient(fn, x0, precision=1e-5, max_iter=10000):
         # iteration stopping condition
         if nums_iteration >= max_iter:
             return Result(x, val_rec, time_rec, False)
-<<<<<<< HEAD
         nums_iteration +=1
     
-=======
-        nums_iteration += 1
-
->>>>>>> c5508920cc053374192443dbca3281778312e5fc
 
 def min_newton():
     pass
 
 
-<<<<<<< HEAD
 def min_gradientdescent(fn, x0, precision, max_iter, lr=0.01):
      # create initial variables
     # right now we only test with the 26 alphabets
@@ -206,10 +195,6 @@ def min_gradientdescent(fn, x0, precision, max_iter, lr=0.01):
         if nums_iteration >= max_iter:
             return Result(x, val_rec, time_rec, False)
         nums_iteration +=1
-=======
-def min_gradient_descend():
-    pass
->>>>>>> c5508920cc053374192443dbca3281778312e5fc
 
 
 def min_BFGS():

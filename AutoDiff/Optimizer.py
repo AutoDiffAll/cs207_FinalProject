@@ -35,7 +35,9 @@ def minimize(fun, x0, method=None, **kwargs):
         - 'Newton Method'               :ref:`(see here) <optimizer.min_newton>`
         - 'BFGS'                        :ref:`(see here) <optimizer.min_BFGS>`
         - 'Stochastic Gradient Descend' :ref:`(see here) <optimizer.min_SGD>`
-        - 'Gradient Descend'            :ref:`(see here) <optimizer.min_gradientdescend>`
+        - 'Gradient Descend'            :ref:`(see here) <optimizer.min_gradient_descend>`
+        - 'Conjugate Gradient'          :ref:`(see here) <optimizer.min_conjugate_gradient>`
+        - 'Secant Method'               :ref:`(see here) <optimizer.min_secant_method>`
         \\ To add
         If not specified, it will automatically choose 'Newton Method'.
 
@@ -73,8 +75,9 @@ def minimize(fun, x0, method=None, **kwargs):
     >>> res.x.val # Remeber to change this to res.x if we finally decides store x as numerical value!!!!!!!!
     0
     """
-    if method == "Newton Method":
-        result = min_newton(fun, x0, **kwargs)
+    if method == "Conjugate Gradient":
+        result = min_conjugate_gradient(fun, x0, **kwargs)
+    elif method == ""
     # etc.
     return result
 
@@ -136,7 +139,7 @@ def min_newton():
     pass
 
 
-def min_gradientdescend():
+def min_gradient_descend():
     pass
 
 
@@ -214,3 +217,4 @@ def root_newton():
 
 def root_SGD():
     pass
+

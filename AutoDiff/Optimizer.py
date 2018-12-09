@@ -120,34 +120,19 @@ def min_conjugate_gradient(fn, x0, precision=1e-5, max_iter=10000):
 
         beta = (g @ g) / (g @ g)
         s = g + beta*s
-<<<<<<< HEAD
 
         def argmin_fn(alpha): return fn(*[i + alpha*j for i, j in zip(x, s)])
-=======
-        argmin_fn = lambda alpha: fn(*[i + alpha*j for i, j in zip(x, s)])
-
->>>>>>> minimize
         alpha = minimize(argmin_fn, 0).x
         x = x + alpha*s
 
         # store history of values
         val_rec.append(x)
-<<<<<<< HEAD
         time_rec.append(time.time()-init_time)
-=======
-
-        time_rec.append(time.time()-init_time)
-
->>>>>>> minimize
 
         # iteration stopping condition
         if nums_iteration >= max_iter:
             return Result(x, val_rec, time_rec, False)
-<<<<<<< HEAD
         nums_iteration += 1
-=======
-        nums_iteration +=1
->>>>>>> minimize
 
 
 def min_newton():
@@ -185,12 +170,7 @@ def min_steepestdescent(fn, x0, precision, max_iter, lr=0.01):
             x_var.append(Variable(var_names[i], v))
         # obtain values and jacobian to find delta_f
         val_vector = np.array([value.val for value in x_var])
-<<<<<<< HEAD
         jacobian = np.array([fn(x_var).der.get(i) for i in var_names])
-=======
-        jacobian = np.array([fn(*x_var).der.get(i) for i in var_names])
-
->>>>>>> minimize
         delta_f = jacobian*val_vector
 
 
@@ -216,14 +196,6 @@ def min_steepestdescent(fn, x0, precision, max_iter, lr=0.01):
         nums_iteration +=1
 
 
-<<<<<<< HEAD
-def min_gradient_descend():
-    pass
-
-
-def min_BFGS():
-    pass
-=======
 def _get_grad(fn, x, var_names):
     variables = [Variable(var_names[idx], x_n) for idx, x_n in enumerate(x)]
     out = fn(*variables)
@@ -268,7 +240,6 @@ def min_BFGS(fn, x0, precision, max_iter, lr=0.01):
         d_grad = new_grad - grad
         approx_hessian = update_hessian(approx_hessian, d_grad, step)
 
->>>>>>> minimize
 
 
 def findroot(fun, x0, method=None, **kwargs):
@@ -353,14 +324,6 @@ def root_secant_method(fun, x0, precision=1e-5, max_iter=10000):
             converge=False
             break
     return Result(x1,np.array(val_arr),np.array(time_arr),converge)
-<<<<<<< HEAD
-=======
-
-
-
-
-    return
->>>>>>> minimize
 
 
 def root_BFGS():

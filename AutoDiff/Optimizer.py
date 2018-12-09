@@ -120,25 +120,25 @@ def min_conjugate_gradient(fn, x0, precision=1e-5, max_iter=10000):
         # maximum norm
         if max(abs(g)) < precision:
             return Result(x, val_rec, time_rec, True)
-        
+
         beta = (g @ g) / (g @ g)
         s = g + beta*s
         argmin_fn = lambda alpha: fn(*[i + alpha*j for i, j in zip(x, s)])
-        
+
         alpha = minimize(argmin_fn, 0).x
         x = x + alpha*s
 
         # store history of values
         val_rec.append(x)
-      
+
         time_rec.append(time.time()-init_time)
-        
+
 
         # iteration stopping condition
         if nums_iteration >= max_iter:
             return Result(x, val_rec, time_rec, False)
         nums_iteration +=1
-    
+
 
 def min_newton():
     pass
@@ -175,7 +175,7 @@ def min_gradientdescent(fn, x0, precision, max_iter, lr=0.01):
         # obtain values and jacobian to find delta_f
         val_vector = np.array([value.val for value in x_var])
         jacobian = np.array([fn(*x_var).der.get(i) for i in var_names])
-        
+
         delta_f = jacobian*val_vector
 
         old_x = x
@@ -188,17 +188,59 @@ def min_gradientdescent(fn, x0, precision, max_iter, lr=0.01):
 
         # store history of values
         val_rec.append(x)
-      
+
         time_rec.append(time.time()-init_time)
-        
+
         # iteration stopping condition
         if nums_iteration >= max_iter:
             return Result(x, val_rec, time_rec, False)
         nums_iteration +=1
 
 
-def min_BFGS():
-    pass
+def _get_grad(fn, x, var_names):
+    variables = [Variable(var_names[idx], x_n) for idx, x_n in enumerate(x)]
+    out = fn(*variables)
+    jacobian = out.jacobian()
+    grad = np.array([jacobian[name] for name in var_names])
+    return grad
+
+def _line_search(fn, x, search_direction, grad, beta = 0.9, c = 0.9, alpha_init = 1):
+    """approximately minimizes f along search_direction
+    https://en.wikipedia.org/wiki/Backtracking_line_search
+    """
+    m = search_direction.T.dot(grad)
+    alpha = alpha_init
+    print(-c*alpha*m)
+    while (fn(*(x)) - fn(*(x+alpha*search_direction))) < -c*alpha*m:
+        alpha = alpha * beta
+    return alpha
+
+def _update_hessian(approx_hessian, d_grad, step):
+    return (approx_hessian
+            + 1/(d_grad.T.dot(step))*d_grad.dot(d_grad.T)
+            - 1/(step.T.dot(approx_hessian).dot(step))*(approx_hessian.dot(step).dot(step.T).dot(approx_hessian.T))
+           )
+
+def min_BFGS(fn, x0, precision, max_iter, lr=0.01):
+    approx_hessian = np.identity(len(x0))
+    x = np.array(x0).reshape(-1,1)
+    var_names = ['x'+str(idx) for idx in range(len(x))]
+    new_grad = get_grad(fn, x, var_names)
+    for _ in range(max_iter):
+        # get new x values
+        grad = new_grad
+        search_direction = -np.linalg.pinv(approx_hessian).dot(grad)
+        stepsize = line_search(fn, x, search_direction, grad)
+        print('stepsize:',stepsize)
+        print('search_direction:',search_direction)
+        step = stepsize * search_direction
+        x = x + step
+        print(x)
+        # update hessian approximation
+        new_grad = get_grad(fn, x, var_names)
+        d_grad = new_grad - grad
+        approx_hessian = update_hessian(approx_hessian, d_grad, step)
+
 
 
 def findroot(fun, x0, method=None, **kwargs):
@@ -268,10 +310,10 @@ def root_secant_method(fun, x0, precision=1e-5, max_iter=10000):
 
     x1=x0-1 # randomly assigned
     i=0
-    
+
     f_der_inv=lambda x1,x0:(x1-x0)/(fun(x1)-fun(x0))
     while True:
-        
+
         i+=1
         x0,x1=x1,x1-fun(x1)*f_der_inv(x1,x0)
         time_arr.append(time.time()-begin)
@@ -283,9 +325,9 @@ def root_secant_method(fun, x0, precision=1e-5, max_iter=10000):
             converge=False
             break
     return Result(x1,np.array(val_arr),np.array(time_arr),converge)
-    
 
-        
+
+
 
     return
 

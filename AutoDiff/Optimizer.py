@@ -2,7 +2,8 @@ try:
     from variables import Variable
 except:
     from AutoDiff.variables import Variable
-
+import time
+import numpy as np
 
 class Result:
     def __init__(self, x, val_rec, time_rec, converge):
@@ -79,7 +80,8 @@ def minimize(fun, x0, method=None, **kwargs):
         result = min_conjugate_gradient(fun, x0, **kwargs)
     elif method == "Steepest Descend":
         result = min_steepestdescent(fun, x0, **kwargs)
-    # etc.
+    elif method =="BFGS":
+        result = min_BFGS(fun,x0, **kwargs)
     return result
 
 
@@ -140,7 +142,7 @@ def min_conjugate_gradient(fn, x0, precision=1e-5, max_iter=10000):
 def min_newton():
     pass
 
-def min_steepestdescent(fn, x0, precision, max_iter, lr=0.01):
+def min_steepestdescent(fn, x0, precision, max_iter):
      # create initial variables
     # right now we only test with the 26 alphabets
     from string import ascii_lowercase
@@ -182,7 +184,7 @@ def min_steepestdescent(fn, x0, precision, max_iter, lr=0.01):
         # update x
         old_x = x
         x = x + n*delta_f
-
+        print(x)
         # threshold stopping condition
         if max(abs(x-old_x)) < precision:
             return Result(x, val_rec, time_rec, True)
@@ -197,13 +199,109 @@ def min_steepestdescent(fn, x0, precision, max_iter, lr=0.01):
             return Result(x, val_rec    , time_rec, False)
         nums_iteration +=1
 
+def _get_grad(fn, x, var_names):
+    variables = [Variable(var_names[idx], x_n) for idx, x_n in enumerate(x)]
+    out = fn(*variables)
+    jacobian = out.jacobian()
+    grad = np.array([jacobian[name] for name in var_names])
+    return grad
 
-def min_gradient_descend():
-    pass
+def _line_search(fn, x, search_direction, grad, beta = 0.9, c = 0.9, alpha_init = 1):
+    """approximately minimizes f along search_direction
+    https://en.wikipedia.org/wiki/Backtracking_line_search
+    """
+    m = search_direction.T.dot(grad)
+    alpha = alpha_init
+    while (fn(*(x)) - fn(*(x+alpha*search_direction))) < -c*alpha*m:
+        alpha = alpha * beta
+    return alpha
+
+def _update_hessian(approx_hessian, d_grad, step):
+    return (approx_hessian
+            + 1/(d_grad.T.dot(step))*d_grad.dot(d_grad.T)
+            - 1/(step.T.dot(approx_hessian).dot(step))*(approx_hessian.dot(step).dot(step.T).dot(approx_hessian.T))
+           )
+
+def min_BFGS(fn, x0, precision, max_iter, beta = 0.9, c = 0.9, alpha_init = 1):
+    time_rec = [time.time()]
+    approx_hessian = np.identity(len(x0))
+    x = np.array(x0).reshape(-1,1)
+    var_names = ['x'+str(idx) for idx in range(len(x))]
+    new_grad = _get_grad(fn, x, var_names)
+    iter = 0
+    val_rec = [x.flatten()]
+    while np.linalg.norm(new_grad) > precision and iter < max_iter:
+        # get new x values
+        grad = new_grad
+        search_direction = -np.linalg.pinv(approx_hessian).dot(grad)
+        stepsize = _line_search(fn, x, search_direction, grad, beta = beta, c = c, alpha_init = alpha_init)
+        step = stepsize * search_direction
+        x = x + step
+        val_rec.append(x.flatten())
+
+        # update hessian approximation
+        new_grad = _get_grad(fn, x, var_names)
+        d_grad = new_grad - grad
+        approx_hessian = _update_hessian(approx_hessian, d_grad, step)
+
+        iter += 1
+        time_rec.append(time.time())
+
+    converge = (np.linalg.norm(new_grad) <= precision)
+    return Result(x, np.array(val_rec), time_rec, converge)
+
+def min_gradientdescent(fn, x0, precision, max_iter, lr=0.01):
+     # create initial variables
+    # right now we only test with the 26 alphabets
+    from string import ascii_lowercase
+    import time
+    import numpy as np
+
+    name_ls = iter(ascii_lowercase)
+
+    # create initial variables
+    var_names = []
+    for i in x0:
+        name = next(name_ls)
+        var_names.append(name)
+
+    x = np.array(x0)
+    s = 0 # initialize as 0 works to ensure that s=g in 1st iteration
+
+    nums_iteration = 0
+    val_rec = []
+    time_rec = []
+    init_time = time.time()
+     # initial guess of n = 0.01
+    n = 0.01
+    while True:
+        # recreate new variables with new values
+        x_var = []
+        for i, v in enumerate(x):
+            x_var.append(Variable(var_names[i], v))
+        # obtain values and jacobian to find delta_f
+        val_vector = np.array([value.val for value in x_var])
+        jacobian = np.array([fn(*x_var).der.get(i) for i in var_names])
+        delta_f = jacobian*val_vector
 
 
-def min_BFGS():
-    pass
+        # update x
+        old_x = x
+        x = x - lr*delta_f
+        print(x)
+        # threshold stopping condition
+        if max(abs(x-old_x)) < precision:
+            return Result(x, val_rec, time_rec, True)
+
+        # store history of values
+        val_rec.append(x)
+
+        time_rec.append(time.time()-init_time)
+
+        # iteration stopping condition
+        if nums_iteration >= max_iter:
+            return Result(x, val_rec    , time_rec, False)
+        nums_iteration +=1
 
 
 def findroot(fun, x0, method=None, **kwargs):

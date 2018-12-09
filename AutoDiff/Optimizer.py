@@ -2,7 +2,8 @@ try:
     from variables import Variable
 except:
     from AutoDiff.variables import Variable
-
+import time
+import numpy as np
 
 class Result:
     def __init__(self, x, val_rec, time_rec, converge):
@@ -79,7 +80,8 @@ def minimize(fun, x0, method=None, **kwargs):
         result = min_conjugate_gradient(fun, x0, **kwargs)
     elif method == "Steepest Descend":
         result = min_steepestdescent(fun, x0, **kwargs)
-    # etc.
+    elif method =="BFGS":
+        result = min_BFGS(fun,x0, **kwargs)
     return result
 
 
@@ -210,7 +212,6 @@ def _line_search(fn, x, search_direction, grad, beta = 0.9, c = 0.9, alpha_init 
     """
     m = search_direction.T.dot(grad)
     alpha = alpha_init
-    print(-c*alpha*m)
     while (fn(*(x)) - fn(*(x+alpha*search_direction))) < -c*alpha*m:
         alpha = alpha * beta
     return alpha
@@ -221,25 +222,33 @@ def _update_hessian(approx_hessian, d_grad, step):
             - 1/(step.T.dot(approx_hessian).dot(step))*(approx_hessian.dot(step).dot(step.T).dot(approx_hessian.T))
            )
 
-def min_BFGS(fn, x0, precision, max_iter, lr=0.01):
+def min_BFGS(fn, x0, precision, max_iter, beta = 0.9, c = 0.9, alpha_init = 1):
+    time_rec = [time.time()]
     approx_hessian = np.identity(len(x0))
     x = np.array(x0).reshape(-1,1)
     var_names = ['x'+str(idx) for idx in range(len(x))]
-    new_grad = get_grad(fn, x, var_names)
-    for _ in range(max_iter):
+    new_grad = _get_grad(fn, x, var_names)
+    iter = 0
+    val_rec = [x.flatten()]
+    while np.linalg.norm(new_grad) > precision and iter < max_iter:
         # get new x values
         grad = new_grad
         search_direction = -np.linalg.pinv(approx_hessian).dot(grad)
-        stepsize = line_search(fn, x, search_direction, grad)
-        print('stepsize:',stepsize)
-        print('search_direction:',search_direction)
+        stepsize = _line_search(fn, x, search_direction, grad, beta = beta, c = c, alpha_init = alpha_init)
         step = stepsize * search_direction
         x = x + step
-        print(x)
+        val_rec.append(x.flatten())
+
         # update hessian approximation
-        new_grad = get_grad(fn, x, var_names)
+        new_grad = _get_grad(fn, x, var_names)
         d_grad = new_grad - grad
-        approx_hessian = update_hessian(approx_hessian, d_grad, step)
+        approx_hessian = _update_hessian(approx_hessian, d_grad, step)
+
+        iter += 1
+        time_rec.append(time.time())
+
+    converge = (np.linalg.norm(new_grad) <= precision)
+    return Result(x, np.array(val_rec), time_rec, converge)
 
 def min_gradientdescent(fn, x0, precision, max_iter, lr=0.01):
      # create initial variables
@@ -293,7 +302,6 @@ def min_gradientdescent(fn, x0, precision, max_iter, lr=0.01):
         if nums_iteration >= max_iter:
             return Result(x, val_rec    , time_rec, False)
         nums_iteration +=1
-
 
 
 def findroot(fun, x0, method=None, **kwargs):

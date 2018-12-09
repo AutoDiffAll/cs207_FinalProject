@@ -906,13 +906,14 @@ def exp(x):
     """
     return unary_user_function(lambda x: np.exp(x), lambda x: np.exp(x))(x)
 
-def log(x):
-    """Returns natural logarithm of x, can be used to calculate
-    natural logarithm of Variable instance
+def log(x, base=np.exp(1)):
+    """Returns logarithm of x with any base (defaults to natural logarithm),
+    can be used to calculate natural logarithm of Variable instance
 
     INPUTS
     =======
     x: numeric or Variable, element-wise for lists, arrays, or similar structures
+    base: numeric
 
     RETURNS
     ========
@@ -923,6 +924,7 @@ def log(x):
     PRE:
          - x is either numeric or Variable types
          - x should be greater than 0
+         - base should a numeric type
 
     POST:
          - x is not changed by this function
@@ -959,9 +961,16 @@ def log(x):
     ... except ValueError as e:
     ...     print(e)
     math domain error
+    >>> try:
+    ...     np.log(-1, base='a')
+    ... except ValueError as e:
+    ...     print(e)
+    Base must be numeric!!
     """
     _check_input(x, lower = 0)
-    return unary_user_function(lambda x: np.log(x), lambda x: 1/x)(x)
+    if not isinstance(base, (numeric, float)):
+        raise ValueError('Base must be numeric!!')
+    return unary_user_function(lambda x: np.log(x)/np.log(base), lambda x: 1/(x*np.log(base)))(x)
 
 def exp2(x):
     """Returns 2 to the power of x, can be used to calculate
@@ -1179,6 +1188,49 @@ def sqrt(x):
     """
     _check_input(x, lower = 0, lower_inclusive = True)
     return unary_user_function(lambda x: np.sqrt(x), lambda x: 1/(2*sqrt(x)))(x)
+
+def logistic(x):
+    """Returns square root of x, can be used to calculate
+    square root of Variable instance
+
+    INPUTS
+    =======
+    x: numeric or Variable, element-wise for lists, arrays, or similar structures
+
+    RETURNS
+    ========
+    value: numeric or Variable, element-wise for lists, arrays, or similar structures
+
+    NOTES
+    =====
+    PRE:
+         - x is either numeric or Variable types
+         - x should be greater than or equal to 0
+
+    POST:
+         - x is not changed by this function
+         - if x is Variable instance, returns a new Variable instance
+         - if x is numeric, returns numeric
+         - should return value between 0 and 1
+
+    EXAMPLES
+    =========
+    >>> try:
+    ...     from variables import Variable
+    ... except:
+    ...     from AutoDiff.variables import Variable
+    >>> try:
+    ...     import AD_numpy as np
+    ... except:
+    ...     import AutoDiff.AD_numpy as np
+    >>> a = Variable('a', 0)
+    >>> x = np.logistic(a)
+    >>> x.val
+    0.5
+    >>> x.der
+    {'a': 0.25}
+    """
+    return unary_user_function(lambda x: 1/(1+np.exp(-x)), lambda x: np.exp(x)/(1+np.exp(x))**2)(x)
 
 def _check_input(x, lower = None, upper = None, lower_inclusive = False, upper_inclusive = False):
     try:

@@ -138,6 +138,63 @@ def min_conjugate_gradient(fn, x0, precision=1e-5, max_iter=10000):
 def min_newton():
     pass
 
+def min_steepestdescent(fn, x0, precision, max_iter, lr=0.01):
+     # create initial variables
+    # right now we only test with the 26 alphabets
+    from string import ascii_lowercase
+    import time
+    import numpy as np
+    from scipy.optimize import fmin
+
+    name_ls = iter(ascii_lowercase)
+
+    # create initial variables
+    var_names = []
+    for i in x0:
+        name = next(name_ls)
+        var_names.append(name)
+
+    x = np.array(x0)
+    s = 0 # initialize as 0 works to ensure that s=g in 1st iteration
+
+    nums_iteration = 0
+    val_rec = []
+    time_rec = []
+    init_time = time.time()
+     # initial guess of n = 0.01
+    n = 0.01
+    while True:
+        # recreate new variables with new values
+        x_var = []
+        for i, v in enumerate(x):
+            x_var.append(Variable(var_names[i], v))
+        # obtain values and jacobian to find delta_f
+        val_vector = np.array([value.val for value in x_var])
+        jacobian = np.array([fn(x_var).der.get(i) for i in var_names])
+        delta_f = jacobian*val_vector
+
+
+        find_min = fmin(fn, val_vector-n*delta_f, maxiter = 1, disp=False)
+        n = (find_min - x)/delta_f
+
+        # update x
+        old_x = x
+        x = x + n*delta_f
+
+        # threshold stopping condition
+        if max(abs(x-old_x)) < precision:
+            return Result(x, val_rec, time_rec, True)
+
+        # store history of values
+        val_rec.append(x)
+
+        time_rec.append(time.time()-init_time)
+
+        # iteration stopping condition
+        if nums_iteration >= max_iter:
+            return Result(x, val_rec    , time_rec, False)
+        nums_iteration +=1
+
 
 def min_gradient_descend():
     pass
@@ -210,14 +267,14 @@ def root_secant_method(fun, x0, precision=1e-5, max_iter=10000):
     begin = time.time()
     time_arr = [0]
     val_arr = [x0]
-    converge=False 
+    converge=False
 
     x1=x0-1 # randomly assigned
     i=0
-    
+
     f_der_inv=lambda x1,x0:(x1-x0)/(fun(x1)-fun(x0))
     while True:
-        
+
         i+=1
         x0,x1=x1,x1-fun(x1)*f_der_inv(x1,x0)
         time_arr.append(time.time()-begin)
@@ -229,11 +286,6 @@ def root_secant_method(fun, x0, precision=1e-5, max_iter=10000):
             converge=False
             break
     return Result(x1,np.array(val_arr),np.array(time_arr),converge)
-
-
-        
-
-    return
 
 
 def root_BFGS():

@@ -37,7 +37,7 @@ def minimize(fun, x0, method=None, **kwargs):
         - 'Stochastic Gradient Descend' :ref:`(see here) <optimizer.min_SGD>`
         - 'Gradient Descend'            :ref:`(see here) <optimizer.min_gradient_descend>`
         - 'Conjugate Gradient'          :ref:`(see here) <optimizer.min_conjugate_gradient>`
-        - 'Secant Method'               :ref:`(see here) <optimizer.min_secant_method>`
+        - 'Steepest Descend'            :ref:`(see here) <optimizer.min_steepestdescent>`
         \\ To add
         If not specified, it will automatically choose 'Newton Method'.
 
@@ -77,6 +77,8 @@ def minimize(fun, x0, method=None, **kwargs):
     """
     if method == "Conjugate Gradient":
         result = min_conjugate_gradient(fun, x0, **kwargs)
+    elif method == "Steepest Descend":
+        result = min_steepestdescent(fun, x0, **kwargs)
     # etc.
     return result
 
@@ -138,7 +140,7 @@ def min_conjugate_gradient(fn, x0, precision=1e-5, max_iter=10000):
 def min_newton():
     pass
 
-def min_steepestdescent(fn, x0, precision, max_iter, lr=0.01):
+def min_steepestdescent(fn, x0, precision, max_iter):
      # create initial variables
     # right now we only test with the 26 alphabets
     from string import ascii_lowercase
@@ -180,7 +182,7 @@ def min_steepestdescent(fn, x0, precision, max_iter, lr=0.01):
         # update x
         old_x = x
         x = x + n*delta_f
-
+        print(x)
         # threshold stopping condition
         if max(abs(x-old_x)) < precision:
             return Result(x, val_rec, time_rec, True)
@@ -194,7 +196,6 @@ def min_steepestdescent(fn, x0, precision, max_iter, lr=0.01):
         if nums_iteration >= max_iter:
             return Result(x, val_rec    , time_rec, False)
         nums_iteration +=1
-
 
 def _get_grad(fn, x, var_names):
     variables = [Variable(var_names[idx], x_n) for idx, x_n in enumerate(x)]
@@ -239,6 +240,59 @@ def min_BFGS(fn, x0, precision, max_iter, lr=0.01):
         new_grad = get_grad(fn, x, var_names)
         d_grad = new_grad - grad
         approx_hessian = update_hessian(approx_hessian, d_grad, step)
+
+def min_gradientdescent(fn, x0, precision, max_iter, lr=0.01):
+     # create initial variables
+    # right now we only test with the 26 alphabets
+    from string import ascii_lowercase
+    import time
+    import numpy as np
+
+    name_ls = iter(ascii_lowercase)
+
+    # create initial variables
+    var_names = []
+    for i in x0:
+        name = next(name_ls)
+        var_names.append(name)
+
+    x = np.array(x0)
+    s = 0 # initialize as 0 works to ensure that s=g in 1st iteration
+
+    nums_iteration = 0
+    val_rec = []
+    time_rec = []
+    init_time = time.time()
+     # initial guess of n = 0.01
+    n = 0.01
+    while True:
+        # recreate new variables with new values
+        x_var = []
+        for i, v in enumerate(x):
+            x_var.append(Variable(var_names[i], v))
+        # obtain values and jacobian to find delta_f
+        val_vector = np.array([value.val for value in x_var])
+        jacobian = np.array([fn(*x_var).der.get(i) for i in var_names])
+        delta_f = jacobian*val_vector
+
+
+        # update x
+        old_x = x
+        x = x - lr*delta_f
+        print(x)
+        # threshold stopping condition
+        if max(abs(x-old_x)) < precision:
+            return Result(x, val_rec, time_rec, True)
+
+        # store history of values
+        val_rec.append(x)
+
+        time_rec.append(time.time()-init_time)
+
+        # iteration stopping condition
+        if nums_iteration >= max_iter:
+            return Result(x, val_rec    , time_rec, False)
+        nums_iteration +=1
 
 
 

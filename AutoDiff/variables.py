@@ -135,6 +135,23 @@ class Variable(object):
         pow = binary_user_function(lambda x,y: x**y, lambda x,y: y*(x**(y-1)), lambda x,y: x**y*np.log(x))
         return pow(other,self)
 
+    def __eq__(self, other):
+        try:
+            if (self.jacobian() == other.jacobian()) and (self.val == other.val):
+                return True
+            else:
+                return False
+        except AttributeError:
+            return False
+
+    def __ne__(self, other):
+        if self == other:
+            return False
+        else:
+            return True
+
+
+
 def unary_user_function(fn, fn_der):
     """Given a function and its derivative, returns an original function that
     can be applied to the variable class, keeping track of the actual value,

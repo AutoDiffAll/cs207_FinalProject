@@ -37,7 +37,7 @@ def minimize(fun, x0, method=None, **kwargs):
         - 'Stochastic Gradient Descend' :ref:`(see here) <optimizer.min_SGD>`
         - 'Gradient Descend'            :ref:`(see here) <optimizer.min_gradient_descend>`
         - 'Conjugate Gradient'          :ref:`(see here) <optimizer.min_conjugate_gradient>`
-        - 'Secant Method'               :ref:`(see here) <optimizer.min_secant_method>`
+        - 'Steepest Descend'            :ref:`(see here) <optimizer.min_steepestdescent>`
         \\ To add
         If not specified, it will automatically choose 'Newton Method'.
 
@@ -77,6 +77,8 @@ def minimize(fun, x0, method=None, **kwargs):
     """
     if method == "Conjugate Gradient":
         result = min_conjugate_gradient(fun, x0, **kwargs)
+    elif method == "Steepest Descend":
+        result = min_steepestdescent(fun, x0, **kwargs)
     # etc.
     return result
 

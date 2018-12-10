@@ -120,7 +120,7 @@ def minimize_over_data(model, init_param, method, epochs, stochastic = False, **
                 val_rec.append(r.x)
                 model.step()
         model.make_deterministic()
-        r = opt.Result(x, val_rec, None, None)
+        r = Result(x, val_rec, None, None)
     else:
         x = init_param
         val_rec = [x]

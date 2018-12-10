@@ -25,7 +25,7 @@ class Variable(object):
         >>> a
         Variable name: a, Value: 2, Derivatives: {'a': 1}
         """
-        return ("Variable name:\n{}\nValue:\n{}\nDerivatives:\n{}"
+        return ("Variable name: {}, Value: {}, Derivatives: {}"
                 .format(self.name, self.val, self.der)
                 )
 
@@ -186,10 +186,6 @@ def unary_user_function(fn, fn_der):
     ...     from variables import Variable
     ... except:
     ...     from AutoDiff.variables import Variable
-    >>> try:
-    ...     from user_func import user_function
-    ... except:
-    ...     from AutoDiff.user_func import user_function
     >>> import numpy as np
     >>> sec = lambda x: 1/np.cos(x)
     >>> sec_der = lambda x: sec(x)*np.tan(x)
@@ -243,7 +239,10 @@ def binary_user_function(fn, fn_der_x1, fn_der_x2):
 
     EXAMPLES
     =========
-    >>> from variables import Variable
+    >>> try:
+    ...     from variables import Variable
+    ... except:
+    ...     from AutoDiff.variables import Variable
     >>> mult = binary_user_function(lambda x,y: x*y, lambda x,y: y, lambda x,y: x)
     >>> x = Variable('x', 3)
     >>> y = Variable('y', 2)

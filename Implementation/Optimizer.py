@@ -4,7 +4,7 @@ try:
     from variables import Variable
 except:
     from AutoDiff.variables import Variable
-    
+
 import time
 import numpy as np
 
@@ -75,7 +75,7 @@ def minimize(fun, x0, method=None, **kwargs):
     >>> try:
     ...     from Optimizer import minimize
     ... except:
-    ...     from AutoDiff.Optimizer import minimize
+    ...     from Implementation.Optimizer import minimize
     >>> a = Variable('a', 2)
     >>> myfunc = lambda x: x**2
     >>> res=minimize(myfunc,a)
@@ -160,7 +160,7 @@ def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, norm=np.i
     from scipy.optimize import minimize
 
     x = np.array(x0,dtype=float)
-    var_names = ['x'+str(idx) for idx in range(len(x))] 
+    var_names = ['x'+str(idx) for idx in range(len(x))]
 
     val_rec = [x.copy()]
     time_rec = [0]
@@ -177,7 +177,7 @@ def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, norm=np.i
 
         val_rec.append(x.copy())
         time_rec.append(time.time()-init_time)
-        
+
         grad1 = _get_grad(fn,x,var_names)
         # threshold stopping condition
         # maximum norm
@@ -189,7 +189,7 @@ def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, norm=np.i
 
 
     return Result(x, np.array(val_rec), np.array(time_rec), False)
-        
+
 
 def _get_grad(fn, x, var_names):
     variables = [Variable(var_names[idx], x_n) for idx, x_n in enumerate(x)]
@@ -343,7 +343,7 @@ def findroot(fun, x0, method=None, **kwargs):
     >>> try:
     ...     from Optimizer import findroot
     ... except:
-    ...     from AutoDiff.Optimizer import findroot
+    ...     from Implementation.Optimizer import findroot
     >>> a = Variable('a', 2)
     >>> myfunc = lambda x: x**2
     >>> res=findroot(myfunc,a)

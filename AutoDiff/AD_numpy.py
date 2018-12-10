@@ -223,11 +223,11 @@ def power(x, y):
     ... except:
     ...     import AutoDiff.AD_numpy as np
     >>> import pprint
-    >>> a = Variable('a', 2)
-    >>> b = Variable('b', 3)
+    >>> a = Variable('a', 2.0)
+    >>> b = Variable('b', 3.0)
     >>> x = np.power(a,b)
     >>> x.val
-    8
+    8.0
     >>> pprint.pprint(x.der)
     {'a': 12.0, 'b': 5.545177444479562}
     """
@@ -961,15 +961,8 @@ def log(x, base=np.exp(1)):
     ... except ValueError as e:
     ...     print(e)
     math domain error
-    >>> try:
-    ...     np.log(-1, base='a')
-    ... except ValueError as e:
-    ...     print(e)
-    Base must be numeric!!
     """
     _check_input(x, lower = 0)
-    if not isinstance(base, (numeric, float)):
-        raise ValueError('Base must be numeric!!')
     return unary_user_function(lambda x: np.log(x)/np.log(base), lambda x: 1/(x*np.log(base)))(x)
 
 def exp2(x):

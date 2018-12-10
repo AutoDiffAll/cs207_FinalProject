@@ -4,6 +4,7 @@ try:
     from variables import Variable
 except:
     from AutoDiff.variables import Variable
+
 import time
 import numpy as np
 
@@ -64,22 +65,6 @@ def minimize(fun, x0, method=None, **kwargs):
          - if initial guess x0 is a Variable instance,
          returns a new Variable instance
          - if x0 is numeric, returns numeric
-
-    EXAMPLES
-    =========
-    >>> try:
-    ...     from variables import Variable
-    ... except:
-    ...     from AutoDiff.variables import Variable
-    >>> try:
-    ...     from Optimizer import minimize
-    ... except:
-    ...     from AutoDiff.Optimizer import minimize
-    >>> a = Variable('a', 2)
-    >>> myfunc = lambda x: x**2
-    >>> res=minimize(myfunc,a)
-    >>> res.x.val # Remeber to change this to res.x if we finally decides store x as numerical value!!!!!!!!
-    0
     """
     if method == "Conjugate Gradient":
         return min_conjugate_gradient(fun, x0, **kwargs)
@@ -152,21 +137,21 @@ def min_conjugate_gradient(fn, x0, precision=1e-5, max_iter=10000, alpha_init=0,
 def min_newton():
     pass
 
-def min_steepestdescent(fn, x0, precision = PRECISION, max_iter = MAXITER):
+
+def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, norm=np.inf):
      # create initial variables
     import numpy as np
     from scipy.optimize import minimize
 
-    x = np.array(x0)
+    x = np.array(x0,dtype=float)
     var_names = ['x'+str(idx) for idx in range(len(x))]
-    new_grad = _get_grad(fn, x, var_names)
 
     val_rec = [x.copy()]
     time_rec = [0]
     init_time = time.time()
 
     for i in range(max_iter):
-        s = -new_grad
+        s = -_get_grad(fn, x, var_names)
 
         opt = minimize(lambda eta: fn(*(x+eta*s)), 0)
         eta = opt.x
@@ -176,7 +161,8 @@ def min_steepestdescent(fn, x0, precision = PRECISION, max_iter = MAXITER):
 
         val_rec.append(x.copy())
         time_rec.append(time.time()-init_time)
-        
+
+        grad1 = _get_grad(fn,x,var_names)
         # threshold stopping condition
         # maximum norm
         if np.linalg.norm(grad1, norm) < precision:
@@ -187,7 +173,7 @@ def min_steepestdescent(fn, x0, precision = PRECISION, max_iter = MAXITER):
 
 
     return Result(x, np.array(val_rec), np.array(time_rec), False)
-        
+
 
 def _get_grad(fn, x, var_names):
     variables = [Variable(var_names[idx], x_n) for idx, x_n in enumerate(x)]
@@ -293,103 +279,3 @@ def min_gradientdescent(fn, x0, precision = PRECISION, max_iter = MAXITER, lr=0.
         if nums_iteration >= max_iter:
             return Result(x, val_rec    , time_rec, False)
         nums_iteration +=1
-
-
-def findroot(fun, x0, method=None, **kwargs):
-    """Find the roots of a function.
-    Return the roots of the (non-linear) equations defined by
-    ``func(x) = 0`` given a starting estimate.
-
-    INPUTS
-    =======
-    fun: callable object. The opjective function to be solved.
-    x0: variable inputs or normal value tuple. Initial guess.
-    args: tuple (optional). Extra arguments passed to the opjective function.
-    method: string (optional). Type of different optimizer. Should be one of
-
-        - 'Newton Method'               :ref:`(see here) <optimizer.root_newton>`
-        - 'BFGS'                        :ref:`(see here) <optimizer.root_BFGS>`
-        - 'Stochastic Gradient Descend' :ref:`(see here) <optimizer.root_SGD>`
-        - 'Gradient Descend'            :ref:`(see here) <optimizer.root_gradientdescend>`
-        \\ To add
-        If not specified, it will automatically choose 'Newton Method'.
-
-
-
-    RETURNS
-    ========
-    res: OptimizationResult. Maybe a Variable or a normal value tuple, depends on the input object.
-
-    NOTES
-    =====
-    PRE:
-         - fun is normal function.
-         - x0 are initial guess of the results
-
-    POST:
-         - fun and x0 are not changed by this function
-         - if initial guess x0 is a Variable instance,
-         returns a new Variable instance
-         - if x0 is numeric, returns numeric
-
-    EXAMPLES
-    =========
-    >>> try:
-    ...     from variables import Variable
-    ... except:
-    ...     from AutoDiff.variables import Variable
-    >>> try:
-    ...     from Optimizer import findroot
-    ... except:
-    ...     from AutoDiff.Optimizer import findroot
-    >>> a = Variable('a', 2)
-    >>> myfunc = lambda x: x**2
-    >>> res=findroot(myfunc,a)
-    >>> res.x.val # Remeber to change this to res.x if we finally decides store x as numerical value!!!!!!!!
-    0
-    """
-    pass
-
-
-def root_secant_method(fun, x0, precision=PRECISION, max_iter=MAXITER):
-    # choose initial guess of x0, and use finite difference to approximate the derivatives
-    import time
-    import numpy as np
-    begin = time.time()
-    time_arr = [0]
-    val_arr = [x0]
-    converge=False
-
-    x1=x0-1 # randomly assigned
-    i=0
-
-    f_der_inv=lambda x1,x0:(x1-x0)/(fun(x1)-fun(x0))
-    while True:
-
-        i+=1
-        x0,x1=x1,x1-fun(x1)*f_der_inv(x1,x0)
-        time_arr.append(time.time()-begin)
-        val_arr.append(x1)
-        if abs(fun(x1)-fun(x0))<=precision:
-            converge=True
-            break
-        if i>max_iter:
-            converge=False
-            break
-    return Result(x1,np.array(val_arr),np.array(time_arr),converge)
-
-
-def root_BFGS():
-    pass
-
-
-def root_gradientdescend():
-    pass
-
-
-def root_newton():
-    pass
-
-
-def root_SGD():
-    pass

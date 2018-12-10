@@ -47,5 +47,7 @@ x_grid = np.linspace(-3, 3, 150)
 y_grid = np.linspace(-3, 4, 200)
 f_grid = f1(x_grid.reshape(1, -1),
             y_grid.reshape(-1, 1))
+
 plt.figure(figsize=(6, 8))
 plot_path_2D(res.val_rec, x_grid, y_grid, f_grid, "BFGS")
+plt.show()

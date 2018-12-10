@@ -1,9 +1,15 @@
-import sys
+import sys,os
+#sys.path.append('../AutoDiff')
+base_dir = os.path.dirname(__file__) or '.'
+
+package_dir_a = os.path.join(base_dir, '../AutoDiff')
+sys.path.insert(0, package_dir_a)
+
 try:
-    sys.path.append('../AutoDiff')
     from variables import Variable
 except:
     from AutoDiff.variables import Variable
+
     
 import time
 import numpy as np

@@ -82,10 +82,8 @@ class vector_Variable(object):
 
     def __eq__(self, other):
         # check that vector functions are of the same length
-        if len(self.val) != len(other.val):
-            return False
         try:
-            if (self.jacobian() == other.jacobian()) and (self.val == other.val):
+            if np.array_equal(self.variables, other.variables):
                 return True
             else:
                 return False

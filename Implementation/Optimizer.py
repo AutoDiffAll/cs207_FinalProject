@@ -91,7 +91,7 @@ def minimize(fun, x0, method=None, **kwargs):
 
 
 
-ddef min_conjugate_gradient(fn, x0, precision=1e-5, max_iter=10000, alpha_init=0, norm=np.inf):
+def min_conjugate_gradient(fn, x0, precision=1e-5, max_iter=10000, alpha_init=0, norm=np.inf):
     # create initial variables
     from scipy.optimize import minimize
     import time
@@ -212,7 +212,7 @@ def _get_grad(fn, x, var_names):
     variables = [Variable(var_names[idx], x_n) for idx, x_n in enumerate(x)]
     out = fn(*variables)
     jacobian = out.jacobian()
-    grad = np.array([jacobian[name] for name in var_names]).reshape(-1,1)
+    grad = np.array([jacobian[name] for name in var_names])
     return grad
 
 def _line_search(fn, x, search_direction, grad, beta = 0.9, c = 0.9, alpha_init = 1):

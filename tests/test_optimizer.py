@@ -1,11 +1,7 @@
-import numpy as np
-<<<<<<< HEAD
 import pytest
 import sys, os
 import numpy as np
-=======
 import sys
->>>>>>> 8e1192ba695b58ef22e21145859d774995e4ead5
 try:
     sys.path.append('../AutoDiff')
     sys.path.append('../Implementation')

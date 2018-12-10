@@ -111,9 +111,9 @@ ddef min_conjugate_gradient(fn, x0, precision=1e-5, max_iter=10000, alpha_init=0
     nums_iteration = 0
     val_rec = []
     time_rec = []
-    init_time = time.time()
+    time_total = 0
     while True:
-
+        start_time = time.time()
         argmin_fn = lambda alpha: fn(*[i + alpha*j for i, j in zip(x, conj_direct)])
         alpha = minimize(argmin_fn, alpha_init).x
         x = x + alpha*conj_direct
@@ -123,7 +123,8 @@ ddef min_conjugate_gradient(fn, x0, precision=1e-5, max_iter=10000, alpha_init=0
 
         # store history of values
         val_rec.append(x)
-        time_rec.append(time.time()-init_time)
+        time_total = time_total + time.time()-start_time
+        time_rec.append(time_total)
 
         # update grad
         grad0 = grad1

@@ -206,7 +206,7 @@ def _get_grad(fn, x, var_names):
     variables = [Variable(var_names[idx], x_n) for idx, x_n in enumerate(x)]
     out = fn(*variables)
     jacobian = out.jacobian()
-    grad = np.array([jacobian[name] for name in var_names])
+    grad = np.array([jacobian[name] for name in var_names]).reshape(-1,1)
     return grad
 
 def _line_search(fn, x, search_direction, grad, beta = 0.9, c = 0.9, alpha_init = 1):

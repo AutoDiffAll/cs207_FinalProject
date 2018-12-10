@@ -1,4 +1,5 @@
 import numpy as np
+import sys
 try:
     sys.path.append('../AutoDiff')
     sys.path.append('../Implementation')

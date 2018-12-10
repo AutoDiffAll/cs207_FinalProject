@@ -4,6 +4,7 @@ try:
     from variables import Variable
 except:
     from AutoDiff.variables import Variable
+    
 import time
 import numpy as np
 
@@ -152,21 +153,21 @@ def min_conjugate_gradient(fn, x0, precision=1e-5, max_iter=10000, alpha_init=0,
 def min_newton():
     pass
 
-def min_steepestdescent(fn, x0, precision = PRECISION, max_iter = MAXITER):
+
+def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, norm=np.inf):
      # create initial variables
     import numpy as np
     from scipy.optimize import minimize
 
-    x = np.array(x0)
-    var_names = ['x'+str(idx) for idx in range(len(x))]
-    new_grad = _get_grad(fn, x, var_names)
+    x = np.array(x0,dtype=float)
+    var_names = ['x'+str(idx) for idx in range(len(x))] 
 
     val_rec = [x.copy()]
     time_rec = [0]
     init_time = time.time()
 
     for i in range(max_iter):
-        s = -new_grad
+        s = -_get_grad(fn, x, var_names)
 
         opt = minimize(lambda eta: fn(*(x+eta*s)), 0)
         eta = opt.x
@@ -177,6 +178,7 @@ def min_steepestdescent(fn, x0, precision = PRECISION, max_iter = MAXITER):
         val_rec.append(x.copy())
         time_rec.append(time.time()-init_time)
         
+        grad1 = _get_grad(fn,x,var_names)
         # threshold stopping condition
         # maximum norm
         if np.linalg.norm(grad1, norm) < precision:

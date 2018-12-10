@@ -1,4 +1,6 @@
+import sys
 try:
+    sys.path.append('../AutoDiff')
     from variables import Variable
 except:
     from AutoDiff.variables import Variable

@@ -60,20 +60,6 @@ class vector_Variable(object):
             return vector_Variable(self.variables*other)
     __rmul__ = __mul__
 
-    def __pow__(self, other):
-        # check that vector functions are of the same length
-        if len(self.val) != len(other.val):
-            raise (ValueError('operands could not be broadcast together with shapes {} {}'
-                              .format(self.val.shape, other.val.shape)))
-
-        # if both are vector variables
-        try:
-            return vector_Variable(self.variables**other.variables)
-        # when other is not a vector of variables
-        except AttributeError:
-            return vector_Variable(self.variables**other)
-    __rpow__ = __pow__
-
     def __pos__(self):
         return vector_Variable(self.variables)
 

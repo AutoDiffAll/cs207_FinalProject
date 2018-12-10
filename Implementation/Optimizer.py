@@ -1,4 +1,6 @@
+import sys
 try:
+    sys.path.append('../AutoDiff')
     from variables import Variable
 except:
     from AutoDiff.variables import Variable
@@ -89,57 +91,60 @@ def minimize(fun, x0, method=None, **kwargs):
 
 
 
-def min_conjugate_gradient(fn, x0, precision = PRECISION, max_iter = MAXITER):
+ddef min_conjugate_gradient(fn, x0, precision=1e-5, max_iter=10000, alpha_init=0, norm=np.inf):
     # create initial variables
-    # right now we only test with the 26 alphabets
-    from string import ascii_lowercase
     from scipy.optimize import minimize
     import time
     import numpy as np
 
-    name_ls = iter(ascii_lowercase)
+    x = np.array(x0)
 
     # create initial variables
-    var_names = []
-    for i in x0:
-        name = next(name_ls)
-        var_names.append(name)
+    var_names = ['x'+str(idx) for idx in range(len(x))]
 
-    x = np.array(x0)
-    s = 0  # initialize as 0 works to ensure that s=g in 1st iteration
+    # initial gradient and steepest descent
+    # recreate new variables with new values
+    grad0 = _get_grad(fn, x, var_names)
+    x = -grad0
+    conj_direct = x
 
     nums_iteration = 0
     val_rec = []
     time_rec = []
     init_time = time.time()
     while True:
-        # recreate new variables with new values
-        x_var = []
-        for i, v in enumerate(x):
-            x_var.append(Variable(var_names[i], v))
 
-        g = np.array([-fn(*x_var).der.get(i) for i in var_names])
-
-        # threshold stopping condition
-        # maximum norm
-        if max(abs(g)) < precision:
-            return Result(x, val_rec, time_rec, True)
-
-        beta = (g @ g) / (g @ g)
-        s = g + beta*s
-
-        def argmin_fn(alpha): return fn(*[i + alpha*j for i, j in zip(x, s)])
-        alpha = minimize(argmin_fn, 0).x
-        x = x + alpha*s
+        argmin_fn = lambda alpha: fn(*[i + alpha*j for i, j in zip(x, conj_direct)])
+        alpha = minimize(argmin_fn, alpha_init).x
+        x = x + alpha*conj_direct
+        grad1 = _get_grad(fn, x, var_names)
+        beta = (grad1 @ grad1) / (grad0 @ grad0)
+        conj_direct = -grad1 + beta*conj_direct
 
         # store history of values
         val_rec.append(x)
         time_rec.append(time.time()-init_time)
 
+        # update grad
+        grad0 = grad1
+
+        # threshold stopping condition
+        # maximum norm
+        if np.linalg.norm(grad1, norm) < precision:
+            # reshape val_rec
+            val_rec = np.concatenate(val_rec).reshape(-1, len(x))
+            time_rec = np.array(time_rec)
+            return Result(x, val_rec, time_rec, True)
+
         # iteration stopping condition
         if nums_iteration >= max_iter:
+            # reshape val_rec
+            val_rec = np.concatenate(val_rec).reshape(-1, len(x))
+            time_rec = np.array(time_rec)
             return Result(x, val_rec, time_rec, False)
         nums_iteration += 1
+
+
 
 
 def min_newton():

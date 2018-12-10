@@ -227,7 +227,7 @@ def power(x, y):
     >>> b = Variable('b', 3.0)
     >>> x = np.power(a,b)
     >>> x.val
-    8
+    8.0
     >>> pprint.pprint(x.der)
     {'a': 12.0, 'b': 5.545177444479562}
     """

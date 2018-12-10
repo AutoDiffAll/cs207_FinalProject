@@ -5,6 +5,7 @@ except:
 import time
 import numpy as np
 
+
 class Result:
     def __init__(self, x, val_rec, time_rec, converge):
         """Record the optimization results and performance
@@ -222,7 +223,7 @@ def _update_hessian(approx_hessian, d_grad, step):
             - 1/(step.T.dot(approx_hessian).dot(step))*(approx_hessian.dot(step).dot(step.T).dot(approx_hessian.T))
            )
 
-def min_BFGS(fn, x0, precision, max_iter, beta = 0.9, c = 0.9, alpha_init = 1):
+def min_BFGS(fn, x0, precision = , max_iter, beta = 0.9, c = 0.9, alpha_init = 1):
     time_rec = [time.time()]
     approx_hessian = np.identity(len(x0))
     x = np.array(x0).reshape(-1,1)

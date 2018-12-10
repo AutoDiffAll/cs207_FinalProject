@@ -1,4 +1,7 @@
 import numpy as np
+import pytest
+import sys, os
+import numpy as np
 try:
     sys.path.append('../AutoDiff')
     sys.path.append('../Implementation')
@@ -8,7 +11,6 @@ except:
     import AutoDiff.AD_numpy as anp
     from Implementation.Optimizer import minimize, PRECISION
 
-import AutoDiff.AD_numpy as anp
 def no_minimum(method):
     f = lambda x,y: x+y
     x = [0,0]
@@ -28,7 +30,7 @@ def at_minimum(method):
     assert np.linalg.norm(r.x) < PRECISION/2
 
 def parabola_univariate(method):
-    f = lambda x,y: x**2
+    f = lambda x: x**2
     x = [-20]
     r = minimize(f, x, method)
     assert np.linalg.norm(r.x) < PRECISION/2
@@ -58,6 +60,9 @@ def test_optimization():
         no_minimum(m)
         parabola(m)
         at_minimum(m)
-        parabola_univariate(method)
-        saddle(method)
-        start_at_max(method)
+        parabola_univariate(m)
+        saddle(m)
+        start_at_max(m)
+
+if __name__ == "__main__":
+    test_optimization()

@@ -1,0 +1,7 @@
+{
+  "Implementation/Optimizer.py": true, 
+  "Implementation/evaluate.py": true, 
+  "tests/test_numpy.py": true, 
+  "tests/test_optimizer.py": true, 
+  "tests/test_variables.py": true
+}

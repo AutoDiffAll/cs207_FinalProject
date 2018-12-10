@@ -10,6 +10,7 @@ before_install:
     - "pip install -U pip"
     - "export PYTHONPATH=$PYTHONPATH:$(pwd)"
     - "python setup.py install"
+bundler_args: --retry 5
 script:
     - py.test
 after_success:

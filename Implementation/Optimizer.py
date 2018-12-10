@@ -5,6 +5,9 @@ except:
 import time
 import numpy as np
 
+PRECISION = 1e-5
+MAXITER = 1000
+
 class Result:
     def __init__(self, x, val_rec, time_rec, converge):
         """Record the optimization results and performance
@@ -86,7 +89,7 @@ def minimize(fun, x0, method=None, **kwargs):
 
 
 
-def min_conjugate_gradient(fn, x0, precision=1e-5, max_iter=10000):
+def min_conjugate_gradient(fn, x0, precision = PRECISION, max_iter = MAXITER):
     # create initial variables
     # right now we only test with the 26 alphabets
     from string import ascii_lowercase
@@ -142,7 +145,7 @@ def min_conjugate_gradient(fn, x0, precision=1e-5, max_iter=10000):
 def min_newton():
     pass
 
-def min_steepestdescent(fn, x0, precision, max_iter):
+def min_steepestdescent(fn, x0, precision = PRECISION, max_iter = MAXITER):
      # create initial variables
     # right now we only test with the 26 alphabets
     from string import ascii_lowercase
@@ -222,7 +225,7 @@ def _update_hessian(approx_hessian, d_grad, step):
             - 1/(step.T.dot(approx_hessian).dot(step))*(approx_hessian.dot(step).dot(step.T).dot(approx_hessian.T))
            )
 
-def min_BFGS(fn, x0, precision, max_iter, beta = 0.9, c = 0.9, alpha_init = 1):
+def min_BFGS(fn, x0, precision = PRECISION, max_iter = MAXITER, beta = 0.9, c = 0.9, alpha_init = 1):
     time_rec = [time.time()]
     approx_hessian = np.identity(len(x0))
     x = np.array(x0).reshape(-1,1)
@@ -250,7 +253,7 @@ def min_BFGS(fn, x0, precision, max_iter, beta = 0.9, c = 0.9, alpha_init = 1):
     converge = (np.linalg.norm(new_grad) <= precision)
     return Result(x, np.array(val_rec), time_rec, converge)
 
-def min_gradientdescent(fn, x0, precision, max_iter, lr=0.01):
+def min_gradientdescent(fn, x0, precision = PRECISION, max_iter = MAXITER, lr=0.01):
      # create initial variables
     # right now we only test with the 26 alphabets
     from string import ascii_lowercase
@@ -360,7 +363,7 @@ def findroot(fun, x0, method=None, **kwargs):
     pass
 
 
-def root_secant_method(fun, x0, precision=1e-5, max_iter=10000):
+def root_secant_method(fun, x0, precision=PRECISION, max_iter=MAXITER):
     # choose initial guess of x0, and use finite difference to approximate the derivatives
     import time
     import numpy as np

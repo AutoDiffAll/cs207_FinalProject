@@ -161,7 +161,7 @@ def min_steepestdescent(fn, x0, precision = PRECISION, max_iter = MAXITER):
     new_grad = _get_grad(fn, x, var_names)
 
     val_rec = [x.copy()]
-    time_rec = []
+    time_rec = [0]
     init_time = time.time()
 
     for i in range(max_iter):
@@ -174,42 +174,19 @@ def min_steepestdescent(fn, x0, precision = PRECISION, max_iter = MAXITER):
         x += dx
 
         val_rec.append(x.copy())
+        time_rec.append(time.time()-init_time)
         
-
-
-     # initial guess of n = 0.01
-    n = 0.01
-    while True:
-        # recreate new variables with new values
-        x_var = []
-        for i, v in enumerate(x):
-            x_var.append(Variable(var_names[i], v))
-        # obtain values and jacobian to find delta_f
-        val_vector = np.array([value.val for value in x_var])
-        jacobian = np.array([fn(*x_var).der.get(i) for i in var_names])
-        delta_f = jacobian*val_vector
-
-
-        find_min = fmin(lambda x:fn(*x), val_vector-n*delta_f, maxiter = 1, disp=False)
-        n = (find_min - x)/delta_f
-
-        # update x
-        old_x = x
-        x = x + n*delta_f
-        print(x)
         # threshold stopping condition
-        if max(abs(x-old_x)) < precision:
+        # maximum norm
+        if np.linalg.norm(grad1, norm) < precision:
+            # reshape val_rec
+            val_rec = np.array(val_rec)
+            time_rec = np.array(time_rec)
             return Result(x, val_rec, time_rec, True)
 
-        # store history of values
-        val_rec.append(x)
 
-        time_rec.append(time.time()-init_time)
-
-        # iteration stopping condition
-        if nums_iteration >= max_iter:
-            return Result(x, val_rec    , time_rec, False)
-        nums_iteration +=1
+    return Result(x, np.array(val_rec), np.array(time_rec), False)
+        
 
 def _get_grad(fn, x, var_names):
     variables = [Variable(var_names[idx], x_n) for idx, x_n in enumerate(x)]

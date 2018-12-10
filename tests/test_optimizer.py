@@ -1,5 +1,13 @@
-from Implementation.Optimizer import minimize, PRECISION
 import numpy as np
+try:
+    sys.path.append('../AutoDiff')
+    sys.path.append('../Implementation')
+    import AD_numpy as anp
+    from Optimizer import minimize, PRECISION
+except:
+    import AutoDiff.AD_numpy as anp
+    from Implementation.Optimizer import minimize, PRECISION
+
 import AutoDiff.AD_numpy as anp
 def no_minimum(method):
     f = lambda x,y: x+y

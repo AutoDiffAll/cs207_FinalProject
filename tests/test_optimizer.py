@@ -73,7 +73,7 @@ def test_conjugate_gradient():
     start_at_max(m)
 
 def test_steepest_descent():
-    m = 'Steepest Descent'
+    m = 'Steepest Descend'
     no_minimum(m)
     parabola(m)
     at_minimum(m)

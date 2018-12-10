@@ -74,7 +74,8 @@ def minimize(fun, x0, method=None, **kwargs):
         return min_BFGS(fun,x0, **kwargs)
     elif method == "Gradient Descend":
         return min_gradientdescent(fun, x0, **kwargs)
-    return False
+    else:
+        raise ValueError("{} is not a valid optimization method".format(method))
 
 
 

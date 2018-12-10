@@ -2,8 +2,6 @@ import numpy as np
 
 class Variable(object):
     def __init__(self, name, val, der = None, primitive = True):
-        if not isinstance(val, (float, int)):
-            raise ValueError('val must be numeric')
         self.val = val
         if primitive:
             self.name = name

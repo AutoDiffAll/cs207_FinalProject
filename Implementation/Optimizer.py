@@ -10,7 +10,7 @@ try:
 except:
     from AutoDiff.variables import Variable
 
-    
+
 import time
 import numpy as np
 
@@ -45,13 +45,11 @@ def minimize(fun, x0, method=None, **kwargs):
     args: tuple (optional). Extra arguments passed to the opjective function.
     method: string (optional). Type of different optimizer. Should be one of
 
-        - 'Newton Method'               :ref:`(see here) <optimizer.min_newton>`
         - 'BFGS'                        :ref:`(see here) <optimizer.min_BFGS>`
-        - 'Stochastic Gradient Descend' :ref:`(see here) <optimizer.min_SGD>`
         - 'Gradient Descend'            :ref:`(see here) <optimizer.min_gradient_descend>`
         - 'Conjugate Gradient'          :ref:`(see here) <optimizer.min_conjugate_gradient>`
         - 'Steepest Descend'            :ref:`(see here) <optimizer.min_steepestdescent>`
-        \\ To add
+
         If not specified, it will automatically choose 'Newton Method'.
 
 
@@ -83,7 +81,51 @@ def minimize(fun, x0, method=None, **kwargs):
     else:
         raise ValueError("{} is not a valid optimization method".format(method))
 
+class Model(object):
+    def __init__(self, data):
+        self.data = data
+        self.all_data = data
+        self.row_idx = 0
 
+    def make_stochastic(self):
+        self.stochastic = True
+        self.row_idx = 0
+        self.data = self.all_data.iloc[self.row_idx,:]
+
+    def make_deterministic(self):
+        self.data = self.all_data
+
+    def step(self):
+        if self.row_idx < len(self.all_data) - 1:
+            self.row_idx += 1
+        else:
+            self.row_idx = 0
+        self.data = self.all_data.iloc[self.row_idx,:]
+
+    def predict(self):
+        raise NotImplementedError
+
+    def loss(self):
+        raise NotImplementedError
+
+def minimize_over_data(model, init_param, method, epochs, stochastic = False, **kwargs):
+    if stochastic:
+        x = np.array(init_param)
+        val_rec = [x]
+        model.make_stochastic()
+        for epoch in range(epochs):
+            for rows in range(len(model.all_data)):
+                r = minimize(model.loss, x, method = method, max_iter = 1, **kwargs)
+                x = r.x
+                val_rec.append(r.x)
+                model.step()
+        model.make_deterministic()
+        r = opt.Result(x, val_rec, None, None)
+    else:
+        x = init_param
+        val_rec = [x]
+        r = minimize(model.loss, x, method = method, max_iter = epochs, **kwargs)
+    return r
 
 def min_conjugate_gradient(fn, x0, precision=1e-5, max_iter=10000, alpha_init=0, norm=np.inf):
     # create initial variables
@@ -139,12 +181,6 @@ def min_conjugate_gradient(fn, x0, precision=1e-5, max_iter=10000, alpha_init=0,
         nums_iteration += 1
 
 
-
-
-def min_newton():
-    pass
-
-
 def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, norm=np.inf):
      # create initial variables
     import numpy as np
@@ -189,6 +225,7 @@ def _get_grad(fn, x, var_names):
     grad = np.array([jacobian[name] for name in var_names])
     return grad
 
+
 def _line_search(fn, x, search_direction, grad, beta = 0.9, c = 0.9, alpha_init = 1):
     """approximately minimizes f along search_direction
     https://en.wikipedia.org/wiki/Backtracking_line_search
@@ -199,11 +236,13 @@ def _line_search(fn, x, search_direction, grad, beta = 0.9, c = 0.9, alpha_init 
         alpha = alpha * beta
     return alpha
 
+
 def _update_hessian(approx_hessian, d_grad, step):
     return (approx_hessian
             + 1/(d_grad.T.dot(step))*d_grad.dot(d_grad.T)
             - 1/(step.T.dot(approx_hessian).dot(step))*(approx_hessian.dot(step).dot(step.T).dot(approx_hessian.T))
            )
+
 
 def min_BFGS(fn, x0, precision = PRECISION, max_iter = MAXITER, beta = 0.9, c = 0.9, alpha_init = 1):
     begin=time.time()
@@ -233,6 +272,7 @@ def min_BFGS(fn, x0, precision = PRECISION, max_iter = MAXITER, beta = 0.9, c = 
 
     converge = (np.linalg.norm(new_grad) <= precision)
     return Result(x, np.array(val_rec), time_rec, converge)
+
 
 def min_gradientdescent(fn, x0, precision = PRECISION, max_iter = MAXITER, lr=0.01):
      # create initial variables

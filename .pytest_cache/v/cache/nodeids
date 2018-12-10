@@ -52,7 +52,5 @@
   "AutoDiff/variables.py::cs207_FinalProject.AutoDiff.variables.Variable.__repr__", 
   "AutoDiff/variables.py::cs207_FinalProject.AutoDiff.variables.Variable.jacobian", 
   "AutoDiff/variables.py::cs207_FinalProject.AutoDiff.variables.Variable.partial_der", 
-  "AutoDiff/variables.py::cs207_FinalProject.AutoDiff.variables.binary_user_function", 
-  "AutoDiff/variables.py::cs207_FinalProject.AutoDiff.variables.unary_user_function", 
   "AutoDiff/vectorize_func.py::cs207_FinalProject.AutoDiff.vectorize_func.vectorize_variable"
 ]

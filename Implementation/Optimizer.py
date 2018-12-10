@@ -93,7 +93,7 @@ def minimize(fun, x0, method=None, **kwargs):
 
 
 
-ddef min_conjugate_gradient(fn, x0, precision=1e-5, max_iter=10000, alpha_init=0, norm=np.inf):
+def min_conjugate_gradient(fn, x0, precision=1e-5, max_iter=10000, alpha_init=0, norm=np.inf):
     # create initial variables
     from scipy.optimize import minimize
     import numpy as np

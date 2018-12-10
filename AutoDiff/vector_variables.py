@@ -60,11 +60,43 @@ class vector_Variable(object):
             return vector_Variable(self.variables*other)
     __rmul__ = __mul__
 
+    def __truediv__(self, other):
+        # check that vector functions are of the same length
+        if len(self.val) != len(other.val):
+            raise (ValueError('operands could not be broadcast together with shapes {} {}'
+                              .format(self.val.shape, other.val.shape)))
+
+        # if both are vector variables
+        try:
+            return vector_Variable(self.variables/other.variables)
+        # when other is not a vector of variables
+        except AttributeError:
+            return vector_Variable(self.variables/other)
+    __rtruediv__ = __truediv__
+
     def __pos__(self):
         return vector_Variable(self.variables)
 
     def __neg__(self):
         return vector_Variable(np.negative(self.variables))
+
+    def __eq__(self, other):
+        # check that vector functions are of the same length
+        if len(self.val) != len(other.val):
+            return False
+        try:
+            if (self.jacobian() == other.jacobian()) and (self.val == other.val):
+                return True
+            else:
+                return False
+        except AttributeError:
+            return False
+
+    def __ne__(self, other):
+        if self == other:
+            return False
+        else:
+            return True
 
 def vectorize_variable(fn):
     """Given a vector function of variables, returns a function that

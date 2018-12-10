@@ -189,7 +189,7 @@ def unary_user_function(fn, fn_der):
     >>> import numpy as np
     >>> sec = lambda x: 1/np.cos(x)
     >>> sec_der = lambda x: sec(x)*np.tan(x)
-    >>> ad_sec = user_function(sec, sec_der)
+    >>> ad_sec = unary_user_function(sec, sec_der)
     >>> a = Variable('a', 2)
     >>> x = ad_sec(a)
     >>> x.val
@@ -248,8 +248,7 @@ def binary_user_function(fn, fn_der_x1, fn_der_x2):
     >>> y = Variable('y', 2)
     >>> z = Variable('z', 4)
     >>> print(mult(mult(x,y),z))
-
-    Variable name: f(y,x,z), Value: 24, Derivatives: {'y': 12, 'x': 8, 'z': 6}
+    Variable name: f(z,x,y), Value: 24, Derivatives: {'z': 6, 'x': 8, 'y': 12}
     """
     def AD_fn(x1, x2):
         # get dep variables and variables

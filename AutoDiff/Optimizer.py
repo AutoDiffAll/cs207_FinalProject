@@ -212,6 +212,8 @@ def _line_search(fn, x, search_direction, grad, beta = 0.9, c = 0.9, alpha_init 
     """
     m = search_direction.T.dot(grad)
     alpha = alpha_init
+    print(x)
+    print(fn(*(x))
     while (fn(*(x)) - fn(*(x+alpha*search_direction))) < -c*alpha*m:
         alpha = alpha * beta
     return alpha

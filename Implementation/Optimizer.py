@@ -144,7 +144,7 @@ def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=
     val_rec = [np.array(x0)]
     time_rec = [0]
     time_total = 0
-    while True:
+    while np.linalg.norm(grad0, norm) > precision and nums_iteration < max_iter:
         start_time = time.time()
         # secant method line search
         alpha = (-sigma*grad0 @ conj_direct) / (_get_grad(fn, x+sigma*conj_direct, var_names)@conj_direct -  grad0@conj_direct)
@@ -163,19 +163,20 @@ def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=
 
         # threshold stopping condition
         # maximum norm
-        if np.linalg.norm(grad1, norm) < precision:
-            # reshape val_rec
-            val_rec = np.concatenate(val_rec).reshape(-1, len(x))
-            time_rec = np.array(time_rec)
-            return Result(x, val_rec, time_rec, True)
-
-        # iteration stopping condition
-        if nums_iteration >= max_iter:
-            # reshape val_rec
-            val_rec = np.concatenate(val_rec).reshape(-1, len(x))
-            time_rec = np.array(time_rec)
-            return Result(x, val_rec, time_rec, False)
         nums_iteration += 1
+
+    if np.linalg.norm(grad0, norm) < precision:
+        # reshape val_rec
+        val_rec = np.concatenate(val_rec).reshape(-1, len(x))
+        time_rec = np.array(time_rec)
+        return Result(x, val_rec, time_rec, True)
+
+    # iteration stopping condition
+    if nums_iteration >= max_iter:
+        # reshape val_rec
+        val_rec = np.concatenate(val_rec).reshape(-1, len(x))
+        time_rec = np.array(time_rec)
+        return Result(x, val_rec, time_rec, False)
 
 
 def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.01, norm=2):

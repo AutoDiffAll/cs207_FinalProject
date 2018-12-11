@@ -37,6 +37,7 @@
   "tests/test_optimizer.py::test_gradient_descent",
   "tests/test_optimizer.py::test_conjugate_gradient",
   "tests/test_optimizer.py::test_steepest_descent",
+  "tests/test_optimizer.py::test_minimize_over_data",
   "tests/test_variables.py::test_variable_scalar_add_minus",
   "tests/test_variables.py::test_variable_scalar_multiple_divide",
   "tests/test_variables.py::test_variable_scalar_pow"

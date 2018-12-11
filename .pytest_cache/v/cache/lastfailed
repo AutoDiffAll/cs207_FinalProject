@@ -1,3 +1,4 @@
 {
-  "AutoDiff/variables.py::cs207_FinalProject.AutoDiff.variables.binary_user_function": true
+  "AutoDiff/variables.py::cs207_FinalProject.AutoDiff.variables.binary_user_function": true,
+  "tests/test_optimizer.py::test_minimize_over_data": true
 }

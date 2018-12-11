@@ -1,15 +1,10 @@
 import pytest
+import pandas as pd
 import sys, os
 import numpy as np
 import sys
-try:
-    sys.path.append('../AutoDiff')
-    sys.path.append('../Implementation')
-    import AD_numpy as anp
-    from Optimizer import minimize, PRECISION
-except:
-    import AutoDiff.AD_numpy as anp
-    from Implementation.Optimizer import minimize, PRECISION
+from ..AutoDiff import AD_numpy as anp
+from ..Implementation.Optimizer import minimize, PRECISION, Model, minimize_over_data
 
 def no_minimum(method):
     f = lambda x,y: x+y
@@ -83,6 +78,33 @@ def test_steepest_descent():
     parabola_univariate(m)
     saddle(m)
     start_at_max(m)
+
+def test_minimize_over_data():
+    indep_var = np.random.normal(size = (100,2))
+    data = pd.DataFrame(data = indep_var, columns = ['indep_var1','indep_var2'])
+    data['dep_var'] = 2*data.indep_var1 + 3*data.indep_var2
+
+    class MSE_Regression(Model):
+        def __init__(self, data):
+            super().__init__(data)
+
+        def predict(self, beta1, beta2):
+            return self.data['indep_var1']*beta1 + self.data['indep_var2']*beta2
+
+        def loss(self, beta1, beta2):
+            prediction = self.predict(beta1, beta2)
+            return np.sum((prediction-self.data['dep_var'])**2)
+
+    model = MSE_Regression(data)
+
+    methods = ['Gradient Descend', 'Conjugate Gradient', 'Steepest Descend']
+    for m in methods:
+        r_all = minimize_over_data(model, [10,10], m, 2000, stochastic = False)
+        r_all.x
+        assert np.linalg.norm(r_all.x - np.array([2,3])) < PRECISION/2
+        r_stoch = minimize_over_data(model, [10,10], m, 100, stochastic = True)
+        r_stoch.x
+        assert np.linalg.norm(r_stoch.x - np.array([2,3])) < 0.1
 
 
 if __name__ == "__main__":

@@ -127,11 +127,8 @@ def minimize_over_data(model, init_param, method, epochs, stochastic = False, **
         r = minimize(model.loss, x, method = method, max_iter = epochs, **kwargs)
     return r
 
-def min_conjugate_gradient(fn, x0, precision=1e-5, max_iter=10000, alpha_init=0, norm=np.inf):
+def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.01, norm=np.inf):
     # create initial variables
-    from scipy.optimize import minimize
-    import numpy as np
-
     x = np.array(x0)
 
     # create initial variables
@@ -149,8 +146,8 @@ def min_conjugate_gradient(fn, x0, precision=1e-5, max_iter=10000, alpha_init=0,
     time_total = 0
     while True:
         start_time = time.time()
-        argmin_fn = lambda alpha: fn(*[i + alpha*j for i, j in zip(x, conj_direct)])
-        alpha = minimize(argmin_fn, alpha_init).x
+        # secant method line search
+        alpha = (-sigma*grad0 @ conj_direct) / (_get_grad(fn, x+sigma*conj_direct, var_names)@conj_direct -  grad0@conj_direct)
         x = x + alpha*conj_direct
         grad1 = _get_grad(fn, x, var_names)
         beta = (grad1 @ grad1) / (grad0 @ grad0)
@@ -181,11 +178,8 @@ def min_conjugate_gradient(fn, x0, precision=1e-5, max_iter=10000, alpha_init=0,
         nums_iteration += 1
 
 
-def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, norm=np.inf):
+def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.01, norm=np.inf):
      # create initial variables
-    import numpy as np
-    from scipy.optimize import minimize
-
     x = np.array(x0,dtype=float)
     var_names = ['x'+str(idx) for idx in range(len(x))]
 
@@ -195,9 +189,8 @@ def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, norm=np.i
 
     for i in range(max_iter):
         s = -_get_grad(fn, x, var_names)
-
-        opt = minimize(lambda eta: fn(*(x+eta*s)), 0)
-        eta = opt.x
+        # secant method line search
+        eta = (-sigma*s @ s) / (_get_grad(fn, x+sigma*s, var_names)@s -  s@s)
 
         dx = eta*s
         x += dx
@@ -244,16 +237,17 @@ def _update_hessian(approx_hessian, d_grad, step):
            )
 
 
-def min_BFGS(fn, x0, precision = PRECISION, max_iter = MAXITER, beta = 0.9, c = 0.9, alpha_init = 1):
-    begin=time.time()
-    time_rec = [0]
+def min_BFGS(fn, x0, precision = PRECISION, max_iter = MAXITER, beta = 0.9, c = 0.9, alpha_init = 1, norm=np.inf):
     approx_hessian = np.identity(len(x0))
     x = np.array(x0).reshape(-1,1)
     var_names = ['x'+str(idx) for idx in range(len(x))]
     new_grad = _get_grad(fn, x, var_names)
     iter = 0
     val_rec = [x.flatten()]
-    while np.linalg.norm(new_grad) > precision and iter < max_iter:
+    time_rec = []
+    time_total = 0
+    while np.linalg.norm(new_grad, norm) > precision and iter < max_iter:
+        start_time = time.time()
         # get new x values
         grad = new_grad
         search_direction = -np.linalg.pinv(approx_hessian).dot(grad)
@@ -268,63 +262,40 @@ def min_BFGS(fn, x0, precision = PRECISION, max_iter = MAXITER, beta = 0.9, c = 
         approx_hessian = _update_hessian(approx_hessian, d_grad, step)
 
         iter += 1
-        time_rec.append(time.time()-begin)
+        time_total = time_total + time.time()-start_time
+        time_rec.append(time_total)
 
-    converge = (np.linalg.norm(new_grad) <= precision)
+    converge = (np.linalg.norm(new_grad, norm) <= precision)
     return Result(x, np.array(val_rec), time_rec, converge)
 
 
-def min_gradientdescent(fn, x0, precision = PRECISION, max_iter = MAXITER, lr=0.01):
-     # create initial variables
-    # right now we only test with the 26 alphabets
-    from string import ascii_lowercase
-    import time
-    import numpy as np
+def min_gradientdescent(fn, x0, precision = PRECISION, max_iter = MAXITER, lr=0.01, norm=np.inf):
 
-    name_ls = iter(ascii_lowercase)
-
-    # create initial variables
-    var_names = []
-    for i in x0:
-        name = next(name_ls)
-        var_names.append(name)
+    var_names = ['x'+str(idx) for idx in range(len(x))]
 
     x = np.array(x0)
-    s = 0 # initialize as 0 works to ensure that s=g in 1st iteration
 
     nums_iteration = 0
     val_rec = []
     time_rec = []
-    init_time = time.time()
-     # initial guess of n = 0.01
-    n = 0.01
+    time_total = 0
     while True:
-        # recreate new variables with new values
-        x_var = []
-        for i, v in enumerate(x):
-            x_var.append(Variable(var_names[i], v))
-        # obtain values and jacobian to find delta_f
-        val_vector = np.array([value.val for value in x_var])
-        jacobian = np.array([fn(*x_var).der.get(i) for i in var_names])
-        delta_f = jacobian*val_vector
-
-
-        # update x
-        old_x = x
-        x = x - lr*delta_f
-        #print(x)
-        # threshold stopping condition
-        if max(abs(x-old_x)) < precision:
-            return Result(x, val_rec, time_rec, True)
+        start_time = time.time()
+        g = _get_grad(fn, x, var_names)
+        x = x - lr*g
 
         # store history of values
         val_rec.append(x)
+        time_total = time_total + time.time()-start_time
+        time_rec.append(time_total)
 
-        time_rec.append(time.time()-init_time)
+        # threshold stopping condition
+        if np.linalg.norm(g, norm) < precision:
+            return Result(x, val_rec, time_rec, True)
 
         # iteration stopping condition
         if nums_iteration >= max_iter:
-            return Result(x, val_rec    , time_rec, False)
+            return Result(x, val_rec, time_rec, False)
         nums_iteration +=1
 
 

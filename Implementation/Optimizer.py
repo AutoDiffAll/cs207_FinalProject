@@ -326,3 +326,13 @@ def min_gradientdescent(fn, x0, precision = PRECISION, max_iter = MAXITER, lr=0.
         if nums_iteration >= max_iter:
             return Result(x, val_rec    , time_rec, False)
         nums_iteration +=1
+
+
+if __name__ == "__main__":
+    def fn(x): return (x-2)**3+1
+    x = np.array([-1], dtype=float)
+    var_names = ['x'+str(idx) for idx in range(len(x))]
+    s=_get_grad(fn, x, var_names)
+    print(s)
+    print(type(s))
+    

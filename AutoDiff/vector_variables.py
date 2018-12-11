@@ -52,9 +52,9 @@ class vector_Variable(object):
         >>> b = Variable('b', 3)
         >>> c = Variable('c', 2)
         >>> f = vec_fn(a, b, c)
-        >>> f.jacobian().values
-        array([[ 3.        ,  1.0100075 , -0.90929743],
-           [ 3.88051086,  2.92034057,  0.        ]])
+        >>> print(f.jacobian().values)
+        [[ 3.          1.0100075  -0.90929743]
+         [ 3.88051086  2.92034057  0.        ]]
         """
         return self.der
 
@@ -98,13 +98,13 @@ class vector_Variable(object):
         >>> b = Variable('b', 3)
         >>> c = Variable('c', 2)
         >>> f = vec_fn(a, b, c)
-        >>> x = partial_der(a)
+        >>> x = f.partial_der(a)
         array([1.       , 0.0100075])
         >>> d = 3
-        >>> x.partial_der(b)
+        >>> f.partial_der(b)
         input is not a Variable
         >>> e = Variable('e', 3)
-        >>> x.partial_der(e)
+        >>> f.partial_der(e)
         array([0., 0.])
         """
         try:
@@ -222,9 +222,9 @@ def vectorize_variable(fn):
     >>> b = Variable('b', 1)
     >>> c = Variable('c', 2)
     >>> f = vec_fn(a, b, c)
-    >>> f.jacobian().values
-    array([[ 1.        ,  3.54030231, -0.90929743],
-           [ 0.0100075 , -1.96997749,  0.        ]])
+    >>> print(f.jacobian().values)
+    [[ 1.        ,  3.54030231, -0.90929743],
+     [ 0.0100075 , -1.96997749,  0.        ]]
     >>> f.val
     array([3.42532415, 4.14112001])
     """

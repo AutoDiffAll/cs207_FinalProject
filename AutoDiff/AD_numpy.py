@@ -2,10 +2,11 @@
 # functions should be able to handle inputs of Variable and regular python
 # numbers
 import numpy as np
-try:
-    from variables import Variable, unary_user_function
-except:
-    from AutoDiff.variables import Variable, unary_user_function
+from .variables import Variable, unary_user_function
+#try:
+#    from variables import Variable, unary_user_function
+#except:
+#    from AutoDiff.variables import Variable, unary_user_function
 
 # arithmetic
 def add(x, y):

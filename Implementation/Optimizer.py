@@ -185,7 +185,7 @@ def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=
     # iteration stopping condition
     if nums_iteration >= max_iter:
         # reshape val_rec
-        return Result(x, np.array(val_rec(), np.array(time_rec), False)
+        return Result(x, np.array(val_rec), np.array(time_rec), False)
 
 def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.01, norm=NORM, **kwargs):
      # create initial variables

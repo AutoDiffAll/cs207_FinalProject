@@ -180,16 +180,12 @@ def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=
 
     if np.linalg.norm(sgrad1, norm) < precision:
         # reshape val_rec
-        val_rec = np.concatenate(val_rec).reshape(-1, len(x))
-        time_rec = np.array(time_rec)
-        return Result(x, val_rec, time_rec, True)
+        return Result(x, np.array(val_rec), np.array(time_rec), True)
 
     # iteration stopping condition
     if nums_iteration >= max_iter:
         # reshape val_rec
-        val_rec = np.concatenate(val_rec).reshape(-1, len(x))
-        time_rec = np.array(time_rec)
-        return Result(x, val_rec, time_rec, False)
+        return Result(x, np.array(val_rec(), np.array(time_rec), False)
 
 def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.01, norm=NORM, **kwargs):
      # create initial variables

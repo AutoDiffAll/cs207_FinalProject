@@ -150,7 +150,9 @@ class Variable(object):
         else:
             return True
 
-
+    def dot(self, other):
+        matmul = binary_user_function(lambda x,y: x.dot(y), lambda x,y: y*(x**(y-1)), lambda x,y: x**y*np.log(x))
+        
 
 def unary_user_function(fn, fn_der):
     """Given a function and its derivative, returns an original function that

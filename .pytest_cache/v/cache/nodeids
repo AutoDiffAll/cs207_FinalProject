@@ -28,6 +28,8 @@
   "AutoDiff/variables.py::cs207_FinalProject.AutoDiff.variables.Variable.jacobian",
   "AutoDiff/variables.py::cs207_FinalProject.AutoDiff.variables.Variable.partial_der",
   "AutoDiff/variables.py::cs207_FinalProject.AutoDiff.variables.unary_user_function",
+  "AutoDiff/vector_variables.py::cs207_FinalProject.AutoDiff.vector_variables.vector_Variable.jacobian",
+  "AutoDiff/vector_variables.py::cs207_FinalProject.AutoDiff.vector_variables.vector_Variable.partial_der",
   "AutoDiff/vector_variables.py::cs207_FinalProject.AutoDiff.vector_variables.vectorize_variable",
   "tests/test_numpy.py::test_numpy_scalar_add_minus",
   "tests/test_numpy.py::test_numpy_scalar_multiple_divide",

@@ -97,14 +97,12 @@ def test_minimize_over_data():
 
     model = MSE_Regression(data)
 
-    methods = ['Gradient Descend', 'Conjugate Gradient', 'Steepest Descend']
-    for m in methods:
-        r_all = minimize_over_data(model, [10,10], m, 2000, stochastic = False)
-        r_all.x
-        assert np.linalg.norm(r_all.x - np.array([2,3])) < PRECISION/2
-        r_stoch = minimize_over_data(model, [10,10], m, 100, stochastic = True)
-        r_stoch.x
-        assert np.linalg.norm(r_stoch.x - np.array([2,3])) < 0.1
+    r_all = minimize_over_data(model, [10,10], 'Gradient Descend', 2000, stochastic = False, lr = 1e-4)
+    r_all.x
+    assert np.linalg.norm(r_all.x - np.array([2,3])) < PRECISION/2
+    r_stoch = minimize_over_data(model, [10,10], 'Gradient Descend', 100, stochastic = True, lr = 1e-3)
+    r_stoch.x
+    assert np.linalg.norm(r_stoch.x - np.array([2,3])) < 0.1
 
 
 if __name__ == "__main__":

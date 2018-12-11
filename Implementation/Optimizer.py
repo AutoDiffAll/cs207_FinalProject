@@ -128,7 +128,7 @@ def minimize_over_data(model, init_param, method, epochs, stochastic = False, **
         r = minimize(model.loss, x, method = method, max_iter = epochs, **kwargs)
     return r
 
-def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.01, norm=NORM):
+def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.01, norm=NORM, **kwargs):
     # create initial variables
     x = np.array(x0)
 
@@ -180,7 +180,7 @@ def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=
         return Result(x, val_rec, time_rec, False)
 
 
-def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.01, norm=NORM):
+def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.01, norm=NORM, **kwargs):
      # create initial variables
     x = np.array(x0,dtype=float)
     var_names = ['x'+str(idx) for idx in range(len(x))]
@@ -209,8 +209,9 @@ def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.0
         val_rec.append(x.copy())
         time_rec.append(time.time()-init_time)
 
+    converge = (np.linalg.norm(grad1, norm) <= precision)
 
-    return Result(x, np.array(val_rec), np.array(time_rec), False)
+    return Result(x, np.array(val_rec), np.array(time_rec), converge)
 
 
 def _get_grad(fn, x, var_names):
@@ -221,57 +222,61 @@ def _get_grad(fn, x, var_names):
     return grad
 
 
-def _line_search(fn, x, search_direction, grad, beta = 0.9, c = 0.9, alpha_init = 1):
-    """approximately minimizes f along search_direction
-    https://en.wikipedia.org/wiki/Backtracking_line_search
-    """
-    m = search_direction.T.dot(grad)
-    alpha = alpha_init
-    while (fn(*(x)) - fn(*(x+alpha*search_direction))) < -c*alpha*m:
-        alpha = alpha * beta
-    return alpha
+# def _line_search(fn, x, search_direction, grad, beta = 0.9, c = 0.9, alpha_init = 1):
+#     """approximately minimizes f along search_direction
+#     https://en.wikipedia.org/wiki/Backtracking_line_search
+#     """
+#     m = search_direction.T.dot(grad)
+#     alpha = alpha_init
+#     while (fn(*(x)) - fn(*(x+alpha*search_direction))) < -c*alpha*m:
+#         alpha = alpha * beta
+#     return alpha
 
 
-def _update_hessian(approx_hessian, d_grad, step):
-    return (approx_hessian
-            + 1/(d_grad.T.dot(step))*d_grad.dot(d_grad.T)
-            - 1/(step.T.dot(approx_hessian).dot(step))*(approx_hessian.dot(step).dot(step.T).dot(approx_hessian.T))
-           )
+# def _update_hessian(approx_hessian, d_grad, step):
+#     return (approx_hessian
+#             + 1/(d_grad.T.dot(step))*d_grad.dot(d_grad.T)
+#             - 1/(step.T.dot(approx_hessian).dot(step))*(approx_hessian.dot(step).dot(step.T).dot(approx_hessian.T))
+#            )
 
 
-def min_BFGS(fn, x0, precision = PRECISION, max_iter = MAXITER, beta = 0.9, c = 0.9, alpha_init = 1, norm=NORM):
-    approx_hessian = np.identity(len(x0))
-    x = np.array(x0).reshape(-1,1)
+def min_BFGS(fn, x0, precision=PRECISION, max_iter=MAXITER, beta=0.9, c=0.9, alpha_init=1, norm=NORM, **kwargs):
+    approx_hessian = np.eye(len(x0))
+
+    x = np.array(x0, dtype=np.float)
+
     var_names = ['x'+str(idx) for idx in range(len(x))]
-    new_grad = _get_grad(fn, x, var_names)
-    iter = 0
-    val_rec = [x.flatten()]
+
+    val_rec = [x.copy()]
     time_rec = [0]
-    time_total = 0
-    while np.linalg.norm(new_grad, norm) > precision and iter < max_iter:
-        start_time = time.time()
-        # get new x values
-        grad = new_grad
-        search_direction = -np.linalg.pinv(approx_hessian).dot(grad)
-        stepsize = _line_search(fn, x, search_direction, grad, beta = beta, c = c, alpha_init = alpha_init)
-        step = stepsize * search_direction
-        x = x + step
-        val_rec.append(x.flatten())
+    init_time = time.time()
 
-        # update hessian approximation
-        new_grad = _get_grad(fn, x, var_names)
-        d_grad = new_grad - grad
-        approx_hessian = _update_hessian(approx_hessian, d_grad, step)
+    for i in range(max_iter):
+        grad_now = _get_grad(fn, x, var_names)
+        s = np.linalg.solve(approx_hessian, -grad_now)
+        x += s
+        val_rec.append(x.copy())
 
-        iter += 1
-        time_total = time_total + time.time()-start_time
-        time_rec.append(time_total)
+        # update matrix Hessian
+        grad1 = _get_grad(fn, x, var_names)
+        y = grad1-grad_now
+        dH1 = np.outer(y, y)/np.dot(y, s)
+        Hs = np.dot(approx_hessian, s)
+        dH2 = -np.outer(Hs, Hs)/np.dot(Hs, s)
+        approx_hessian += dH1+dH2
 
-    converge = (np.linalg.norm(new_grad, norm) <= precision)
+        time_rec.append(time.time()-init_time)
+
+        if np.linalg.norm(grad1, norm) <= precision:
+            # reshape val_rec
+            val_rec = np.array(val_rec)
+            time_rec = np.array(time_rec)
+            return Result(x, val_rec, time_rec, True)
+
+    converge = (np.linalg.norm(grad1, norm) <= precision)
     return Result(x, np.array(val_rec), time_rec, converge)
 
-
-def min_gradientdescent(fn, x0, precision = PRECISION, max_iter = MAXITER, lr=1e-2, norm=NORM):
+def min_gradientdescent(fn, x0, precision = PRECISION, max_iter = MAXITER, lr=1e-2, norm=NORM, **kwargs):
     x = np.array(x0)
 
     var_names = ['x'+str(idx) for idx in range(len(x))]

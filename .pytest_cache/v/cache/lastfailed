@@ -1,4 +1,5 @@
 {
   "AutoDiff/variables.py::cs207_FinalProject.AutoDiff.variables.binary_user_function": true,
-  "tests/test_optimizer.py::test_minimize_over_data": true
+  "AutoDiff/vector_variables.py::cs207_FinalProject.AutoDiff.vector_variables.vector_Variable.jacobian": true,
+  "AutoDiff/vector_variables.py::cs207_FinalProject.AutoDiff.vector_variables.vector_Variable.partial_der": true
 }

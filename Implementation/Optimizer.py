@@ -171,7 +171,7 @@ def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=
         x = x + alpha*conj_direct
 
         # store history of values
-        val_rec.append(x)
+        val_rec.append(x.copy())
         time_rec.append(time.time()-init_time)
 
         # update grad

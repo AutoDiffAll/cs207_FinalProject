@@ -286,24 +286,24 @@ def min_gradientdescent(fn, x0, precision = PRECISION, max_iter = 10000, lr=1e-3
     var_names = ['x'+str(idx) for idx in range(len(x))]
 
     nums_iteration = 0
-    val_rec = [x]
+    val_rec = [x.copy()]
     time_rec = [0]
-    time_total = 0
+    initial_time=time.time()
+    g = _get_grad(fn, x, var_names)
+
     while True:
-        start_time = time.time()
-        g = _get_grad(fn, x, var_names)
         x = x - lr*g
 
         # store history of values
         val_rec.append(x)
-        time_total = time_total + time.time()-start_time
-        time_rec.append(time_total)
+        time_rec.append(time.time()-initial_time)
+        g = _get_grad(fn, x, var_names)
 
         # threshold stopping condition
         if np.linalg.norm(g, norm) < precision:
-            return Result(x, val_rec, time_rec, True)
+            return Result(x, np.array(val_rec), time_rec, True)
 
         # iteration stopping condition
         if nums_iteration >= max_iter:
-            return Result(x, val_rec, time_rec, False)
+            return Result(x, np.array(val_rec), time_rec, False)
         nums_iteration +=1

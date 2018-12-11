@@ -154,7 +154,7 @@ def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=10000, sigma=0.
 
     if np.linalg.norm(sgrad0, norm) <= precision:
         # reshape val_rec
-        return Result(x, np.array(val_rec)[0], time_rec, True)
+        return Result(x, np.array(val_rec), time_rec, True)
 
     gradsigma = _get_grad(fn, x+sigma*sgrad0, var_names)
     # check this

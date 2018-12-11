@@ -127,7 +127,7 @@ def minimize_over_data(model, init_param, method, epochs, stochastic = False, **
         r = minimize(model.loss, x, method = method, max_iter = epochs, **kwargs)
     return r
 
-def min_conjugate_gradient(fn, x0, precision=1e-5, max_iter=10000, alpha_init=0, norm=np.inf):
+def min_conjugate_gradient(fn, x0, precision=1e-5, max_iter=10000, alpha_init=0, norm=np.inf, sigma=0.01):
     # create initial variables
     from scipy.optimize import minimize
     import numpy as np
@@ -149,8 +149,8 @@ def min_conjugate_gradient(fn, x0, precision=1e-5, max_iter=10000, alpha_init=0,
     time_total = 0
     while True:
         start_time = time.time()
-        argmin_fn = lambda alpha: fn(*[i + alpha*j for i, j in zip(x, conj_direct)])
-        alpha = minimize(argmin_fn, alpha_init).x
+        # secant method line search
+        alpha = (-sigma*grad0 @ conj_direct) / (_get_grad(fn, x+sigma*conj_direct, var_names)@conj_direct -  grad0@conj_direct)
         x = x + alpha*conj_direct
         grad1 = _get_grad(fn, x, var_names)
         beta = (grad1 @ grad1) / (grad0 @ grad0)
@@ -335,4 +335,3 @@ if __name__ == "__main__":
     s=_get_grad(fn, x, var_names)
     print(s)
     print(type(s))
-    

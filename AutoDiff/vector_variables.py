@@ -94,8 +94,8 @@ class vector_Variable(object):
         ...     f1 = x * y + anp.sin(y) + anp.cos(z)
         ...     f2 = x + y + anp.sin(x*y)
         ...     return [f1,f2]
-        >>> a = Variable('a', 2)
-        >>> b = Variable('b', 3)
+        >>> a = Variable('a', 3)
+        >>> b = Variable('b', 1)
         >>> c = Variable('c', 2)
         >>> f = vec_fn(a, b, c)
         >>> f.partial_der(a)

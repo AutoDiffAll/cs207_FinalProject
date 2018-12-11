@@ -28,18 +28,9 @@ class vector_Variable(object):
 
         EXAMPLES
         =========
-        >>> try:
-        ...     from variables import Variable
-        ... except:
-        ...     from AutoDiff.variables import Variable
-        >>> try:
-        ...     from vector_variables import vectorize_variable
-        ... except:
-        ...     from AutoDiff.vector_variables import vectorize_variable
-        >>> try:
-        ...     import AD_numpy as anp
-        ... except:
-        ...     import AutoDiff.AD_numpy as anp
+        >>> from automin.autodiff.variables import Variable
+        >>> from automin.autodiff.vector_variables import vectorize_variable
+        >>> import automin.autodiff.AD_numpy as anp
         >>> @vectorize_variable
         ... def vec_fn(x, y, z):
         ...     f1 = x * y + anp.sin(y) + anp.cos(z)
@@ -74,18 +65,9 @@ class vector_Variable(object):
 
         EXAMPLES
         =========
-        >>> try:
-        ...     from variables import Variable
-        ... except:
-        ...     from AutoDiff.variables import Variable
-        >>> try:
-        ...     from vector_variables import vectorize_variable
-        ... except:
-        ...     from AutoDiff.vector_variables import vectorize_variable
-        >>> try:
-        ...     import AD_numpy as anp
-        ... except:
-        ...     import AutoDiff.AD_numpy as anp
+        >>> from automin.autodiff.variables import Variable
+        >>> from automin.autodiff.vector_variables import vectorize_variable
+        >>> import automin.autodiff.AD_numpy as anp
         >>> @vectorize_variable
         ... def vec_fn(x, y, z):
         ...     f1 = x * y + anp.sin(y) + anp.cos(z)
@@ -198,18 +180,9 @@ def vectorize_variable(fn):
 
     EXAMPLES
     =========
-    >>> try:
-    ...     from variables import Variable
-    ... except:
-    ...     from AutoDiff.variables import Variable
-    >>> try:
-    ...     from vector_variables import vectorize_variable
-    ... except:
-    ...     from AutoDiff.vector_variables import vectorize_variable
-    >>> try:
-    ...     import AD_numpy as anp
-    ... except:
-    ...     import AutoDiff.AD_numpy as anp
+    >>> from automin.autodiff.variables import Variable
+    >>> from automin.autodiff.vector_variables import vectorize_variable
+    >>> import automin.autodiff.AD_numpy as anp
     >>> @vectorize_variable
     ... def vec_fn(x, y, z):
     ...     f1 = x * y + anp.sin(y) + anp.cos(z)

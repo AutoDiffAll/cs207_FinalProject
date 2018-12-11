@@ -17,10 +17,7 @@ class Variable(object):
         """
         EXAMPLES
         =========
-        >>> try:
-        ...     from variables import Variable
-        ... except:
-        ...     from AutoDiff.variables import Variable
+        >>> from automin.autodiff.variables import Variable
         >>> a = Variable('a', 2)
         >>> a
         Variable name: a, Value: 2, Derivatives: {'a': 1}
@@ -48,10 +45,7 @@ class Variable(object):
 
         EXAMPLES
         =========
-        >>> try:
-        ...     from variables import Variable
-        ... except:
-        ...     from AutoDiff.variables import Variable
+        >>> from automin.autodiff.variables import Variable
         >>> a = Variable('a', 2)
         >>> x = 4*a
         >>> x.partial_der(a)
@@ -80,10 +74,7 @@ class Variable(object):
 
         EXAMPLES
         =========
-        >>> try:
-        ...     from variables import Variable
-        ... except:
-        ...     from AutoDiff.variables import Variable
+        >>> from automin.autodiff.variables import Variable
         >>> import pprint
         >>> a = Variable('a', 2)
         >>> b = Variable('b', 3)
@@ -152,7 +143,7 @@ class Variable(object):
 
     def dot(self, other):
         matmul = binary_user_function(lambda x,y: x.dot(y), lambda x,y: y*(x**(y-1)), lambda x,y: x**y*np.log(x))
-        
+
 
 def unary_user_function(fn, fn_der):
     """Given a function and its derivative, returns an original function that
@@ -184,10 +175,7 @@ def unary_user_function(fn, fn_der):
 
     EXAMPLES
     =========
-    >>> try:
-    ...     from variables import Variable, unary_user_function
-    ... except:
-    ...     from AutoDiff.variables import Variable, unary_user_function
+    >>> from automin.autodiff.variables import Variable, unary_user_function
     >>> import numpy as np
     >>> sec = lambda x: 1/np.cos(x)
     >>> sec_der = lambda x: sec(x)*np.tan(x)

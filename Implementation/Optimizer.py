@@ -1,4 +1,6 @@
 import sys,os
+import warnings
+
 #sys.path.append('../AutoDiff')
 base_dir = os.path.dirname(__file__) or '.'
 
@@ -33,6 +35,8 @@ class Result:
         self.val_rec = val_rec
         self.time_rec = time_rec
         self.converge = converge
+        if not converge:
+            warnings.warn("optimization did not converge")
         # throw warning if not convergent
 
 
@@ -276,7 +280,7 @@ def min_BFGS(fn, x0, precision=PRECISION, max_iter=MAXITER, beta=0.9, c=0.9, alp
     converge = (np.linalg.norm(grad1, norm) <= precision)
     return Result(x, np.array(val_rec), time_rec, converge)
 
-def min_gradientdescent(fn, x0, precision = PRECISION, max_iter = MAXITER, lr=1e-2, norm=NORM, **kwargs):
+def min_gradientdescent(fn, x0, precision = PRECISION, max_iter = 10000, lr=1e-3, norm=NORM, **kwargs):
     x = np.array(x0)
 
     var_names = ['x'+str(idx) for idx in range(len(x))]

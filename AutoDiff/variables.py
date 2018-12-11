@@ -25,7 +25,7 @@ class Variable(object):
         >>> a
         Variable name: a, Value: 2, Derivatives: {'a': 1}
         """
-        return ("Variable name:\n{}\nValue:\n{}\nDerivatives:\n{}"
+        return ("Variable name: {}, Value: {}, Derivatives: {}"
                 .format(self.name, self.val, self.der)
                 )
 
@@ -236,17 +236,6 @@ def binary_user_function(fn, fn_der_x1, fn_der_x2):
          - fn and fn_der are not changed by this function
          - returns a function AD_fn that has a single input
          - AD_fn should work on numeric types as well as on variable class
-
-    EXAMPLES
-    =========
-    >>> from variables import Variable
-    >>> mult = binary_user_function(lambda x,y: x*y, lambda x,y: y, lambda x,y: x)
-    >>> x = Variable('x', 3)
-    >>> y = Variable('y', 2)
-    >>> z = Variable('z', 4)
-    >>> print(mult(mult(x,y),z))
-
-    Variable name: f(y,x,z), Value: 24, Derivatives: {'y': 12, 'x': 8, 'z': 6}
     """
     def AD_fn(x1, x2):
         # get dep variables and variables

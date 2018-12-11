@@ -144,7 +144,7 @@ def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=
     val_rec = [np.array(x0)]
     time_rec = [0]
     time_total = 0
-    while True:
+    while np.linalg.norm(grad0, norm) > precision and nums_iteration < max_iter:
         start_time = time.time()
         # secant method line search
         alpha = (-sigma*grad0 @ conj_direct) / (_get_grad(fn, x+sigma*conj_direct, var_names)@conj_direct -  grad0@conj_direct)
@@ -163,22 +163,23 @@ def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=
 
         # threshold stopping condition
         # maximum norm
-        if np.linalg.norm(grad1, norm) < precision:
-            # reshape val_rec
-            val_rec = np.concatenate(val_rec).reshape(-1, len(x))
-            time_rec = np.array(time_rec)
-            return Result(x, val_rec, time_rec, True)
-
-        # iteration stopping condition
-        if nums_iteration >= max_iter:
-            # reshape val_rec
-            val_rec = np.concatenate(val_rec).reshape(-1, len(x))
-            time_rec = np.array(time_rec)
-            return Result(x, val_rec, time_rec, False)
         nums_iteration += 1
 
+    if np.linalg.norm(grad0, norm) < precision:
+        # reshape val_rec
+        val_rec = np.concatenate(val_rec).reshape(-1, len(x))
+        time_rec = np.array(time_rec)
+        return Result(x, val_rec, time_rec, True)
 
-def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.01, norm=np.inf):
+    # iteration stopping condition
+    if nums_iteration >= max_iter:
+        # reshape val_rec
+        val_rec = np.concatenate(val_rec).reshape(-1, len(x))
+        time_rec = np.array(time_rec)
+        return Result(x, val_rec, time_rec, False)
+
+
+def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.01, norm=2):
      # create initial variables
     x = np.array(x0,dtype=float)
     var_names = ['x'+str(idx) for idx in range(len(x))]
@@ -202,7 +203,8 @@ def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.0
 
         # threshold stopping condition
         # maximum norm
-        if np.linalg.norm(grad1, norm) <= precision:
+
+        if np.linalg.norm(grad1, norm) < precision:
             # reshape val_rec
             val_rec = np.array(val_rec)
             time_rec = np.array(time_rec)
@@ -243,6 +245,7 @@ def min_BFGS(fn, x0, precision=PRECISION, max_iter=MAXITER, beta=0.9, c=0.9, alp
     approx_hessian = np.eye(len(x0))
 
     x = np.array(x0, dtype=np.float)
+
     var_names = ['x'+str(idx) for idx in range(len(x))]
 
     val_rec = [x.copy()]
@@ -274,11 +277,10 @@ def min_BFGS(fn, x0, precision=PRECISION, max_iter=MAXITER, beta=0.9, c=0.9, alp
     converge = (np.linalg.norm(grad1, norm) <= precision)
     return Result(x, np.array(val_rec), time_rec, converge)
 
-def min_gradientdescent(fn, x0, precision = PRECISION, max_iter = MAXITER, lr=0.01, norm=np.inf):
+def min_gradientdescent(fn, x0, precision = PRECISION, max_iter = MAXITER, lr=1e-2, norm=2):
+    x = np.array(x0)
 
     var_names = ['x'+str(idx) for idx in range(len(x))]
-
-    x = np.array(x0)
 
     nums_iteration = 0
     val_rec = [x]

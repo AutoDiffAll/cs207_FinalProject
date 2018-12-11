@@ -101,7 +101,7 @@ class vector_Variable(object):
         >>> f.partial_der(a)
         array([1.       , 0.0100075])
         >>> d = 3
-        >>> f.partial_der(b)
+        >>> f.partial_der(d)
         input is not a Variable
         >>> e = Variable('e', 3)
         >>> f.partial_der(e)

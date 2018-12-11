@@ -148,23 +148,26 @@ def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=
 
     # initial gradient and steepest descent
     # recreate new variables with new values
-    grad0 = _get_grad(fn, x, var_names)
-    x = -grad0
-    conj_direct = x
+    sgrad0 = -_get_grad(fn, x, var_names)
+    gradsigma = _get_grad(fn, x+sigma*sgrad0, var_names)
+    # check this
+    alpha = (-sigma*sgrad0@sgrad0) / (gradsigma@sgrad0 - sgrad0@sgrad0)
+    x = x + alpha*sgrad0
+    conj_direct = sgrad0
 
     nums_iteration = 0
-    val_rec = [np.array(x0)]
-    time_rec = [0]
+    val_rec = []
+    time_rec = []
     time_total = 0
-    while np.linalg.norm(grad0, norm) > precision and nums_iteration < max_iter:
+    while True:
         start_time = time.time()
-        # secant method line search
-        alpha = (-sigma*grad0 @ conj_direct) / (_get_grad(fn, x+sigma *
-                                                          conj_direct, var_names)@conj_direct - grad0@conj_direct)
+        sgrad1 = -_get_grad(fn, x, var_names)
+        beta = min(0, (sgrad1 @ (sgrad0-sgrad1)) / (sgrad0 @ sgrad0))
+        conj_direct = sgrad1 + beta*conj_direct
+        gradsigma = _get_grad(fn, x+sigma*conj_direct, var_names)
+        # secant method
+        alpha = (sigma*sgrad1 @ conj_direct) / (gradsigma@conj_direct +  sgrad1@conj_direct)
         x = x + alpha*conj_direct
-        grad1 = _get_grad(fn, x, var_names)
-        beta = (grad1 @ grad1) / (grad0 @ grad0)
-        conj_direct = -grad1 + beta*conj_direct
 
         # store history of values
         val_rec.append(x)
@@ -172,13 +175,10 @@ def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=
         time_rec.append(time_total)
 
         # update grad
-        grad0 = grad1
+        sgrad0 = sgrad1
 
-        # threshold stopping condition
-        # maximum norm
-        nums_iteration += 1
 
-    if np.linalg.norm(grad0, norm) < precision:
+    if np.linalg.norm(sgrad1, norm) < precision:
         # reshape val_rec
         val_rec = np.concatenate(val_rec).reshape(-1, len(x))
         time_rec = np.array(time_rec)
@@ -190,7 +190,6 @@ def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=
         val_rec = np.concatenate(val_rec).reshape(-1, len(x))
         time_rec = np.array(time_rec)
         return Result(x, val_rec, time_rec, False)
-
 
 def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.01, norm=NORM, **kwargs):
      # create initial variables

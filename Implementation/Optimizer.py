@@ -139,7 +139,7 @@ def minimize_over_data(model, init_param, method, epochs, stochastic=False, **kw
     return r
 
 
-def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.01, norm=NORM, **kwargs):
+def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=10000, sigma=0.01, norm=NORM, **kwargs):
     # create initial variables
     x = np.array(x0)
 
@@ -157,11 +157,11 @@ def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=
     x = x + alpha*sgrad0
     conj_direct = sgrad0
 
-    nums_iteration = 0
     val_rec.append(x.copy())
     time_rec.append(time.time()-time0)
     init_time = time.time()
-    while True:
+
+    for i in range(max_iter-1):
         sgrad1 = -_get_grad(fn, x, var_names)
         beta = min(0, (sgrad1 @ (sgrad0-sgrad1)) / (sgrad0 @ sgrad0))
         conj_direct = sgrad1 + beta*conj_direct
@@ -178,14 +178,12 @@ def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=
         sgrad0 = sgrad1
 
 
-    if np.linalg.norm(sgrad1, norm) < precision:
+    if np.linalg.norm(sgrad1, norm) <= precision:
         # reshape val_rec
-        return Result(x, np.array(val_rec), np.array(time_rec), True)
+        return Result(x, np.array(val_rec), time_rec, True)
 
-    # iteration stopping condition
-    if nums_iteration >= max_iter:
-        # reshape val_rec
-        return Result(x, np.array(val_rec), np.array(time_rec), False)
+
+    return Result(x, np.array(val_rec), time_rec, False)
 
 def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.01, norm=NORM, **kwargs):
      # create initial variables
@@ -201,11 +199,9 @@ def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.0
         # threshold stopping condition
         # maximum norm
 
-        if np.linalg.norm(grad1, norm) < precision:
+        if np.linalg.norm(grad1, norm) <= precision:
             # reshape val_rec
-            val_rec = np.array(val_rec)
-            time_rec = np.array(time_rec)
-            return Result(x, val_rec, time_rec, True)
+            return Result(x, np.array(val_rec), time_rec, True)
         s = -grad1
         # secant method line search
         eta = (-sigma*s @ s) / (_get_grad(fn, x+sigma*s, var_names)@s - s@s)
@@ -216,9 +212,8 @@ def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.0
         val_rec.append(x.copy())
         time_rec.append(time.time()-init_time)
 
-    converge = (np.linalg.norm(grad1, norm) <= precision)
 
-    return Result(x, np.array(val_rec), np.array(time_rec), converge)
+    return Result(x, np.array(val_rec), time_rec, False)
 
 
 def _get_grad(fn, x, var_names):
@@ -276,12 +271,9 @@ def min_BFGS(fn, x0, precision=PRECISION, max_iter=MAXITER, beta=0.9, c=0.9, alp
 
         if np.linalg.norm(grad1, norm) <= precision:
             # reshape val_rec
-            val_rec = np.array(val_rec)
-            time_rec = np.array(time_rec)
-            return Result(x, val_rec, time_rec, True)
+            return Result(x, np.array(val_rec), time_rec, True)
 
-    converge = (np.linalg.norm(grad1, norm) <= precision)
-    return Result(x, np.array(val_rec), time_rec, converge)
+    return Result(x, np.array(val_rec), time_rec, False)
 
 
 def min_gradientdescent(fn, x0, precision=PRECISION, max_iter=10000, lr=1e-3, norm=NORM, **kwargs):
@@ -289,13 +281,12 @@ def min_gradientdescent(fn, x0, precision=PRECISION, max_iter=10000, lr=1e-3, no
 
     var_names = ['x'+str(idx) for idx in range(len(x))]
 
-    nums_iteration = 0
     val_rec = [x.copy()]
     time_rec = [0]
     initial_time = time.time()
     g = _get_grad(fn, x, var_names)
 
-    while True:
+    for i in range(max_iter):
         x = x - lr*g
 
         # store history of values
@@ -304,10 +295,8 @@ def min_gradientdescent(fn, x0, precision=PRECISION, max_iter=10000, lr=1e-3, no
         g = _get_grad(fn, x, var_names)
 
         # threshold stopping condition
-        if np.linalg.norm(g, norm) < precision:
+        if np.linalg.norm(g, norm) <= precision:
             return Result(x, np.array(val_rec), time_rec, True)
 
         # iteration stopping condition
-        if nums_iteration >= max_iter:
-            return Result(x, np.array(val_rec), time_rec, False)
-        nums_iteration += 1
+    return Result(x, np.array(val_rec), time_rec, False)

@@ -1,7 +1,8 @@
-import sys,os
+import sys
+import os
 import warnings
 
-#sys.path.append('../AutoDiff')
+# sys.path.append('../AutoDiff')
 base_dir = os.path.dirname(__file__) or '.'
 
 package_dir_a = os.path.join(base_dir, '../AutoDiff')
@@ -19,6 +20,7 @@ import numpy as np
 PRECISION = 1e-5
 MAXITER = 5000
 NORM = 2
+
 
 class Result:
     def __init__(self, x, val_rec, time_rec, converge):
@@ -79,12 +81,14 @@ def minimize(fun, x0, method=None, **kwargs):
         return min_conjugate_gradient(fun, x0, **kwargs)
     elif method == "Steepest Descend":
         return min_steepestdescent(fun, x0, **kwargs)
-    elif method =="BFGS":
-        return min_BFGS(fun,x0, **kwargs)
+    elif method == "BFGS":
+        return min_BFGS(fun, x0, **kwargs)
     elif method == "Gradient Descend":
         return min_gradientdescent(fun, x0, **kwargs)
     else:
-        raise ValueError("{} is not a valid optimization method".format(method))
+        raise ValueError(
+            "{} is not a valid optimization method".format(method))
+
 
 class Model(object):
     def __init__(self, data):
@@ -95,7 +99,7 @@ class Model(object):
     def make_stochastic(self):
         self.stochastic = True
         self.row_idx = 0
-        self.data = self.all_data.iloc[self.row_idx,:]
+        self.data = self.all_data.iloc[self.row_idx, :]
 
     def make_deterministic(self):
         self.data = self.all_data
@@ -105,7 +109,7 @@ class Model(object):
             self.row_idx += 1
         else:
             self.row_idx = 0
-        self.data = self.all_data.iloc[self.row_idx,:]
+        self.data = self.all_data.iloc[self.row_idx, :]
 
     def predict(self):
         raise NotImplementedError
@@ -113,8 +117,13 @@ class Model(object):
     def loss(self):
         raise NotImplementedError
 
+<<<<<<< HEAD
 def minimize_over_data(model, init_param, method, epochs, stochastic = False, **kwargs):
     supported_stochastic_methods = ['Gradient Descend']
+=======
+
+def minimize_over_data(model, init_param, method, epochs, stochastic=False, **kwargs):
+>>>>>>> 41183bd80ce43ad7f259e37f5d6dcc76f3bacddc
     if stochastic:
         if method not in supported_stochastic_methods:
             raise ValueError("""{} is not supported for stochastic optimization.
@@ -128,7 +137,8 @@ def minimize_over_data(model, init_param, method, epochs, stochastic = False, **
         for epoch in range(epochs):
             start_time = time.time()
             for rows in range(len(model.all_data)):
-                r = minimize(model.loss, x, method = method, max_iter = 1, **kwargs)
+                r = minimize(model.loss, x, method=method,
+                             max_iter=1, **kwargs)
                 x = r.x
                 val_rec.append(r.x)
                 model.step()
@@ -139,10 +149,11 @@ def minimize_over_data(model, init_param, method, epochs, stochastic = False, **
     else:
         x = init_param
         val_rec = [x]
-        r = minimize(model.loss, x, method = method, max_iter = epochs, **kwargs)
+        r = minimize(model.loss, x, method=method, max_iter=epochs, **kwargs)
     return r
 
-def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.01, norm=NORM, **kwargs):
+
+def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=10000, sigma=0.01, norm=NORM, **kwargs):
     # create initial variables
     x = np.array(x0)
 
@@ -150,53 +161,51 @@ def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=
     var_names = ['x'+str(idx) for idx in range(len(x))]
 
     # initial gradient and steepest descent
-    # recreate new variables with new values
-    grad0 = _get_grad(fn, x, var_names)
-    x = -grad0
-    conj_direct = x
-
-    nums_iteration = 0
-    val_rec = [np.array(x0)]
+    val_rec = [x.copy()]
     time_rec = [0]
-    time_total = 0
-    while np.linalg.norm(grad0, norm) > precision and nums_iteration < max_iter:
-        start_time = time.time()
-        # secant method line search
-        alpha = (-sigma*grad0 @ conj_direct) / (_get_grad(fn, x+sigma*conj_direct, var_names)@conj_direct -  grad0@conj_direct)
+    time0 = time.time()
+    sgrad0 = -_get_grad(fn, x, var_names)
+
+    if np.linalg.norm(sgrad0, norm) <= precision:
+        # reshape val_rec
+        return Result(x, np.array(val_rec), time_rec, True)
+
+    gradsigma = _get_grad(fn, x+sigma*sgrad0, var_names)
+    # check this
+    alpha = (-sigma*sgrad0@sgrad0) / (gradsigma@sgrad0 - sgrad0@sgrad0)
+    x = x + alpha*sgrad0
+    conj_direct = sgrad0
+
+    val_rec.append(x.copy())
+    time_rec.append(time.time()-time0)
+    init_time = time.time()
+
+    for i in range(max_iter-1):
+        sgrad1 = -_get_grad(fn, x, var_names)
+
+        if np.linalg.norm(sgrad1, norm) <= precision:
+            # reshape val_rec
+            return Result(x, np.array(val_rec), time_rec, True)
+
+        beta = min(0, (sgrad1 @ (sgrad0-sgrad1)) / (sgrad0 @ sgrad0))
+        conj_direct = sgrad1 + beta*conj_direct
+        gradsigma = _get_grad(fn, x+sigma*conj_direct, var_names)
+        # secant method
+        alpha = (sigma*sgrad1 @ conj_direct) / (gradsigma@conj_direct +  sgrad1@conj_direct)
         x = x + alpha*conj_direct
-        grad1 = _get_grad(fn, x, var_names)
-        beta = (grad1 @ grad1) / (grad0 @ grad0)
-        conj_direct = -grad1 + beta*conj_direct
 
         # store history of values
-        val_rec.append(x)
-        time_total = time_total + time.time()-start_time
-        time_rec.append(time_total)
+        val_rec.append(x.copy())
+        time_rec.append(time.time()-init_time)
 
         # update grad
-        grad0 = grad1
+        sgrad0 = sgrad1
 
-        # threshold stopping condition
-        # maximum norm
-        nums_iteration += 1
-
-    if np.linalg.norm(grad0, norm) < precision:
-        # reshape val_rec
-        val_rec = np.concatenate(val_rec).reshape(-1, len(x))
-        time_rec = np.array(time_rec)
-        return Result(x, val_rec, time_rec, True)
-
-    # iteration stopping condition
-    if nums_iteration >= max_iter:
-        # reshape val_rec
-        val_rec = np.concatenate(val_rec).reshape(-1, len(x))
-        time_rec = np.array(time_rec)
-        return Result(x, val_rec, time_rec, False)
-
+    return Result(x, np.array(val_rec), time_rec, False)
 
 def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.01, norm=NORM, **kwargs):
      # create initial variables
-    x = np.array(x0,dtype=float)
+    x = np.array(x0, dtype=float)
     var_names = ['x'+str(idx) for idx in range(len(x))]
 
     val_rec = [x.copy()]
@@ -204,18 +213,16 @@ def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.0
     init_time = time.time()
 
     for i in range(max_iter):
-        grad1 = _get_grad(fn,x,var_names)
+        grad1 = _get_grad(fn, x, var_names)
         # threshold stopping condition
         # maximum norm
 
-        if np.linalg.norm(grad1, norm) < precision:
+        if np.linalg.norm(grad1, norm) <= precision:
             # reshape val_rec
-            val_rec = np.array(val_rec)
-            time_rec = np.array(time_rec)
-            return Result(x, val_rec, time_rec, True)
+            return Result(x, np.array(val_rec), time_rec, True)
         s = -grad1
         # secant method line search
-        eta = (-sigma*s @ s) / (_get_grad(fn, x+sigma*s, var_names)@s -  s@s)
+        eta = (-sigma*s @ s) / (_get_grad(fn, x+sigma*s, var_names)@s - s@s)
 
         dx = eta*s
         x += dx
@@ -223,9 +230,8 @@ def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.0
         val_rec.append(x.copy())
         time_rec.append(time.time()-init_time)
 
-    converge = (np.linalg.norm(grad1, norm) <= precision)
 
-    return Result(x, np.array(val_rec), np.array(time_rec), converge)
+    return Result(x, np.array(val_rec), time_rec, False)
 
 
 def _get_grad(fn, x, var_names):
@@ -283,37 +289,32 @@ def min_BFGS(fn, x0, precision=PRECISION, max_iter=MAXITER, beta=0.9, c=0.9, alp
 
         if np.linalg.norm(grad1, norm) <= precision:
             # reshape val_rec
-            val_rec = np.array(val_rec)
-            time_rec = np.array(time_rec)
-            return Result(x, val_rec, time_rec, True)
+            return Result(x, np.array(val_rec), time_rec, True)
 
-    converge = (np.linalg.norm(grad1, norm) <= precision)
-    return Result(x, np.array(val_rec), time_rec, converge)
+    return Result(x, np.array(val_rec), time_rec, False)
 
-def min_gradientdescent(fn, x0, precision = PRECISION, max_iter = 10000, lr=1e-3, norm=NORM, **kwargs):
+
+def min_gradientdescent(fn, x0, precision=PRECISION, max_iter=10000, lr=1e-3, norm=NORM, **kwargs):
     x = np.array(x0)
 
     var_names = ['x'+str(idx) for idx in range(len(x))]
 
-    nums_iteration = 0
-    val_rec = [x]
+    val_rec = [x.copy()]
     time_rec = [0]
-    time_total = 0
-    while True:
-        start_time = time.time()
-        g = _get_grad(fn, x, var_names)
+    initial_time = time.time()
+    g = _get_grad(fn, x, var_names)
+
+    for i in range(max_iter):
         x = x - lr*g
 
         # store history of values
         val_rec.append(x)
-        time_total = time_total + time.time()-start_time
-        time_rec.append(time_total)
+        time_rec.append(time.time()-initial_time)
+        g = _get_grad(fn, x, var_names)
 
         # threshold stopping condition
-        if np.linalg.norm(g, norm) < precision:
-            return Result(x, val_rec, time_rec, True)
+        if np.linalg.norm(g, norm) <= precision:
+            return Result(x, np.array(val_rec), time_rec, True)
 
         # iteration stopping condition
-        if nums_iteration >= max_iter:
-            return Result(x, val_rec, time_rec, False)
-        nums_iteration +=1
+    return Result(x, np.array(val_rec), time_rec, False)

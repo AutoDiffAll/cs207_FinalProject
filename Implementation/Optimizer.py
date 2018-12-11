@@ -147,7 +147,9 @@ def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=
     var_names = ['x'+str(idx) for idx in range(len(x))]
 
     # initial gradient and steepest descent
-    # recreate new variables with new values
+    val_rec = [x.copy()]
+    time_rec = [0]
+    time0 = time.time()
     sgrad0 = -_get_grad(fn, x, var_names)
     gradsigma = _get_grad(fn, x+sigma*sgrad0, var_names)
     # check this
@@ -156,11 +158,10 @@ def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=
     conj_direct = sgrad0
 
     nums_iteration = 0
-    val_rec = []
-    time_rec = []
-    time_total = 0
+    val_rec.append(x.copy())
+    time_rec.append(time.time()-time0)
+    init_time = time.time()
     while True:
-        start_time = time.time()
         sgrad1 = -_get_grad(fn, x, var_names)
         beta = min(0, (sgrad1 @ (sgrad0-sgrad1)) / (sgrad0 @ sgrad0))
         conj_direct = sgrad1 + beta*conj_direct
@@ -171,8 +172,7 @@ def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=
 
         # store history of values
         val_rec.append(x)
-        time_total = time_total + time.time()-start_time
-        time_rec.append(time_total)
+        time_rec.append(time.time()-init_time)
 
         # update grad
         sgrad0 = sgrad1

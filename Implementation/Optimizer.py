@@ -117,13 +117,8 @@ class Model(object):
     def loss(self):
         raise NotImplementedError
 
-<<<<<<< HEAD
 def minimize_over_data(model, init_param, method, epochs, stochastic = False, **kwargs):
     supported_stochastic_methods = ['Gradient Descend']
-=======
-
-def minimize_over_data(model, init_param, method, epochs, stochastic=False, **kwargs):
->>>>>>> 41183bd80ce43ad7f259e37f5d6dcc76f3bacddc
     if stochastic:
         if method not in supported_stochastic_methods:
             raise ValueError("""{} is not supported for stochastic optimization.

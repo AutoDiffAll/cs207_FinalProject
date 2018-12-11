@@ -95,7 +95,36 @@ def plot_path(fn, val_lists, title, dim=2, **kwargs):
             # plot 2D path
             plot_path_2D(val_arr=val_lists[i].val_rec, fn=fn, **kwargs)
     plt.suptitle(title, fontsize=25, y=1.02)
+    plt.show()
 
+def plot_convergency(time_lists, label_lists):
+    n = len(time_lists)
+    for i in range(n):
+        plt.plot(time_lists[i], label=label_lists[i])
+    plt.title('Convergency time for different model')
+    plt.xlabel('iterations')
+    plt.ylabel('time(s)')
+    plt.legend()
+    plt.grid()
+    plt.show()
+
+
+def plot_acc(val_lists, true, label_lists, norm='L2'):
+    n = len(val_lists)
+    for i in range(n):
+        if norm == 'L1':
+            err = np.linalg.norm(val_lists[i]-[1, 1], 1, axis=-1)
+        elif norm == 'L_inf':
+            err = np.linalg.norm(val_lists[i]-[1, 1], np.inf, axis=-1)
+        else:
+            err = np.linalg.norm(val_lists[i]-[1, 1], 2, axis=-1)
+        plt.plot(err, label=label_lists[i])
+    plt.title(norm+' Error per iterations')
+    plt.xlabel('iterations')
+    plt.ylabel('Error')
+    plt.legend()
+    plt.grid()
+    plt.show()
 
 if __name__ == "__main__":
 
@@ -108,10 +137,17 @@ if __name__ == "__main__":
     x_grid = np.linspace(-3, 3, 150)
     y_grid = np.linspace(-3, 4, 200)
     plot_path(f1, val_lists, "Steepest Descend", x_grid=x_grid, y_grid=y_grid)
+    val_arr = [val.val_rec for val in val_lists]
+    plot_acc(val_arr, [1, 1], ['start at '+str(v0)
+                                for v0 in v0_list], norm='L2')
+
+    plot_convergency([val.time_rec for val in val_lists], [
+                        'start at '+str(v0) for v0 in v0_list])
+
 
     def f0(x): return x**2+(x-3)**2
     v0_list = [[-1], [0], [2]]
     val_lists = [minimize(f0, vo, method="Steepest Descend") for vo in v0_list]
     x_grid = np.linspace(-2, 4, 150)
     plot_path(f0, val_lists, "Steepest Descend", dim=1, x_grid=x_grid)
-
+    

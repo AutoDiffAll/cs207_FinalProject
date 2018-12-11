@@ -208,7 +208,7 @@ def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, norm=np.i
         grad1 = _get_grad(fn,x,var_names)
         # threshold stopping condition
         # maximum norm
-        if np.linalg.norm(grad1, norm) < precision:
+        if np.linalg.norm(grad1, norm) <= precision:
             # reshape val_rec
             val_rec = np.array(val_rec)
             time_rec = np.array(time_rec)
@@ -328,11 +328,3 @@ def min_gradientdescent(fn, x0, precision = PRECISION, max_iter = MAXITER, lr=0.
         nums_iteration +=1
 
 
-if __name__ == "__main__":
-    def fn(x): return (x-2)**3+1
-    x = np.array([-1], dtype=float)
-    var_names = ['x'+str(idx) for idx in range(len(x))]
-    s=_get_grad(fn, x, var_names)
-    print(s)
-    print(type(s))
-    

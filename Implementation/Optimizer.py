@@ -178,7 +178,7 @@ def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=
         nums_iteration += 1
 
 
-def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.01, norm=np.inf):
+def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.01, norm=2):
      # create initial variables
     x = np.array(x0,dtype=float)
     var_names = ['x'+str(idx) for idx in range(len(x))]
@@ -201,7 +201,8 @@ def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.0
         grad1 = _get_grad(fn,x,var_names)
         # threshold stopping condition
         # maximum norm
-        if np.linalg.norm(grad1, norm) <= precision:
+
+        if np.linalg.norm(grad1, norm) < precision:
             # reshape val_rec
             val_rec = np.array(val_rec)
             time_rec = np.array(time_rec)
@@ -237,7 +238,7 @@ def _update_hessian(approx_hessian, d_grad, step):
            )
 
 
-def min_BFGS(fn, x0, precision = PRECISION, max_iter = MAXITER, beta = 0.9, c = 0.9, alpha_init = 1, norm=np.inf):
+def min_BFGS(fn, x0, precision = PRECISION, max_iter = MAXITER, beta = 0.9, c = 0.9, alpha_init = 1, norm=2):
     approx_hessian = np.identity(len(x0))
     x = np.array(x0).reshape(-1,1)
     var_names = ['x'+str(idx) for idx in range(len(x))]
@@ -269,11 +270,10 @@ def min_BFGS(fn, x0, precision = PRECISION, max_iter = MAXITER, beta = 0.9, c = 
     return Result(x, np.array(val_rec), time_rec, converge)
 
 
-def min_gradientdescent(fn, x0, precision = PRECISION, max_iter = MAXITER, lr=0.01, norm=np.inf):
+def min_gradientdescent(fn, x0, precision = PRECISION, max_iter = MAXITER, lr=1e-2, norm=2):
+    x = np.array(x0)
 
     var_names = ['x'+str(idx) for idx in range(len(x))]
-
-    x = np.array(x0)
 
     nums_iteration = 0
     val_rec = []
@@ -297,5 +297,3 @@ def min_gradientdescent(fn, x0, precision = PRECISION, max_iter = MAXITER, lr=0.
         if nums_iteration >= max_iter:
             return Result(x, val_rec, time_rec, False)
         nums_iteration +=1
-
-

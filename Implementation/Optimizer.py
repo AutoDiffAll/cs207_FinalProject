@@ -181,7 +181,7 @@ def min_conjugate_gradient(fn, x0, precision=1e-5, max_iter=10000, alpha_init=0,
         nums_iteration += 1
 
 
-def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, norm=np.inf):
+def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, norm=np.inf, sigma=0.01):
      # create initial variables
     import numpy as np
     from scipy.optimize import minimize
@@ -195,9 +195,8 @@ def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, norm=np.i
 
     for i in range(max_iter):
         s = -_get_grad(fn, x, var_names)
-
-        opt = minimize(lambda eta: fn(*(x+eta*s)), 0)
-        eta = opt.x
+        # secant method line search
+        eta = (-sigma*s @ s) / (_get_grad(fn, x+sigma*s, var_names)@s -  s@s)
 
         dx = eta*s
         x += dx

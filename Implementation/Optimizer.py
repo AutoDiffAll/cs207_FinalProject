@@ -163,6 +163,11 @@ def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=10000, sigma=0.
 
     for i in range(max_iter-1):
         sgrad1 = -_get_grad(fn, x, var_names)
+
+        if np.linalg.norm(sgrad1, norm) <= precision:
+            # reshape val_rec
+            return Result(x, np.array(val_rec), time_rec, True)
+
         beta = min(0, (sgrad1 @ (sgrad0-sgrad1)) / (sgrad0 @ sgrad0))
         conj_direct = sgrad1 + beta*conj_direct
         gradsigma = _get_grad(fn, x+sigma*conj_direct, var_names)
@@ -176,12 +181,6 @@ def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=10000, sigma=0.
 
         # update grad
         sgrad0 = sgrad1
-
-
-    if np.linalg.norm(sgrad1, norm) <= precision:
-        # reshape val_rec
-        return Result(x, np.array(val_rec), time_rec, True)
-
 
     return Result(x, np.array(val_rec), time_rec, False)
 

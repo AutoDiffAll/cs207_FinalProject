@@ -1,9 +1,6 @@
 import numpy as np
 import pandas as pd
-try:
-    from variables import Variable
-except:
-    from AutoDiff.variables import Variable
+from .variables import Variable
 
 class vector_Variable(object):
     def __init__(self, variable_vec):

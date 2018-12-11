@@ -3,8 +3,8 @@ import pandas as pd
 import sys, os
 import numpy as np
 import sys
-from ..AutoDiff import AD_numpy as anp
-from ..Implementation.Optimizer import minimize, PRECISION, Model, minimize_over_data
+from ..automin.autodiff import AD_numpy as anp
+from ..automin.optimizer import minimize, PRECISION, Model, minimize_over_data
 
 def no_minimum(method):
     f = lambda x,y: x+y

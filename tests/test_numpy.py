@@ -3,13 +3,15 @@ import numpy as np
 import pytest
 import sys
 import os
-try:
-    sys.path.append('../AutoDiff')
-    from variables import Variable
-    import AD_numpy as anp
-except:
-    from AutoDiff.variables import Variable
-    import AutoDiff.AD_numpy as anp
+from ..automin.autodiff import AD_numpy as anp
+from ..automin.autodiff.variables import Variable
+# try:
+#     sys.path.append('../AutoDiff')
+#     from variables import Variable
+#     import AD_numpy as anp
+# except:
+#     from AutoDiff.variables import Variable
+#     import AutoDiff.AD_numpy as anp
 
 def test_numpy_scalar_add_minus():
       # case 0: build variables

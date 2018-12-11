@@ -20,12 +20,13 @@ class vector_Variable(object):
         return self.der
 
     def partial_der(self, dep_var):
-        # note: we should raise KeyError for variable class as well, rather than try and except?
-        # raise error if input is not a variable
-        if dep_var not in self.der.columns.values:
-            raise KeyError('Input is not a Variable')
-
-        return self.der[dep_var].values
+        try:
+            if dep_var.name not in self.der.columns.values:
+                return np.zeros(self.der.shape[0])
+            else:
+                return self.der[dep_var.name].values
+        except AttributeError:
+            print('input is not a Variable')
 
     def __add__(self, other):
         # check that vector functions are of the same length

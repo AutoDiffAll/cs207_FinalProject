@@ -141,8 +141,8 @@ def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=
     conj_direct = x
 
     nums_iteration = 0
-    val_rec = []
-    time_rec = []
+    val_rec = [np.array(x0)]
+    time_rec = [0]
     time_total = 0
     while True:
         start_time = time.time()
@@ -245,7 +245,7 @@ def min_BFGS(fn, x0, precision = PRECISION, max_iter = MAXITER, beta = 0.9, c = 
     new_grad = _get_grad(fn, x, var_names)
     iter = 0
     val_rec = [x.flatten()]
-    time_rec = []
+    time_rec = [0]
     time_total = 0
     while np.linalg.norm(new_grad, norm) > precision and iter < max_iter:
         start_time = time.time()
@@ -276,8 +276,8 @@ def min_gradientdescent(fn, x0, precision = PRECISION, max_iter = MAXITER, lr=1e
     var_names = ['x'+str(idx) for idx in range(len(x))]
 
     nums_iteration = 0
-    val_rec = []
-    time_rec = []
+    val_rec = [x]
+    time_rec = [0]
     time_total = 0
     while True:
         start_time = time.time()

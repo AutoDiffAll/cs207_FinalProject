@@ -1,4 +1,3 @@
 {
-  "AutoDiff/variables.py::cs207_FinalProject.AutoDiff.variables.binary_user_function": true,
-  "tests/test_optimizer.py::test_steepest_descent": true
+  "AutoDiff/variables.py::cs207_FinalProject.AutoDiff.variables.binary_user_function": true
 }

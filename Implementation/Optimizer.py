@@ -15,7 +15,8 @@ import time
 import numpy as np
 
 PRECISION = 1e-5
-MAXITER = 1000
+MAXITER = 5000
+NORM = 2
 
 class Result:
     def __init__(self, x, val_rec, time_rec, converge):
@@ -127,7 +128,7 @@ def minimize_over_data(model, init_param, method, epochs, stochastic = False, **
         r = minimize(model.loss, x, method = method, max_iter = epochs, **kwargs)
     return r
 
-def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.01, norm=np.inf):
+def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.01, norm=NORM):
     # create initial variables
     x = np.array(x0)
 
@@ -179,7 +180,7 @@ def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=
         return Result(x, val_rec, time_rec, False)
 
 
-def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.01, norm=2):
+def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.01, norm=NORM):
      # create initial variables
     x = np.array(x0,dtype=float)
     var_names = ['x'+str(idx) for idx in range(len(x))]
@@ -189,16 +190,6 @@ def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.0
     init_time = time.time()
 
     for i in range(max_iter):
-        s = -_get_grad(fn, x, var_names)
-        # secant method line search
-        eta = (-sigma*s @ s) / (_get_grad(fn, x+sigma*s, var_names)@s -  s@s)
-
-        dx = eta*s
-        x += dx
-
-        val_rec.append(x.copy())
-        time_rec.append(time.time()-init_time)
-
         grad1 = _get_grad(fn,x,var_names)
         # threshold stopping condition
         # maximum norm
@@ -208,6 +199,15 @@ def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.0
             val_rec = np.array(val_rec)
             time_rec = np.array(time_rec)
             return Result(x, val_rec, time_rec, True)
+        s = -grad1
+        # secant method line search
+        eta = (-sigma*s @ s) / (_get_grad(fn, x+sigma*s, var_names)@s -  s@s)
+
+        dx = eta*s
+        x += dx
+
+        val_rec.append(x.copy())
+        time_rec.append(time.time()-init_time)
 
 
     return Result(x, np.array(val_rec), np.array(time_rec), False)
@@ -239,7 +239,7 @@ def _update_hessian(approx_hessian, d_grad, step):
            )
 
 
-def min_BFGS(fn, x0, precision = PRECISION, max_iter = MAXITER, beta = 0.9, c = 0.9, alpha_init = 1, norm=2):
+def min_BFGS(fn, x0, precision = PRECISION, max_iter = MAXITER, beta = 0.9, c = 0.9, alpha_init = 1, norm=NORM):
     approx_hessian = np.identity(len(x0))
     x = np.array(x0).reshape(-1,1)
     var_names = ['x'+str(idx) for idx in range(len(x))]
@@ -271,7 +271,7 @@ def min_BFGS(fn, x0, precision = PRECISION, max_iter = MAXITER, beta = 0.9, c = 
     return Result(x, np.array(val_rec), time_rec, converge)
 
 
-def min_gradientdescent(fn, x0, precision = PRECISION, max_iter = MAXITER, lr=1e-2, norm=2):
+def min_gradientdescent(fn, x0, precision = PRECISION, max_iter = MAXITER, lr=1e-2, norm=NORM):
     x = np.array(x0)
 
     var_names = ['x'+str(idx) for idx in range(len(x))]

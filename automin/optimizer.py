@@ -212,7 +212,7 @@ def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=1e-
             return Result(x, np.array(val_rec), time_rec, True)
         s = -grad1
         # secant method line search
-        eta = (-sigma*s @ s) / (_get_grad(fn, x+sigma*s, var_names)@s - s@s)
+        eta = (-sigma*grad1 @ s) / (_get_grad(fn, x+sigma*s, var_names)@s - grad1@s)
 
         dx = eta*s
         x += dx

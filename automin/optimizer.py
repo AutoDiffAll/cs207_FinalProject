@@ -77,7 +77,7 @@ def minimize(fun, x0, method=None, **kwargs):
         return min_conjugate_gradient(fun, x0, **kwargs)
     elif method == "Steepest Descend":
         return min_steepestdescent(fun, x0, **kwargs)
-    elif method == "BFGS":
+    elif method == "BFGS" or method=="None":
         return min_BFGS(fun, x0, **kwargs)
     elif method == "Gradient Descend":
         return min_gradientdescent(fun, x0, **kwargs)

@@ -9,8 +9,8 @@ import matplotlib.colors as colors
 def plot_path_2D(val_arr, x_grid, y_grid, fn):
     f_grid = fn(x_grid.reshape(1, -1),
                 y_grid.reshape(-1, 1))
-    #f_grid=f_grid-f_grid.min()+1
-    
+    # f_grid=f_grid-f_grid.min()+1
+
     plt.contourf(x_grid, y_grid, f_grid, cmap='Blues',
                  norm=colors.LogNorm(vmin=f_grid.min(), vmax=f_grid.max())
                  )
@@ -89,16 +89,58 @@ def plot_path(fn, val_lists, title, dim=2, **kwargs):
     plt.suptitle(title, fontsize=25, y=1.02)
     plt.show()
 
-def plot_convergency(time_lists, label_lists,precision=1e-5):
+
+def plot_conv(time_lists, label_lists, precision=1e-5):
     n = len(time_lists)
     for i in range(n):
         plt.plot(time_lists[i], label=label_lists[i])
-    plt.title('Convergency time for different model (Precesion_threshold={})'.format(precision))
+    plt.title(
+        'Convergency time for different model (Precesion_threshold={})'.format(precision))
     plt.xlabel('iterations')
     plt.ylabel('time(s)')
     plt.legend()
     plt.grid()
     plt.show()
+
+
+def plot_convergency(res, i=0, **kwargs):
+    conv = {}
+    conv_labels = []
+    not_conv = {}
+    notc_labels = []
+    for k, v in res.items():
+        if v[-1].converge:
+            conv[k] = v
+            conv_labels.append(k)
+        else:
+            not_conv[k] = v
+            notc_labels.append(k)
+    if len(conv_labels) > 0:
+        plot_conv(
+            [v[i].time_rec for k, v in conv.items()], conv_labels)
+    if len(notc_labels) > 0:
+        plot_conv(
+            [v[i].time_rec for k, v in not_conv.items()], notc_labels)
+
+
+def plot_accuracy(res, true, i=0, **kwargs):
+    conv = {}
+    conv_labels = []
+    not_conv = {}
+    notc_labels = []
+    for k, v in res.items():
+        if v[-1].converge:
+            conv[k] = v
+            conv_labels.append(k)
+        else:
+            not_conv[k] = v
+            notc_labels.append(k)
+    if len(conv_labels) > 0:
+        plot_acc(
+            [v[i].val_rec for k, v in conv.items()], true, conv_labels, **kwargs)
+    if len(notc_labels) > 0:
+        plot_acc(
+            [v[i].val_rec for k, v in not_conv.items()], true, notc_labels, **kwargs)
 
 
 def plot_acc(val_lists, true, label_lists, norm='L2'):
@@ -132,11 +174,10 @@ def show_acc(val_lists, true, label_lists, norm='L2'):
     for i, e in enumerate(err):
         print(norm+' error for {0:<20} is: {1:.2E}'.format(label_lists[i], e))
 
+
 if __name__ == "__main__":
 
-
     def f1(x, y): return 100*(y-x**2)**2 + (1-x)**2
-
 
     v0_list = [[-1, 1], [0, 1], [2, 1]]
     val_lists = [minimize(f1, vo, method="Steepest Descend") for vo in v0_list]
@@ -145,11 +186,10 @@ if __name__ == "__main__":
     plot_path(f1, val_lists, "Steepest Descend", x_grid=x_grid, y_grid=y_grid)
     val_arr = [val.val_rec for val in val_lists]
     plot_acc(val_arr, [1, 1], ['start at '+str(v0)
-                                for v0 in v0_list], norm='L2')
+                               for v0 in v0_list], norm='L2')
 
     plot_convergency([val.time_rec for val in val_lists], [
-                        'start at '+str(v0) for v0 in v0_list])
-
+        'start at '+str(v0) for v0 in v0_list])
 
     def f0(x): return x**2+(x-3)**2
     v0_list = [[-1], [0], [2]]

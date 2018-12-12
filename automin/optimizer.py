@@ -4,7 +4,6 @@ import warnings
 import time
 import numpy as np
 from .autodiff.variables import Variable
-from scipy.optimize import minimize as scmin
 
 # sys.path.append('../AutoDiff')
 #base_dir = os.path.dirname(__file__) or '.'
@@ -19,7 +18,7 @@ NORM = 2
 
 
 class Result:
-    def __init__(self, x, val_rec, time_rec, converge):
+    def __init__(self, x, val_rec, time_rec, converge, convergence_warning = True):
         """Record the optimization results and performance
 
         INPUTS
@@ -33,7 +32,7 @@ class Result:
         self.val_rec = val_rec
         self.time_rec = time_rec
         self.converge = converge
-        if not converge:
+        if (not converge) and convergence_warning:
             warnings.warn("optimization did not converge")
         # throw warning if not convergent
 
@@ -129,14 +128,14 @@ def minimize_over_data(model, init_param, method, epochs, stochastic = False, **
             start_time = time.time()
             for rows in range(len(model.all_data)):
                 r = minimize(model.loss, x, method=method,
-                             max_iter=1, **kwargs)
+                             max_iter=1, convergence_warning = False, **kwargs)
                 x = r.x
                 val_rec.append(r.x)
                 model.step()
                 time_total = time_total + time.time()-start_time
                 time_rec.append(time_total)
         model.make_deterministic()
-        r = Result(x, val_rec, time_rec, None)
+        r = Result(x, val_rec, time_rec, None, convergence_warning = False)
     else:
         x = init_param
         val_rec = [x]
@@ -144,7 +143,7 @@ def minimize_over_data(model, init_param, method, epochs, stochastic = False, **
     return r
 
 
-def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=10000, sigma=1e-6, norm=NORM, **kwargs):
+def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=10000, sigma=0.01, norm=NORM, **kwargs):
     # create initial variables
     x = np.array(x0)
 
@@ -194,7 +193,7 @@ def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=10000, sigma=1e
 
     return Result(x, np.array(val_rec), time_rec, False)
 
-def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=1e-6, norm=NORM, **kwargs):
+def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.01, norm=NORM, **kwargs):
      # create initial variables
     x = np.array(x0, dtype=float)
     var_names = ['x'+str(idx) for idx in range(len(x))]
@@ -213,10 +212,9 @@ def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=1e-
             return Result(x, np.array(val_rec), time_rec, True)
         s = -grad1
         # secant method line search
-        #eta = (-sigma*s @ s) / (_get_grad(fn, x+sigma*s, var_names)@s - s@s)
-        eta = scmin(lambda eta: fn(*(x+eta*s)), 0)
+        eta = (-sigma*s @ s) / (_get_grad(fn, x+sigma*s, var_names)@s - s@s)
 
-        dx = eta.x*s
+        dx = eta*s
         x += dx
 
         val_rec.append(x.copy())
@@ -268,7 +266,7 @@ def min_BFGS(fn, x0, precision=PRECISION, max_iter=MAXITER, beta=0.9, c=0.9, alp
     return Result(x, np.array(val_rec), time_rec, False)
 
 
-def min_gradientdescent(fn, x0, precision=1e-3, max_iter=30000, lr=1e-3, norm=NORM, **kwargs):
+def min_gradientdescent(fn, x0, precision=1e-2, max_iter=30000, lr=1e-3, norm=NORM, **kwargs):
     x = np.array(x0)
 
     var_names = ['x'+str(idx) for idx in range(len(x))]
@@ -288,7 +286,7 @@ def min_gradientdescent(fn, x0, precision=1e-3, max_iter=30000, lr=1e-3, norm=NO
 
         # threshold stopping condition
         if np.linalg.norm(g, norm) <= precision:
-            return Result(x, np.array(val_rec), time_rec, True)
+            return Result(x, np.array(val_rec), time_rec, True, **kwargs)
 
         # iteration stopping condition
-    return Result(x, np.array(val_rec), time_rec, False)
+    return Result(x, np.array(val_rec), time_rec, False, **kwargs)

@@ -94,6 +94,10 @@ class vector_Variable(object):
         except AttributeError:
             print('input is not a Variable')
 
+    def __repr__(self):
+        individual_variables = ["f{}: {}".format(idx, v.__repr__()) for idx, v in enumerate(self.variables)]
+        return "\n".join(individual_variables)
+
     def __add__(self, other):
         # check that vector functions are of the same length
         if len(self.val) != len(other.val):

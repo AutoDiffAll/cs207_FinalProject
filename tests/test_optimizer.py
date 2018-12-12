@@ -61,7 +61,7 @@ def test_BFGS():
     start_at_max(m)
 
 def test_gradient_descent():
-    m = 'Gradient Descend'
+    m = 'Gradient Descent'
     rosenbrock(m)
     no_minimum(m)
     parabola(m)
@@ -81,7 +81,7 @@ def test_conjugate_gradient():
     start_at_max(m)
 
 def test_steepest_descent():
-    m = 'Steepest Descend'
+    m = 'Steepest Descent'
     rosenbrock(m)
     no_minimum(m)
     parabola(m)
@@ -108,10 +108,10 @@ def test_minimize_over_data():
 
     model = MSE_Regression(data)
 
-    r_all = minimize_over_data(model, [10,10], 'Gradient Descend', 2000, stochastic = False, lr = 1e-4)
+    r_all = minimize_over_data(model, [10,10], 'Gradient Descent', 2000, stochastic = False, lr = 1e-4)
     r_all.x
     assert np.linalg.norm(r_all.x - np.array([2,3])) < PRECISION/2
-    r_stoch = minimize_over_data(model, [10,10], 'Gradient Descend', 100, stochastic = True, lr = 1e-3)
+    r_stoch = minimize_over_data(model, [10,10], 'Gradient Descent', 100, stochastic = True, lr = 1e-3)
     r_stoch.x
     assert np.linalg.norm(r_stoch.x - np.array([2,3])) < 0.1
 

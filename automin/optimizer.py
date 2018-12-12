@@ -3,7 +3,7 @@ import os
 import warnings
 import time
 import numpy as np
-from .autodiff.variables import Variable
+from autodiff.variables import Variable
 
 # sys.path.append('../AutoDiff')
 #base_dir = os.path.dirname(__file__) or '.'

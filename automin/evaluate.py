@@ -9,8 +9,10 @@ import matplotlib.colors as colors
 def plot_path_2D(val_arr, x_grid, y_grid, fn):
     f_grid = fn(x_grid.reshape(1, -1),
                 y_grid.reshape(-1, 1))
+    #f_grid=f_grid-f_grid.min()+1
+    
     plt.contourf(x_grid, y_grid, f_grid, cmap='Blues',
-                 norm=colors.LogNorm(vmin=max(0,f_grid.min()), vmax=f_grid.max())
+                 norm=colors.LogNorm(vmin=f_grid.min(), vmax=f_grid.max())
                  )
     plt.colorbar(orientation='horizontal')
 

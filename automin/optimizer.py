@@ -4,6 +4,7 @@ import warnings
 import time
 import numpy as np
 from .autodiff.variables import Variable
+from scipy.optimize import minimize as scmin
 
 # sys.path.append('../AutoDiff')
 #base_dir = os.path.dirname(__file__) or '.'
@@ -213,6 +214,7 @@ def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=1e-
         s = -grad1
         # secant method line search
         eta = (-sigma*grad1 @ s) / (_get_grad(fn, x+sigma*s, var_names)@s - grad1@s)
+        #eta = scmin(lambda eta: fn(*(x+eta*s)), 0)
 
         dx = eta*s
         x += dx

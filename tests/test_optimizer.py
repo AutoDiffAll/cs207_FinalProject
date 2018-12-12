@@ -6,6 +6,20 @@ import sys
 from ..automin.autodiff import AD_numpy as anp
 from ..automin.optimizer import minimize, PRECISION, Model, minimize_over_data
 
+def rosenbrock(method):
+    a = 1
+    b = 100
+    f = lambda x,y: (a-x)**2+b*(y-x**2)**2
+    x = [2,2]
+    r = minimize(f,x,method)
+    distance_from_min = np.linalg.norm(r.x-np.array([1,1]))
+    print(r.converge)
+    if method == 'Gradient Descend':
+        p = 1e-2
+    else:
+        p = PRECISION
+    assert distance_from_min < p
+
 def no_minimum(method):
     f = lambda x,y: x+y
     x = [0,0]
@@ -45,6 +59,7 @@ def start_at_max(method):
 
 def test_BFGS():
     m = 'BFGS'
+    rosenbrock(m)
     no_minimum(m)
     parabola(m)
     at_minimum(m)
@@ -54,6 +69,7 @@ def test_BFGS():
 
 def test_gradient_descent():
     m = 'Gradient Descend'
+    rosenbrock(m)
     no_minimum(m)
     parabola(m)
     at_minimum(m)
@@ -63,6 +79,7 @@ def test_gradient_descent():
 
 def test_conjugate_gradient():
     m = 'Conjugate Gradient'
+    rosenbrock(m)
     no_minimum(m)
     parabola(m)
     at_minimum(m)
@@ -72,6 +89,7 @@ def test_conjugate_gradient():
 
 def test_steepest_descent():
     m = 'Steepest Descend'
+    rosenbrock(m)
     no_minimum(m)
     parabola(m)
     at_minimum(m)

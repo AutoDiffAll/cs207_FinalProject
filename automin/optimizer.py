@@ -287,7 +287,7 @@ def min_gradientdescent(fn, x0, precision=1e-2, max_iter=30000, lr=1e-3, norm=NO
 
         # threshold stopping condition
         if np.linalg.norm(g, norm) <= precision:
-            return Result(x, np.array(val_rec), time_rec, True, **kwargs)
+            return Result(x, np.array(val_rec), time_rec, True)
 
         # iteration stopping condition
-    return Result(x, np.array(val_rec), time_rec, False, **kwargs)
+    return Result(x, np.array(val_rec), time_rec, False)

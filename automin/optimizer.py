@@ -143,7 +143,7 @@ def minimize_over_data(model, init_param, method, epochs, stochastic = False, **
     return r
 
 
-def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=10000, sigma=0.01, norm=NORM, **kwargs):
+def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=10000, sigma=1e-6, norm=NORM, **kwargs):
     # create initial variables
     x = np.array(x0)
 

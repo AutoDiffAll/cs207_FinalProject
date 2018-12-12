@@ -108,23 +108,23 @@ def plot_convergency(res, i=0, **kwargs):
     conv_labels = []
     not_conv = {}
     notc_labels = []
-    flag=False
+    # flag=False
     for k, v in res.items():
         if v[-1].converge:
             conv[k] = v
             conv_labels.append(k)
         else:
-            flag=True
+            # flag=True
             not_conv[k] = v
             notc_labels.append(k)
-    if flag:
-        plt.figure(figsize=(20,10))
-        plt.subplot(1,2,1)
+    # if flag:
+    #     plt.figure(figsize=(20,10))
+    #     plt.subplot(1,2,1)
     if len(conv_labels) > 0:
         plot_conv(
             [v[i].time_rec for k, v in conv.items()], conv_labels)
     if len(notc_labels) > 0:
-        plt.subplot(1,2,2)
+        # plt.subplot(1,2,2)
         plot_conv(
             [v[i].time_rec for k, v in not_conv.items()], notc_labels)
 
@@ -134,23 +134,23 @@ def plot_accuracy(res, true, i=0, **kwargs):
     conv_labels = []
     not_conv = {}
     notc_labels = []
-    flag = False
+    # flag = False
     for k, v in res.items():
         if v[-1].converge:
             conv[k] = v
             conv_labels.append(k)
         else:
-            flag = True
+            # flag = True
             not_conv[k] = v
             notc_labels.append(k)
-    if flag:
-        plt.figure(figsize=(20, 10))
-        plt.subplot(1, 2, 1)
+    # if flag:
+    #     plt.figure(figsize=(20, 10))
+    #     plt.subplot(1, 2, 1)
     if len(conv_labels) > 0:
         plot_acc(
             [v[i].val_rec for k, v in conv.items()], true, conv_labels, **kwargs)
     if len(notc_labels) > 0:
-        plt.subplot(1, 2, 2)
+        # plt.subplot(1, 2, 2)
         plot_acc(
             [v[i].val_rec for k, v in not_conv.items()], true, notc_labels, **kwargs)
 

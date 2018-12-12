@@ -12,7 +12,7 @@ from autodiff.variables import Variable
 
 
 
-PRECISION = 1e-5
+PRECISION = 1e-3
 MAXITER = 5000
 NORM = 2
 
@@ -173,10 +173,6 @@ def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=10000, sigma=0.
     for i in range(max_iter-1):
         sgrad1 = -_get_grad(fn, x, var_names)
 
-        if np.linalg.norm(sgrad1, norm) <= precision:
-            # reshape val_rec
-            return Result(x, np.array(val_rec), time_rec, True)
-
         beta = min(0, (sgrad1 @ (sgrad0-sgrad1)) / (sgrad0 @ sgrad0))
         conj_direct = sgrad1 + beta*conj_direct
         gradsigma = _get_grad(fn, x+sigma*conj_direct, var_names)
@@ -190,6 +186,10 @@ def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=10000, sigma=0.
 
         # update grad
         sgrad0 = sgrad1
+
+        if np.linalg.norm(sgrad1, norm) <= precision:
+            # reshape val_rec
+            return Result(x, np.array(val_rec), time_rec, True)
 
     return Result(x, np.array(val_rec), time_rec, False)
 
@@ -232,24 +232,6 @@ def _get_grad(fn, x, var_names):
     return grad
 
 
-# def _line_search(fn, x, search_direction, grad, beta = 0.9, c = 0.9, alpha_init = 1):
-#     """approximately minimizes f along search_direction
-#     https://en.wikipedia.org/wiki/Backtracking_line_search
-#     """
-#     m = search_direction.T.dot(grad)
-#     alpha = alpha_init
-#     while (fn(*(x)) - fn(*(x+alpha*search_direction))) < -c*alpha*m:
-#         alpha = alpha * beta
-#     return alpha
-
-
-# def _update_hessian(approx_hessian, d_grad, step):
-#     return (approx_hessian
-#             + 1/(d_grad.T.dot(step))*d_grad.dot(d_grad.T)
-#             - 1/(step.T.dot(approx_hessian).dot(step))*(approx_hessian.dot(step).dot(step.T).dot(approx_hessian.T))
-#            )
-
-
 def min_BFGS(fn, x0, precision=PRECISION, max_iter=MAXITER, beta=0.9, c=0.9, alpha_init=1, norm=NORM, **kwargs):
     approx_hessian = np.eye(len(x0))
 
@@ -284,7 +266,7 @@ def min_BFGS(fn, x0, precision=PRECISION, max_iter=MAXITER, beta=0.9, c=0.9, alp
     return Result(x, np.array(val_rec), time_rec, False)
 
 
-def min_gradientdescent(fn, x0, precision=PRECISION, max_iter=10000, lr=1e-3, norm=NORM, **kwargs):
+def min_gradientdescent(fn, x0, precision=1e-3, max_iter=30000, lr=1e-3, norm=NORM, **kwargs):
     x = np.array(x0)
 
     var_names = ['x'+str(idx) for idx in range(len(x))]

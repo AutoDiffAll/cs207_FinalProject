@@ -87,11 +87,11 @@ def plot_path(fn, val_lists, title, dim=2, **kwargs):
     plt.suptitle(title, fontsize=25, y=1.02)
     plt.show()
 
-def plot_convergency(time_lists, label_lists):
+def plot_convergency(time_lists, label_lists,precision=1e-5):
     n = len(time_lists)
     for i in range(n):
         plt.plot(time_lists[i], label=label_lists[i])
-    plt.title('Convergency time for different model')
+    plt.title('Convergency time for different model (Precesion_threshold={})'.format(precision))
     plt.xlabel('iterations')
     plt.ylabel('time(s)')
     plt.legend()

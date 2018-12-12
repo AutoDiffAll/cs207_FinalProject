@@ -1,21 +1,16 @@
 import sys
 import os
 import warnings
-
-# sys.path.append('../AutoDiff')
-base_dir = os.path.dirname(__file__) or '.'
-
-package_dir_a = os.path.join(base_dir, '../AutoDiff')
-sys.path.insert(0, package_dir_a)
-
-try:
-    from variables import Variable
-except:
-    from AutoDiff.variables import Variable
-
-
 import time
 import numpy as np
+from .autodiff.variables import Variable
+
+# sys.path.append('../AutoDiff')
+#base_dir = os.path.dirname(__file__) or '.'
+#package_dir_a = os.path.join(base_dir, '../AutoDiff')
+#sys.path.insert(0, package_dir_a)
+
+
 
 PRECISION = 1e-5
 MAXITER = 5000
@@ -117,21 +112,30 @@ class Model(object):
     def loss(self):
         raise NotImplementedError
 
-
-def minimize_over_data(model, init_param, method, epochs, stochastic=False, **kwargs):
+def minimize_over_data(model, init_param, method, epochs, stochastic = False, **kwargs):
+    supported_stochastic_methods = ['Gradient Descend']
     if stochastic:
+        if method not in supported_stochastic_methods:
+            raise ValueError("""{} is not supported for stochastic optimization.
+                                Supported methods are {}"""
+                                .format(method, supported_stochastic_methods))
         x = np.array(init_param)
         val_rec = [x]
         model.make_stochastic()
+        time_rec = [0]
+        time_total = 0
         for epoch in range(epochs):
+            start_time = time.time()
             for rows in range(len(model.all_data)):
                 r = minimize(model.loss, x, method=method,
                              max_iter=1, **kwargs)
                 x = r.x
                 val_rec.append(r.x)
                 model.step()
+                time_total = time_total + time.time()-start_time
+                time_rec.append(time_total)
         model.make_deterministic()
-        r = Result(x, val_rec, None, None)
+        r = Result(x, val_rec, time_rec, None)
     else:
         x = init_param
         val_rec = [x]

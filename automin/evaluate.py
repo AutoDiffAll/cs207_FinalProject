@@ -1,16 +1,6 @@
 import sys
-try:
-    from Optimizer import minimize
-except:
-    from Implementation.Optimizer import minimize
-
-try:
-    sys.path.append('../AutoDiff')
-    from variables import Variable
-except:
-    from AutoDiff.variables import Variable
-
-
+from .optimizer import minimize
+from .autodiff.variables import Variable
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
@@ -150,4 +140,3 @@ if __name__ == "__main__":
     val_lists = [minimize(f0, vo, method="Steepest Descend") for vo in v0_list]
     x_grid = np.linspace(-2, 4, 150)
     plot_path(f0, val_lists, "Steepest Descend", dim=1, x_grid=x_grid)
-    

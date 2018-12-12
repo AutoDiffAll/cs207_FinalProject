@@ -1,6 +1,6 @@
 import sys
-from optimizer import minimize
-from autodiff.variables import Variable
+from .optimizer import minimize
+from .autodiff.variables import Variable
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors

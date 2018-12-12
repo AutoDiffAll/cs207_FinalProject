@@ -192,10 +192,10 @@ if __name__ == "__main__":
     def f1(x, y): return 100*(y-x**2)**2 + (1-x)**2
 
     v0_list = [[-1, 1], [0, 1], [2, 1]]
-    val_lists = [minimize(f1, vo, method="Steepest Descend") for vo in v0_list]
+    val_lists = [minimize(f1, vo, method="Steepest Descent") for vo in v0_list]
     x_grid = np.linspace(-3, 3, 150)
     y_grid = np.linspace(-3, 4, 200)
-    plot_path(f1, val_lists, "Steepest Descend", x_grid=x_grid, y_grid=y_grid)
+    plot_path(f1, val_lists, "Steepest Descent", x_grid=x_grid, y_grid=y_grid)
     val_arr = [val.val_rec for val in val_lists]
     plot_acc(val_arr, [1, 1], ['start at '+str(v0)
                                for v0 in v0_list], norm='L2')
@@ -205,6 +205,6 @@ if __name__ == "__main__":
 
     def f0(x): return x**2+(x-3)**2
     v0_list = [[-1], [0], [2]]
-    val_lists = [minimize(f0, vo, method="Steepest Descend") for vo in v0_list]
+    val_lists = [minimize(f0, vo, method="Steepest Descent") for vo in v0_list]
     x_grid = np.linspace(-2, 4, 150)
-    plot_path(f0, val_lists, "Steepest Descend", dim=1, x_grid=x_grid)
+    plot_path(f0, val_lists, "Steepest Descent", dim=1, x_grid=x_grid)

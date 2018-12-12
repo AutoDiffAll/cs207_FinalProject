@@ -48,9 +48,9 @@ def minimize(fun, x0, method=None, **kwargs):
     method: string (optional). Type of different optimizer. Should be one of
 
         - 'BFGS'                        :ref:`(see here) <optimizer.min_BFGS>`
-        - 'Gradient Descend'            :ref:`(see here) <optimizer.min_gradient_descend>`
+        - 'Gradient Descent'            :ref:`(see here) <optimizer.min_gradient_descent>`
         - 'Conjugate Gradient'          :ref:`(see here) <optimizer.min_conjugate_gradient>`
-        - 'Steepest Descend'            :ref:`(see here) <optimizer.min_steepestdescent>`
+        - 'Steepest Descent'            :ref:`(see here) <optimizer.min_steepestdescent>`
 
         If not specified, it will automatically choose 'Newton Method'.
 
@@ -74,11 +74,11 @@ def minimize(fun, x0, method=None, **kwargs):
     """
     if method == "Conjugate Gradient":
         return min_conjugate_gradient(fun, x0, **kwargs)
-    elif method == "Steepest Descend":
+    elif method == "Steepest Descent":
         return min_steepestdescent(fun, x0, **kwargs)
     elif method == "BFGS" or method=="None":
         return min_BFGS(fun, x0, **kwargs)
-    elif method == "Gradient Descend":
+    elif method == "Gradient Descent":
         return min_gradientdescent(fun, x0, **kwargs)
     else:
         raise ValueError(
@@ -104,6 +104,7 @@ class Model(object):
             self.row_idx += 1
         else:
             self.row_idx = 0
+            self.data = self.data.sample(frac=1)
         self.data = self.all_data.iloc[self.row_idx, :]
 
     def predict(self):
@@ -113,7 +114,7 @@ class Model(object):
         raise NotImplementedError
 
 def minimize_over_data(model, init_param, method, epochs, stochastic = False, **kwargs):
-    supported_stochastic_methods = ['Gradient Descend']
+    supported_stochastic_methods = ['Gradient Descent']
     if stochastic:
         if method not in supported_stochastic_methods:
             raise ValueError("""{} is not supported for stochastic optimization.

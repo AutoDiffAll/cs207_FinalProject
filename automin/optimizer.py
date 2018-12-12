@@ -193,7 +193,7 @@ def min_conjugate_gradient(fn, x0, precision=PRECISION, max_iter=10000, sigma=1e
 
     return Result(x, np.array(val_rec), time_rec, False)
 
-def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=0.01, norm=NORM, **kwargs):
+def min_steepestdescent(fn, x0, precision=PRECISION, max_iter=MAXITER, sigma=1e-6, norm=NORM, **kwargs):
      # create initial variables
     x = np.array(x0, dtype=float)
     var_names = ['x'+str(idx) for idx in range(len(x))]

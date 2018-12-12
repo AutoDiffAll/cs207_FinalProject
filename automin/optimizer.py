@@ -104,6 +104,7 @@ class Model(object):
             self.row_idx += 1
         else:
             self.row_idx = 0
+            self.data = self.data.sample(frac=1)
         self.data = self.all_data.iloc[self.row_idx, :]
 
     def predict(self):

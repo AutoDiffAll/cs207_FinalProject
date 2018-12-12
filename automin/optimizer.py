@@ -234,6 +234,9 @@ def _get_grad(fn, x, var_names):
     return grad
 
 
+def get_gradient(fn, x, var_names,**kwargs):
+    return _get_grad(fn, x, var_names,**kwargs)
+
 def min_BFGS(fn, x0, precision=PRECISION, max_iter=MAXITER, beta=0.9, c=0.9, alpha_init=1, norm=NORM, **kwargs):
     approx_hessian = np.eye(len(x0))
 

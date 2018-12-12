@@ -10,7 +10,7 @@ def plot_path_2D(val_arr, x_grid, y_grid, fn):
     f_grid = fn(x_grid.reshape(1, -1),
                 y_grid.reshape(-1, 1))
     plt.contourf(x_grid, y_grid, f_grid, cmap='Blues',
-                 norm=colors.LogNorm(vmin=f_grid.min(), vmax=f_grid.max())
+                 norm=colors.LogNorm(vmin=max(0,f_grid.min()), vmax=f_grid.max())
                  )
     plt.colorbar(orientation='horizontal')
 
@@ -115,6 +115,20 @@ def plot_acc(val_lists, true, label_lists, norm='L2'):
     plt.legend()
     plt.grid()
     plt.show()
+
+
+def show_acc(val_lists, true, label_lists, norm='L2'):
+    n = len(label_lists)
+
+    if norm == 'L1':
+        err = np.linalg.norm(np.array(val_lists)-np.array([1, 1]), 1, axis=-1)
+    elif norm == 'L_inf':
+        err = np.linalg.norm(np.array(val_lists) -
+                             np.array([1, 1]), np.inf, axis=-1)
+    else:
+        err = np.linalg.norm(np.array(val_lists)-np.array([1, 1]), 2, axis=-1)
+    for i, e in enumerate(err):
+        print(norm+' error for {0:<20} is: {1:.2E}'.format(label_lists[i], e))
 
 if __name__ == "__main__":
 

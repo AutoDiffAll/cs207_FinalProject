@@ -12,13 +12,8 @@ def rosenbrock(method):
     f = lambda x,y: (a-x)**2+b*(y-x**2)**2
     x = [2,2]
     r = minimize(f,x,method)
-    distance_from_min = np.linalg.norm(r.x-np.array([1,1]))
     print(r.converge)
-    if method == 'Gradient Descend':
-        p = 1e-2
-    else:
-        p = PRECISION
-    assert distance_from_min < p
+    assert r.converge
 
 def no_minimum(method):
     f = lambda x,y: x+y
